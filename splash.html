@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Untitled Document</title>
@@ -14,12 +14,12 @@
     <script> 
       $(function () {
         var cb = CampusBooks.create("BLCg7q5VrmUBxsrETg5c");
-        $('body').delegate('#signup', 'submit', function (ev) {
+        $('body').delegate('#email_form', 'submit', function (ev) {
           ev.preventDefault();
           //$.getJSON('subscribe/' + $('input[name=email]').val(), function (data) {
           //  alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
           //});
-          $.post('subscribe', {email: $('input[name=email]').val()}, function (data) {
+          $.post('/subscribe', {email: $('input[name=email]').val()}, function (data) {
             data = data || {};
             alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
           }, 'json');
@@ -45,7 +45,7 @@
 <div id="background-logo"</div>
 
 <form id="email_form"> 
-      	<input type="email" name="email" value= " &nbsp;email address"width="500px"class="form_field" onclick=""/> 
+      	<input type="email" name="email" value= " &nbsp;email address" width="500px" class="form_field" /> 
         <input type="submit" name="submit" value="I want in!" class="button"/> 
       </form> 
  
