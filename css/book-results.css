@@ -1,5 +1,8 @@
 @charset "UTF-8";
 /* CSS Document */
+
+@charset "UTF-8";
+/* CSS Document */
 body
 {background-color:#DCF5FC;
 }
@@ -8,17 +11,6 @@ height:36px;
 width:121px;
 background-repeat:no-repeat;
 }
-#background-logo{
-	background-image:url(file:///Macintosh%20HD/Users/brianturley/Desktop/Spotter%20Rf/Projects/Website/images/background-logos.png);
-	height:350px;
-	width:500px;
-	margin-left:auto;
-	margin-right:auto;
-	margin-bottom:40px;
-	position:relative;
-	bottom:100px;
-	
-	}
 
 li{
 	margin:opx;
@@ -56,7 +48,7 @@ a.text_right{
 	margin:0px;
 	float:right}
 	
-#wrapper
+#background_frame
 {
 	width:1200px;
 	height:auto;
@@ -64,6 +56,7 @@ a.text_right{
 	margin-left:auto;
 	margin-right:auto;
 	border:2px solid  #E3E3E3;-moz-border-radius:25px; /*Firefox*/ border-radius:25px;
+	padding:10px;
 }
 
 #instruction_heading
@@ -127,19 +120,19 @@ text-align:justify;
 	color:#8CC63F
 }
 #menu_step_1{
-	list-style-image:url(step1.png);
+	list-style-image:url(../step1.png);
 	float:left;
 	margin:0px 10px 60px 40px;
 	font-size:16px;
 }
 #menu_step_2{
-	list-style-image:url(step2.png);
+	list-style-image:url(../step2.png);
 	float:left;
 	margin:0px 10px 30px 40px;
 	font-size:18px;
 }
 #menu_step_3{
-	list-style-image:url(step3.png);
+	list-style-image:url(../step3.png);
 	float:left;
 	margin:0px 10px 0px 40px;
 	font-size:18px;
