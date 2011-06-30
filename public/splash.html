@@ -7,23 +7,47 @@
 
 
 
- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
-    <script src="/vendor/global-es5.js"></script> 
-    <script src="/vendor/futures.js"></script> 
-    <script src="/lib/campusbooks.js"></script> 
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
     <script> 
+      function loading() {
+        $('#loading').show();
+      }
+
+      function complete() {
+        $('#loading').hide();
+      }
+
       $(function () {
-        var cb = CampusBooks.create("BLCg7q5VrmUBxsrETg5c");
+        $('#loading').hide();
+
+        //var cb = CampusBooks.create("BLCg7q5VrmUBxsrETg5c");
         $('body').delegate('#email_form', 'submit', function (ev) {
+          var email;
+
           ev.preventDefault();
+
+          email = $('input[name=email]').val();
+
+          if (!email || !email.match(/\w+@\w+.\w+/)) {
+            alert('bad email address');
+            return;
+          }
           //$.getJSON('subscribe/' + $('input[name=email]').val(), function (data) {
           //  alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
           //});
+
+          loading();
           $.post('/subscribe', {email: $('input[name=email]').val()}, function (data) {
-            data = data || {};
+            complete();
+            if (!data) {
+              alert('Server Error');
+              return;
+            }
+
             alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
           }, 'json');
         });
+        /*
         $('body').delegate('#booksearch', 'submit', function (ev) {
           ev.preventDefault();
           var keywords = $('input[name=book_keywords]').val();
@@ -31,6 +55,7 @@
             alert('Results for "' + keywords + '": ' +  JSON.stringify(data));
           });
         });
+        */
       });
     </script> 
 
@@ -44,10 +69,12 @@
 <div id="container_box">
 <div id="background-logo"</div>
 
-<form id="email_form"> 
+<div id="loading">Loading...</div>
+
+  <form id="email_form"> 
       	<input type="email" name="email" value= " &nbsp;email address" width="500px" class="form_field" /> 
         <input type="submit" name="submit" value="I want in!" class="button"/> 
-      </form> 
+  </form> 
  
  <h1>Good things are coming to your college.</h1>
  <p>Join on the list and get in the know</p>  

@@ -105,9 +105,11 @@ $(function () {
       // Note that it only works with Half.com, not the other 20 textbook sites, 
       // so it's not very useful, but good enough for this demo
       campusbooks = CampusBooks.create("BDz21GvuL6RgTKiSbwe3"),
-      template = $("#item_list").html();
+      display_item_template = $("#item_list").html(),
+      form_item_template = $("#item_form").html();
 
     $("div.item").remove();
+    $("div.change_item").remove();
 
     create({
       onSearch: function (input, cb) {
@@ -178,7 +180,7 @@ $(function () {
           books = data.response.page.results.book;
           //debug(JSON.stringify(books));
           books.forEach(function (book) {
-            var bookhtml = $(template);
+            var bookhtml = $(display_item_template);
             discoverBinding(book);
             bookhtml.find(".item_picture img").attr('src', book.image);
             bookhtml.find(".title").html(truncateTitle(book, 50));

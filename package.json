@@ -1,0 +1,19 @@
+{
+  "author": "AJ ONeal <coolaj86@gmail.com> (http://coolaj86.info)",
+  "name": "blyph",
+  "description": "Blyph student book exchange",
+  "version": "0.1.0",
+  "homepage": "http://blyph.com",
+  "repository": {
+    "type": "git",
+    "url": "gitosis@thrustvps.coolaj86.info:blyph.git"
+  },
+  "engines": {
+    "node": ">= 0.4.8"
+  },
+  "dependencies": {
+      "connect": ">= 1.0.0"
+    , "cradle": ">= 0.0.0"
+  },
+  "devDependencies": {}
+}
