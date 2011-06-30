@@ -1,10 +1,15 @@
 @charset "UTF-8";
 /* CSS Document */
+#booklist{float:left;
+width:260;
+height:auto;
+background:#FC0;
+position:fixed;
+	}
 .booklist_title{
 	background:#ccc;
 width:250px;
 height:25px;
-position:fixed;
 left:10px;
 border:0px;
 border-bottom:#999 solid 1px;
@@ -13,9 +18,8 @@ margin-top:10px;
 }
 .booklist{
 	background:#ffc;
-width:660px;
+width:240px;
 height:25px;
-position:relative;
 left:35px;
 border:0px;
 border-bottom:#0CF solid 1px;

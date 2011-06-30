@@ -3,8 +3,7 @@
 #change_item_container{
 	width:680px;
 	height:auto;
-	margin-left:auto;
-	margin-right:auto;
+	margin-right:0px auto 0px auto;
 	background:#FFC;
 }
 #change_item_container li:hover{ 
@@ -107,7 +106,7 @@ cursor:text;
 	border-color:#09F;
 }
 
-.button {
+.button-haveit {
 	width:120px;
 	height:30px;
 	background-color:#8CC63F;
@@ -116,3 +115,14 @@ cursor:text;
 	color:#FFF;
 	font-size:18px;
 	cursor:pointer;
+}
+.button-needit {
+	width:120px;
+	height:30px;
+	background-color:#369;
+	border:2px solid #CCC;-moz-border-radius:5px; /*Firefox*/ border-radius:5px;
+	float:right;
+	color:#FFF;
+	font-size:18px;
+	cursor:pointer;
+	margin:0px 5px 0px 0px;}

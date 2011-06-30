@@ -50,11 +50,13 @@
             		<a href="help.html"class="text_right">Search multiple books at the same time</a>
     			</div>
     </div>
-     
+     <div id="booklist">
      <form><!--MyBooks-->
      <ul>
      <li><input name type="text" class="booklist_title" value="My Books"/></li>
-     
+         <ul>
+         	<li><input name type="text" class="booklist" value="My Books"/></li>
+         </ul>
      </ul>
      </form><!--EndMyBooks-->
      <form><!--MyBooks-->
@@ -63,7 +65,7 @@
     
      </ul>
      </form><!--EndMyBooks-->
-     
+     </div><!--booklist-->
   <hr /><!--page break-->
 
 <div id="item_list">  
@@ -131,7 +133,8 @@
       
 	</div><!--change_item-->
 </div><!--item_container-->
-<input name="list book" type="submit" value="list book" class="button"/>
+<input name="list book" type="submit" value="need it" class="button-haveit"/>
+<input name="list book" type="submit" value="have it" class="button-needit"/>
 </form><!--Change Item-->
 
 </div>

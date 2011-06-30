@@ -6,16 +6,19 @@
 body
 {background-color:#DCF5FC;
 }
-#logo{ background-image:url(file:///Macintosh%20HD/Users/brianturley/Sites/images/Blyph-Logo.png);
-height:36px;
+#logo{ background-image:url(../images/Blyph-Logo.png);
 width:121px;
+height:37px;
 background-repeat:no-repeat;
+visibility:visible;
 }
+
 #wrapper{
 	width:1200px;
 	height:auto;
-	margin:8px auto 0px auto;
+	margin:40px auto 0px auto;
 	background-color:#fff;
+	border:2px solid  #E3E3E3;-moz-border-radius:25px; /*Firefox*/ border-radius:5px;
 }
 
 ul{
@@ -52,7 +55,7 @@ float:left;
 padding:0px;
 margin:5px 5px 5px 5px;
 }
-.match-item-photo{
+.item-photo-small{
 	background-image:url(images/1.jpg);
 height:50px;
 width:50px;
@@ -83,13 +86,14 @@ list-style-type:none;
 	}
 
 #column1{ 
-width:300px;
+width:260px;
 border-right:solid 1px #CCC;
 float:left;
 padding-right:2px;
 }
 
-#column2{ width:544px;
+#column2{
+width:665px;
 height:auto;
 float:left;
 font-family:Arial, Helvetica, sans-serif;
@@ -97,14 +101,14 @@ padding:0px 2px 0px 2px;
 border-left:solid 1px #999;
 }
 #column3{
-width:345px;
+width:260px;
 height:auto;
 float:left;
 border-left:solid 1px #999;
 padding-left:2px;
 	}
 #result-info-box{
-	width:345px;
+	width:260px;
 	height:200px;
 	background-color:#999;
 	}
@@ -125,24 +129,24 @@ border-bottom:2px solid #999;
 padding:2px;
 margin:0px auto 2px auto;
 }
-#searchbar
-{background:#FFF;
-width:290px;
+#searchbar-small
+{background:#fff;
+width:250px;
 height:25px;
 border:2px solid #CCC;-moz-border-radius:5px; /*Firefox*/ border-radius:5px;
 float:inherent;
 padding:2px;
 margin:2px 0px 2px 2px;
 }
-#search
+#search-small
 {background:#C33;
-width:250px;
+width:225px;
 height:23px;
 float:left;
 border:none;
 font-size:24px;
 }
-#search:focus{
+#search-small:focus{
 	outline-width:0;
 }
 .booklist_title{

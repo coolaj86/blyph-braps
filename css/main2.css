@@ -45,17 +45,6 @@ a.text_right{
 	border:0px;
 	margin:0px;
 	float:right}
-	
-#wrapper
-{
-	width:1200px;
-	height:auto;
-	background:#FFF;
-	margin-left:auto;
-	margin-right:auto;
-	border:2px solid  #E3E3E3;-moz-border-radius:25px; /*Firefox*/ border-radius:25px;
-}
-
 #instruction_heading
 {
 	background:#FFC;
@@ -66,6 +55,10 @@ a.text_right{
 	border:solid #FFF586;-moz-border-radius:25px 25px 0px 0px / 25px 25px 0px 0px;
 	border-bottom:0px;
 	padding:10px;
+	position:absolute;
+	top:30px;
+	left:250px;
+	z-index:-1;
 }
 
 #main_area
@@ -82,17 +75,16 @@ a.text_right{
 
 #searchbar
 {background:#FFF;
-width:665px;
+width:645px;
 height:35px;
 border:5px solid #CCC;-moz-border-radius:10px; /*Firefox*/ border-radius:10px;
-margin-left:auto;
-margin-right:auto;
+margin:2px auto 0px auto;
 float:inherent;
 padding:5px;
 }
 #search
 {background:#FFF;
-width:620px;
+width:600px;
 height:30px;
 float:left;
 border:none;
