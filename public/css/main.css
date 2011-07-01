@@ -21,6 +21,7 @@ border:solid #EFEFEF 1px;
 h1{color:#8CC63F}
 h2{color:#8CC63F}
 h3{color:#8CC63F}
+h4{margin:0px; padding:0px;}
 p{color:#9CCE4D}
 p.text_center{
 	text-align:left;
@@ -46,21 +47,19 @@ a.text_right{
 	margin:0px;
 	float:right}
 	
-#wrapper
-{
+#wrapper{
 	width:1200px;
 	height:auto;
-	background:#FFF;
-	margin-left:auto;
-	margin-right:auto;
-	border:2px solid  #E3E3E3;-moz-border-radius:25px; /*Firefox*/ border-radius:25px;
+	margin:0px auto 0px auto;
+	background-color:#fff;
+	border:2px solid  #E3E3E3;-moz-border-radius:25px; /*Firefox*/ border-radius:5px;
 }
 
 #instruction_heading
 {
 	background:#FFC;
 	Width:700px;
-	height:40px;
+	height:25px;
 	margin-left:auto;
 	margin-right:auto;
 	border:solid #FFF586;-moz-border-radius:25px 25px 0px 0px / 25px 25px 0px 0px;
@@ -68,31 +67,19 @@ a.text_right{
 	padding:10px;
 }
 
-#main_area
-{
-	height:150px;
-	width:700px;
-	margin-left:auto;
-	margin-top:inherit;
-	margin-right:auto;
-	margin-bottom:0px;
-	text-align:center;
-	color:#396;
-}
 
 #searchbar
 {background:#FFF;
-width:665px;
+width:645px;
 height:35px;
-border:5px solid #CCC;-moz-border-radius:10px; /*Firefox*/ border-radius:10px;
-margin-left:auto;
-margin-right:auto;
+border:3px solid #CCC;-moz-border-radius:10px; /*Firefox*/ border-radius:10px;
+margin:5px auto 0px auto;
 float:inherent;
 padding:5px;
 }
 #search
 {background:#FFF;
-width:620px;
+width:600px;
 height:30px;
 float:left;
 border:none;
@@ -104,33 +91,164 @@ font-size:24px;
 #Search_tips
 {
 width:650px;
-height:25px;
-padding:5px;
+height:15px;
+padding:2px;
 border:0px;
 margin-left:auto;
 margin-right:auto;
 text-align:justify;
 }
-#menu{
-	float:left;
-	display:inline;
-	color:#8CC63F
-}
+#Search_tips a{ font-size:14px;
+	}
+
 #menu_step_1{
 	list-style-image:url(step1.png);
 	float:left;
-	margin:0px 10px 60px 40px;
+	margin:0px 10px 0px 40px;
 	font-size:16px;
 }
 #menu_step_2{
 	list-style-image:url(step2.png);
 	float:left;
-	margin:0px 10px 30px 40px;
+	margin:0px 10px 0px 40px;
 	font-size:18px;
 }
 #menu_step_3{
 	list-style-image:url(step3.png);
 	float:left;
 	margin:0px 10px 0px 40px;
-	font-size:18px;
+	font-size:18px;}
+	
+#column1{ 
+width:260px;
+border-right:solid 1px #CCC;
+float:left;
+padding-right:2px;
+}
 
+#column2{
+width:665px;
+height:auto;
+float:left;
+font-family:Arial, Helvetica, sans-serif;
+padding:0px 2px 0px 2px;
+border-left:solid 1px #999;
+}
+#column3{
+width:260px;
+height:auto;
+float:left;
+border-left:solid 1px #999;
+padding-left:2px;
+}
+#searchbar-small
+{background:#fff;
+width:250px;
+height:25px;
+border:2px solid #CCC;-moz-border-radius:5px; /*Firefox*/ border-radius:5px;
+float:inherent;
+padding:2px;
+margin:2px 0px 2px 2px;
+}
+#search-small
+{background:#C33;
+width:225px;
+height:23px;
+float:left;
+border:none;
+font-size:24px;
+}
+#search-small:focus{
+	outline-width:0;
+}
+.match-item{ height:72px;
+width:70px;
+float:left;
+padding:0px;
+margin:5px 5px 5px 5px;
+}
+.item-photo-small{
+	background-image:url(images/1.jpg);
+height:50px;
+width:50px;
+padding:0px;
+margin:0px auto 0px auto;
+border:2px solid #CCC;
+}
+.match-description{ height:17px;
+width:70px;
+background-color:#333;
+padding:2px 0px 0px 0px;
+margin:0px auto 0px auto;
+font-size:10px;
+}
+.friend-match-item{
+	background-image:url(images/Picture%204.png);
+height:50px;
+width:50px;
+padding:0px;
+margin:0px auto 0px auto;
+border:2px solid #CCC;
+list-style-type:none;
+}
+.distance{
+	background-color:#0C9;
+	float:right;
+	width:20px;
+	}
+
+.friend-image{
+	background-color:#039;
+	height:75px;
+	width:75px;
+	margin:5px;
+	}
+.book-result-image{
+	background-color:#0CC;
+	height:75px;
+	width:75px;
+	margin:5px;
+	display:inline-block;
+	}
+#footer{ width:1200px;
+height: 100px;
+background-color:#333;
+border-top:solid #1C1C1C 5px;
+filter:alpha(opacity=50);
+        -moz-opacity:0.5;
+        -khtml-opacity: 0.5;
+        opacity: 0.5;
+text-align:center;
+margin:0px auto 0px auto;
+}
+#footer a{
+	color:#000}
+	
+.image_frame{
+	margin:10px 0px 10px 10px;
+	height:150px;
+	width:150px;
+	float:left;
+	}
+	#result-info-box{
+	width:260px;
+	height:200px;
+	background-color:#999;
+	}
+	
+.result_box{
+	width:auto;
+height:105px;
+background-color:#FFF;
+border:solid #CCC 2px;-moz-border-radius:10px 10px 10px 10px / 10px 10px 10px 10px;
+text-align:center;
+font-family:Arial, Helvetica, sans-serif;
+padding:0px 0px 5px 0px;}
+
+.title_box{ height:15px;
+width:auto;
+text-align:left;
+border-bottom:2px solid #999;
+padding:2px;
+margin:0px auto 2px auto;
+}
