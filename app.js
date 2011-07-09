@@ -8,6 +8,7 @@
         , auth: { username: 'coolaj86', password: 'Wh1t3Ch3dd3r' }
       }).database('syllabi', function () { console.log(arguments); })
     , server
+    , vhost
     ;
 
 
@@ -50,7 +51,10 @@
     , connect.router(rest)
   );
 
-  module.exports = server;
+  vhost = connect.createServer(
+    connect.vhost('blyph.com', server),
+    connect.vhost('www.blyph.com', server)
+  );
 
-  server.listen(3001);
+  module.exports = vhost;
 }());
