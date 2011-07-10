@@ -29,6 +29,7 @@ cursor:pointer;
 	height:150px;
 	width:150px;
 	float:left;
+	border:#ccc 1px solid;
 	}
 .item_picture{
 	background-image:url(default-book.jpg) solid 5px #CCC;

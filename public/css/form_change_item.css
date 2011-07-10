@@ -139,6 +139,17 @@ background:#D9F3FC
 	text-align:center;
 	padding-top:2px;
 	margin left:5px;
+	font-family: 'Didact Gothic', serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
+  list-style:none;
 }
 .need-it-button {
 	width:100px;
@@ -152,5 +163,14 @@ background:#D9F3FC
 	text-align:center;
 	padding-top:2px;
 	margin-left:5px;
-}
-
+	font-family: 'Didact Gothic', serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
+  list-style:none;}
