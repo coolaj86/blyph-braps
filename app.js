@@ -18,26 +18,30 @@
   }
 
   function rest(app) {
-    app.get('/subscribe/:user@:domain.:tld', function(req, res) {
-      // TODO make more robust
-      var email = req.params.user + '@' + req.params.domain + '.' + req.params.tld;
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      db.save(email, {email: email}, function (err, data) {
-        //db.getDoc(email, function (err, data) {
-          res.end(JSON.stringify({email: email, couchdb: data}));
-        //});
+    app.get('/schools', function (req, res) {
+      db.view('schools/all', function (err, schools) {
+        res.end(JSON.stringify(schools));
       });
     });
-    app.post('/subscribe', function(req, res) {
+
+    function handleSignUp(req, res) {
       // TODO make more robust
       res.writeHead(200, {'Content-Type': 'application/json'});
-      db.save(req.body.email, {email: req.body.email}, function (err, data) {
+      db.save(req.body.email, { email: req.body.email, school: req.body.school }, function (err, data) {
         console.log('saved');
         //db.getDoc(req.body.email, function (err, data) {
           res.end(JSON.stringify({email: req.body.email, couchdb: data}));
         //});
       });
+    }
+
+    app.get('/subscribe/:user@:domain.:tld', function(req, res) {
+      req.body = req.params;
+
+      handleSignUp(req, res);
     });
+
+    app.post('/subscribe', handleSignUp);
   };
 
   server = connect.createServer(

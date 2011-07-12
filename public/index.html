@@ -1,68 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Blyph.com</title>
-<link href="css/splash.css" rel="stylesheet" type="text/css"/>
-<link  href="http://fonts.googleapis.com/css?family=Didact+Gothic:regular&v1" rel="stylesheet" type="text/css" >
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Blyph.com</title>
+    <link href="css/splash.css" rel="stylesheet" type="text/css"/>
+    <link  href="http://fonts.googleapis.com/css?family=Didact+Gothic:regular&v1" rel="stylesheet" type="text/css" >
 
-
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
-    <script> 
-      function loading() {
-        $('#loading').show();
-      }
-
-      function complete() {
-        $('#loading').hide();
-      }
-
-      $(function () {
-        $('#loading').hide();
-
-        //var cb = CampusBooks.create("BLCg7q5VrmUBxsrETg5c");
-        $('body').delegate('#email_form', 'submit', function (ev) {
-          var email;
-
-          ev.preventDefault();
-
-          email = $('input[name=email]').val();
-
-          if (!email || !email.match(/\w+@\w+.\w+/)) {
-            alert('bad email address');
-            return;
-          }
-          //$.getJSON('subscribe/' + $('input[name=email]').val(), function (data) {
-          //  alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
-          //});
-
-          loading();
-          $.post('/subscribe', {email: $('input[name=email]').val()}, function (data) {
-            complete();
-            if (!data) {
-              alert('Server Error');
-              return;
-            }
-
-            alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
-          }, 'json');
-        });
-        /*
-        $('body').delegate('#booksearch', 'submit', function (ev) {
-          ev.preventDefault();
-          var keywords = $('input[name=book_keywords]').val();
-          cb.search({ keywords: keywords }).when(function (err, data, xhr) {
-            alert('Results for "' + keywords + '": ' +  JSON.stringify(data));
-          });
-        });
-        */
-      });
-    </script> 
-
-
-</head>
-
-<body>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+    <script src="./splash.js"></script>
+  </head>
+  <body>
 
 <div id="logo"></div>
 
@@ -72,6 +19,7 @@
 <div id="loading">Loading...</div>
 <div id="container"> 
 <div id="title-container">
+
  <h1>Great things are coming to your college</h1>
  <p>Join the list and get in the know</p>
  </div>
@@ -79,7 +27,7 @@
   <form id="email_form"> 
       	
         <li><input type="email" name="email" value= " &nbsp;email address" width="500px" class="form_field" /></li> 
-        <li><input type="email" name="email" value= " &nbsp;www.yourschool.edu" width="500px" class="form_field" /> </li>
+        <li><input type="text" name="school" value= " &nbsp;your-school.edu" width="500px" class="form_field" /> </li>
         <p>Enter your school URL here.
         <li><input type="submit" name="submit" value="I want in!" class="button"/> </li>
         
@@ -96,5 +44,5 @@
     <br/> 
     <footer><p>Blyph LLC Copyright 2011</p></footer> 
 
-</body>
+  </body>
 </html>
