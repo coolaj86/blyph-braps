@@ -104,6 +104,7 @@
           set.push(course);
         });
 
+        // TODO put timestamp
         localStorage.setItem('prof:tid:' + tid, JSON.stringify(set));
         console.log('got all items for ' + tid + '. Waiting ' + (waitTime / 1000) + " for next run");
         setTimeout(getCourseList, waitTime);
