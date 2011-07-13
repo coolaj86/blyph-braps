@@ -16,6 +16,8 @@
         $('body').delegate('#email_form', 'submit', function (ev) {
           var email
             , school
+            , users
+            , user
             ;
 
           ev.preventDefault();
@@ -45,6 +47,14 @@
 
             alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
           }, 'json');
+
+          users = localStorage.getItem('users') || '{}';
+          users = JSON.parse(users);
+          user = users[email] = users[email] || {};
+          user.email = email;
+          user.school = school;
+          user.timestamp = new Date().valueOf();
+          localStorage.setItem('users', JSON.stringify(users));
         });
         /*
         $('body').delegate('#booksearch', 'submit', function (ev) {

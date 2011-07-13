@@ -48,6 +48,8 @@
     // images, css, etc
       connect.static(__dirname + '/public')
 
+    , connect.favicon(__dirname + '/public/favicon.ico')
+
     // decode html forms
     , connect.bodyParser()
 
