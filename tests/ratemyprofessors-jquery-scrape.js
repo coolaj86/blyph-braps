@@ -46,6 +46,7 @@
 
   // wait a random amount of time
   // to avoid looking like an scrape attempt
+  // TODO, try looking like a search engine?
   function waitFor() {
     var max_ms = 2000;
     var min_ms = 300;
@@ -58,8 +59,9 @@
     // TODO scrape simultaneously with getTeacherList
     courses = [];
     function getCourseList() {
-      var prof = prof.pop()
+      var prof = profs.pop()
         , tid
+        , responseTime
         , cache
         ;
 
@@ -70,7 +72,7 @@
 
       tid = prof.id;
 
-      cache = localStorage.getItem('prof:' + tid);
+      cache = localStorage.getItem('prof:tid:' + tid);
       try {
         cache = JSON.parse(cache);
       } catch(e) {
@@ -87,17 +89,24 @@
         return;
       }
 
+      console.log('getting courses by tid ' + tid);
+      responseTime = new Date().valueOf();
       $.get('ShowRatings.jsp?tid=' + tid, function (page, status, xhr1) {
+        console.log('' + courses.length + 'request took ' + (new Date().valueOf() - responseTime)/1000 );
         var set = []
           , waitTime = waitFor()
           ;
 
         $(page).find('#ratingTable .entry').each(function (i, data) {
-          courses.push(scrapeCourses(data));
+          var course = scrapeCourses(data);
+          course.tid = tid;
+          courses.push(course);
+          set.push(course);
         });
 
-        localStorage.setItem('prof:' + sid + ':' + alpha, JSON.stringify(set));
-        setTimeout(getCourseList, waitFor(), profs.pop());
+        localStorage.setItem('prof:tid:' + tid, JSON.stringify(set));
+        console.log('got all items for ' + tid + '. Waiting ' + (waitTime / 1000) + " for next run");
+        setTimeout(getCourseList, waitTime);
       }, 'xml');
     }
 
