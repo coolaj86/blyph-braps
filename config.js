@@ -1,4 +1,4 @@
 module.exports = {
     db: "coolaj86.couchone.com"
-  , port: 3001
+  , port: 3080
 };
