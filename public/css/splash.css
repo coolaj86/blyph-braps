@@ -107,4 +107,9 @@ font-size:14px;
 font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
 margin:-8px 0px 0px 320px;
 }
-
+#social-media{
+	height:auto;
+	width:auto;
+	background:#0CC;
+	float:right;
+	}
