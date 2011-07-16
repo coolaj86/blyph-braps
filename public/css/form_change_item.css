@@ -129,7 +129,7 @@ background:#D9F3FC
 
 .have-it-button {
 	width:100px;
-	height:25px;
+	height:20px;
 	background-color:#75CAD8;
 	border:2px solid #CCC;-moz-border-radius:5px; /*Firefox*/ border-radius:5px;
 	float:right;
@@ -153,7 +153,7 @@ background:#D9F3FC
 }
 .need-it-button {
 	width:100px;
-	height:25px;
+	height:20px;
 	background-color:#8CC63F;
 	border:2px solid #CCC;-moz-border-radius:5px; /*Firefox*/ border-radius:5px;
 	float:right;
