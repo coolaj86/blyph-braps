@@ -66,8 +66,8 @@
       }
 
       // must be grouped to match the ^ operator equally
-      cleanSecStart = !section.match(/^(-|,)/) && !!section.match(/^[a-z]/i);
-      cleanSecEnd = !!section.match(/\d$/);
+      cleanSecStart = !section.match(/^(-|,)/) && !!section.match(/^\w/);
+      cleanSecEnd = !!section.match(/\w$/);
       /*
       console.log('curCleanSecEnd', curCleanSecEnd);
       console.log('cleanSecStart', cleanSecStart);
