@@ -53,6 +53,8 @@
     // "A01" ",A02"
     // "A01" ",A02," "A03"
     // "A01," "A02" ",A03"
+    //
+    // "A01" | "W01,W06" ",SA6," "UA1,UB1" | "A01-" 
     function isNewCourse(section, i, row) {
       var cleanSecStart
         , curCleanSecEnd = cleanSecEnd
@@ -63,7 +65,8 @@
         return false;
       }
 
-      cleanSecStart = !section.match(/^-|,/) && !!section.match(/^[a-z]/i);
+      // must be grouped to match the ^ operator equally
+      cleanSecStart = !section.match(/^(-|,)/) && !!section.match(/^[a-z]/i);
       cleanSecEnd = !!section.match(/\d$/);
       /*
       console.log('curCleanSecEnd', curCleanSecEnd);
