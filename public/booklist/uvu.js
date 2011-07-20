@@ -8,7 +8,16 @@
   uvuScript.src = "http://alpha.blyph.com/booklist/uvu.js";
   document.body.appendChild(uvuScript);
  */
-(function () {
+
+
+// Got the booklist from
+// http://www.uvu.edu/bookstore/images/SummerBookList2011c.pdf
+// 
+// The used this pdf to html converter
+// http://www.pdfonline.com/convert-pdf-to-html/
+//
+// then unpacked the .zip and ran this sript as show above
+//(function () {
   "use strict";
 
   function parseCourse() {
@@ -143,4 +152,4 @@
 
   //getAllIsbns();
 
-}());
+//}());
