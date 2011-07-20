@@ -28,6 +28,7 @@
         }
       , cleanSecEnd = false // prevent pushing the first empty course object
       , courses = []
+      , rows = $('tr')
       ;
 
     function newCourse() {
@@ -68,11 +69,6 @@
       // must be grouped to match the ^ operator equally
       cleanSecStart = !section.match(/^(-|,)/) && !!section.match(/^\w/);
       cleanSecEnd = !!section.match(/\w$/);
-      /*
-      console.log('curCleanSecEnd', curCleanSecEnd);
-      console.log('cleanSecStart', cleanSecStart);
-      console.log('cleanSecEnd', cleanSecEnd);
-      */
 
       if (!curCleanSecEnd) {
         // if the last section didn't end cleanly,
@@ -102,13 +98,13 @@
         , dept
         ;
 
-      course.dept = dept = $(cells[0]).text().trim() || course.dept;
+      info.dept = dept = $(cells[0]).text().trim();
       if (dept.match(/^Dept$/) || dept.match(/^Prices and Titles are Subject to Change$/)) {
         console.log('useless line');
         return;
       }
 
-      course.course = $(cells[1]).text().trim() || course.course;
+      info.course = $(cells[1]).text().trim();
       info.section = $(cells[2]).text().trim();
       // skip author
       // skip title
@@ -118,9 +114,13 @@
       // skip $
       book.usedPrice = $(cells[9]).text().trim();
 
-      if (isNewCourse(info.section, i, row)) {
+      if (isNewCourse(info.section, i)) {
+        //course.dept = info.dept || course.dept;
+        //course.course = info.course ||  course.course;
         newCourse();
       }
+      course.dept = info.dept || course.dept;
+      course.course = info.course ||  course.course;
       course.section += info.section;
 
       if (book.isbn.match(/^\d{13}$/)) {
@@ -132,7 +132,9 @@
       }
     }
 
-    var catchresult = $('tr').each(parseRow);
+    var catchresult = rows.each(parseRow);
+    // get the very last course
+    newCourse();
 
     return courses;
   }
