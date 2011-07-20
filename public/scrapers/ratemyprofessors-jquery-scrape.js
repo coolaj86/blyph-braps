@@ -5,6 +5,8 @@
   blyphScript.src = "http://alpha.blyph.com/scrapers/ratemyprofessors-jquery-scrape.js";
   document.body.appendChild(blyphScript);
 */
+// TODO add departments to professor
+// TODO add timestamp to professor
 (function () {
   "use strict";
 
@@ -96,7 +98,7 @@
         return;
       }
 
-      console.log('getting courses by tid ' + tid);
+      console.log('getting professor by tid ' + tid);
       responseTime = new Date().valueOf();
       $.get('ShowRatings.jsp?tid=' + tid, function (page, status, xhr1) {
         console.log('' + courses.length + 'request took ' + (new Date().valueOf() - responseTime)/1000 );
@@ -128,7 +130,7 @@
 
       // TODO: the length check is just a SAFETY for testing
       if (!alpha) {
-        // setTimeout(getCourseList, waitFor());
+        setTimeout(getCourseList, waitFor());
         console.log('DONE with getTeacherList.');
         console.log('start looking for getCourseList');
         return;
