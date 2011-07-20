@@ -1,3 +1,10 @@
+/*
+  var blyphScript;
+
+  blyphScript= document.createElement('script');
+  blyphScript.src = "http://alpha.blyph.com/scrapers/ratemyprofessors-jquery-scrape.js";
+  document.body.appendChild(blyphScript);
+*/
 (function () {
   "use strict";
 
@@ -171,11 +178,10 @@
   }
 
   // BYU === 135
-  getSchool(135, function (err, data) {
+  // UVU === 1584
+  getSchool(1584, function (err, data) {
     console.log('All Done');
   });
-
-  var tid = '753729';
 
   // http://en.wikipedia.org/wiki/Data_URI_scheme#JavaScript
   /*
