@@ -10,6 +10,8 @@
 (function () {
   "use strict";
 
+  alert('hello, loaded once');
+
   var jqScript = document.createElement('script')
     , scriptContainer = document.getElementsByTagName("body")[0] || document.getElementsByTagName("head")[0]
   //, $
@@ -186,6 +188,8 @@
       courses.push(course);
     });
 
+    console.log(courses);
+    $('body').html("<pre><code>" + JSON.stringify(courses, null, '  ') + "</code></pre>");
     return courses;
   }
 
