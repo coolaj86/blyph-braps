@@ -4,6 +4,7 @@
 
   var jqScript
     , db = {}
+    , memDb = {}
       // 3 days
     , maxAge = 3 * 24 * 60 * 60 * 1000
     ;
@@ -18,7 +19,21 @@
     try {
       value = JSON.parse(localStorage.getItem(key));
     } catch(e) {
-      return null;
+      console.error("[localStorage] couldn't parse " + localStorage.getItem(key));
+    }
+    if (!value) {
+      try {
+        value = JSON.parse(sessionStorage.getItem(key));
+      } catch(e) {
+        console.error("[sessionStorage] couldn't parse " + sessionStorage.getItem(key));
+        return null;
+      }
+    }
+    if (!value && key in memDb) {
+      value = memDb[key];
+      if ('undefined' === value) {
+        value = null;
+      }
     }
     return value;
   };
@@ -27,9 +42,34 @@
     try {
       value = localStorage.setItem(key, JSON.stringify(value));
     } catch(e) {
-      console.error("couldn't parse " + value);
+      if (!22 === e.code) {
+        console.error("[db] couldn't stringify (or OOM) " + JSON.stringify(value));
+        return;
+      }
+      try {
+        value = sessionStorage.setItem(key, JSON.stringify(value));
+      } catch(e) {
+        if (22 === e.code) {
+          memDb[key] = value;
+        } else {
+          console.error("[db] couldn't stringify (or OOM) " + JSON.stringify(value));
+        }
+      }
     }
   };
+
+  db.keys = function () {
+    var len
+      , i
+      , keys = [];
+
+    len = localStorage.length;
+    for (i = 0; i < len; i += 1) {
+      keys.push(localStorage.key(i));
+    }
+    keys = Object.keys(memDb).concat(keys);
+    return keys;
+  }
 
   function cachetize(name, fn, cb, a, b, c, d) {
     var container = db.get(name) || { timestamp: 0 };
@@ -161,7 +201,7 @@
         }
       }
 
-      course.dept = dept;
+      //course.dept = dept;
       // course.deptName = parsed[1];
       course.number = parsed[2];
       course.name = parsed[3];
@@ -221,13 +261,13 @@
   // https://bookexchange.byu.edu/cas/books.cfm?curric=00804&pageid=1&numpg=1000&hideHeader=true&hideBreadcrumbs=true
   function fetchCoursePostings(cb, course) {
     if (!course.bookCount) {
-      console.log('Skipping fetch (no books listed)');
+      console.log('\t\tSkipping fetch (no books listed)');
       cb(null, []);
     }
 
     console.log('Fetching fresh list of Postings in ' + course.name + ' ' + course.number);
     var href = "books.cfm?curric=" + course.curricId +
-          "&pageid=1&numpg=" + (course.bookCount * 2) +
+          "&pageid=1&numpg=" + ((1 + course.bookCount) * 2) +
           "&hideHeader=true&hideBreadcrumbs=true";
     $.ajax({
         url: href
@@ -289,7 +329,7 @@
     }
 
     // Title + Newline delimited. Description may span multiple lines?
-    parsedInfo = info.match(/Title\s+(.*)\s+Author\s+(.*)\s+ISBN\s+(.*)\s+Edition\s+(.*)\s+Price\s+\$(.*)\s+Description\s+([\w\W]*)\s+Seller Contact[\w\W]*buying process.\s+(\d+)/);
+    parsedInfo = info.match(/Title\s+(.*)\s+Author\s+(.*)\s+ISBN\s+(.*)\s+Edition\s+(.*)\s+Price\s+\$?(.*)\s+Description\s+([\w\W]*)\s+Seller Contact[\w\W]*buying process.\s+(\d+)/);
 
     if (!parsedInfo) {
       console.log('couldn\'t parse info ' + info);
@@ -413,7 +453,7 @@
 
         // TODO attach course to posting
         if (0 === postings.length % 100) {
-          console.log('postings left:', postings.length);
+          console.log(postings.length + ' postings left');
         }
         setTimeout(function () {
           cachetize('posting:' + posting, fetchFullPosting, getNextFullPosting, posting);
@@ -430,6 +470,7 @@
     // This gets the book listing for each course
     function getPostLists(err, courses) {
       var postings = []
+        , startedNextRequest = false
         , course
         ;
 
@@ -445,14 +486,18 @@
 
         if (!course) {
           console.log('!!! DONE: getPostLists');
-          getFullPosting(null, postings, course);
+          if (!startedNextRequest) {
+            getFullPosting(null, postings, course);
+            startedNextRequest = true;
+          }
           return;
         }
+
         //console.log('Found ' + somePostings.length + ' postings in previous, now checking ' + course.name + ' ' + course.number);
 
         // TODO attach course to posting
         if (0 === courses.length % 100) {
-          console.log('courses left:', courses.length);
+          console.log(courses.length + ' courses left');
         }
         setTimeout(function () {
           cachetize('courses:' + course.curricId, fetchCoursePostings, onFetchedPosting, course);
@@ -502,9 +547,67 @@
     cachetize('departments', fetchDepartmentList, getCourses, $('body'));
   }
 
-  function clearBadKeys() {
+  var allData;
+  var userNames = {};
+  function aggregate() {
+    var depts = db.get('departments');
+    depts = depts.items;
+    if (!depts || !depts.length) {
+      console.log('bad depts');
+      return;
+    }
+    depts.forEach(function (dept) {
+      console.log('dept: ' + dept.abbr);
+      var courses = db.get('departments:' + dept.abbr);
+      if (!courses || !courses.items.length) {
+        console.log('empty dept: ' + dept.abbr);
+        return;
+      }
+      courses = courses.items;
+
+      courses.forEach(function (course) {
+        //console.log('course: ' + course.name);
+        var postIds = db.get('courses:' + course.curricId)
+          , posts = [];
+
+        //course.dept = 'a';
+        course.dept = undefined;
+        //delete course.dept;
+
+        if (!postIds) {
+          return;
+        }
+        if (!postIds.items.length) {
+          // most courses have (0) postings right now
+          //console.log('empty course: ' + course.name);
+          return;
+        }
+        postIds = postIds.items;
+        postIds.forEach(function (postId) {
+          var post = db.get('posting:' + postId);
+          if (!post) {
+            console.log('empty post: ' + postId);
+            return;
+          }
+          post = post.items;
+          post.id = postId;
+          posts.push(post);
+          userNames[post.owner] = true;
+        });
+
+        course.posts = posts;
+      });
+
+      dept.courses = courses;
+    });
+    allData = depts;
+  }
+  // aggregate();
+  // javascript:$('body').html("<pre>" + JSON.stringify(allData, null, '  ') + "</pre>");
+
+  function cacheCoursesInMemory() {
     var len = localStorage.length
-      , keys = []
+      , keys = coursesKeys = []
       , key
       , i
       ;
@@ -513,20 +616,68 @@
       key = localStorage.key(i);
       if (key.match(/^courses:/)) {
         keys.push(key);
-        if (JSON.parse(localStorage.getItem(key)).items.length) {
-          console.log(key);
+        coursesMap[key] = JSON.parse(localStorage.getItem(key));
+      }
+    }
+  }
+
+
+
+  var coursesMap = {}
+    , coursesKeys = []
+    ;
+
+  function cacheCoursesInMemory() {
+    var len = localStorage.length
+      , keys = coursesKeys = []
+      , key
+      , i
+      ;
+
+    for (i = 0; i < len; i +=1) {
+      key = localStorage.key(i);
+      if (key.match(/^courses:/)) {
+        keys.push(key);
+        coursesMap[key] = JSON.parse(localStorage.getItem(key));
+      }
+    }
+  }
+  function clearCoursesFromLocalStorage() {
+    coursesKeys.forEach(function (key) {
+      localStorage.removeItem(key);
+    });
+  }
+
+
+  function clearBadKeys() {
+    var len = localStorage.length
+      , keys = []
+      , count = 0
+      , key
+      , i
+      ;
+
+    for (i = 0; i < len; i +=1) {
+      key = localStorage.key(i);
+      try {
+        if (key.match(/^courses:.*[a-zA-Z].*/)) {
+          count += 1;
+          keys.push(key);
         }
-        //items.forEach(function (item) {
-        //  console.log('\t' + item.name + ' ' + item.number);
-        //});
+      } catch(e) {
+        console.log(key);
       }
     }
 
-    /*
     keys.forEach(function (key) {
-      localStorage.removeItem(key);
+      try {
+        localStorage.removeItem(key);
+      } catch(e) {
+        console.log(key);
+      }
     });
-    */
+
+    console.log(count + ' matching keys removed');
   }
 
   jqScript = document.createElement('script');
