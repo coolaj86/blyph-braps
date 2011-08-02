@@ -64,5 +64,16 @@ border:0px;
 border-bottom:#E0E0E0 solid 1px;
 padding:0px 0px 0px 10px;
 margin:0px 0px 0px 0px;
-list-style:none;
+list-style:none
+font-family: 'Didact Gothic', serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;;
+
 }

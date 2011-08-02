@@ -13,14 +13,57 @@ visibility:visible;
 li{
 	margin:opx;
 	padding:0px;
+	font-family: 'Didact Gothic', serif;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
 }
 
 hr{ text-decoration:none;color:#333;
 border:solid #EFEFEF 1px;
 }
-h1{color:#8CC63F}
-h2{color:#8CC63F}
-h3{color:#8CC63F}
+h1{color:#8CC63F;
+font-family: 'Didact Gothic', serif;
+	height:35px;
+  font-size: 35px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
+}
+h2{color:#8CC63F
+font-family: 'Didact Gothic', serif;
+	height:28px;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;}
+h3{color:#8CC63F;
+font-family: 'Didact Gothic', serif;
+	height:24px;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;}
 h4{margin:0px; padding:0px;}
 p{color:#9CCE4D}
 p.text_center{
@@ -49,6 +92,7 @@ a.text_right{
 	
 #wrapper{
 	width:1200px;
+	min-height:500px;
 	height:auto;
 	margin:0px auto 0px auto;
 	background-color:#fff;
@@ -174,6 +218,7 @@ float:left;
 font-family:Arial, Helvetica, sans-serif;
 padding:0px 2px 0px 2px;
 border-left:solid 1px #999;
+text-align:center;
 }
 #column3{
 width:260px;
