@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>How to Scrape the UVU Booklist</title>
+  </head>
+  <body>
+    <ol>
+      <li>Login to UVU: <a href="https://uvlink.uvu.edu/cp/home/displaylogin" target="_blank">uvlink.uvu.edu/cp/home/displaylogin</a></li>
+      <li>
+        Copy this text
+        <textarea>javascript:window.s=document.createElement('script');window.sc=document.getElementsByTagName("body")[0]||document.getElementsByTagName("head")[0];s.src="http://alpha.blyph.com/booklist/uvu.js";sc.appendChild(s)</textarea>
+      </li>
+      <li>Go to the <a href="https://uvlink.uvu.edu/cp/ip/login?sys=gencpip&url=https%3A%2F%2Fuvu.edu%2Fbookstore%2Fbookmatch.php%3FconnId%3Dplace" target="_blank">UVU bookmatch</a> (you must use this special link)</li>
+      <li>Clear the URL bar</li>
+      <li>Paste the text above into the URL bar</li>
+      <li>Hit Enter</li>
+    <ol>
+  </body>
+</html>
