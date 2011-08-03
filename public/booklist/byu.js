@@ -159,8 +159,7 @@
     }
   }
 
-  //var totalLists = 1 + years * semesters
-  var totalLists = 1 + 4 * 6
+  var totalLists = 1 + years.length * semesters.length
     , loadedLists = 1;
   $("<progress id='scrape-progress' value='" +
       loadedLists + "' max='" +
