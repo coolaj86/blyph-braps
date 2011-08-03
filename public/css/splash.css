@@ -42,6 +42,7 @@ font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
+  margin: 0px;
 }
 h2{color:#8CC63F;
 font-family: 'Didact Gothic', serif;
@@ -72,7 +73,7 @@ font-family: 'Didact Gothic', serif;
   
   
 p{color:#999;
-padding:5px;
+padding:0px 0px 0px 2px;
 margin:0px;
 font-family: 'Didact Gothic', serif;
 	height:30px;

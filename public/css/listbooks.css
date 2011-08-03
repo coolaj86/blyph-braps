@@ -39,6 +39,7 @@ font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
+  margin:0px 0px 10px 0px;
 }
 h2{color:#8CC63F;
 font-family: 'Didact Gothic', serif;
@@ -66,8 +67,8 @@ font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
-  margin:20px 0px 0px 0px;
-  padding:0px;}
+  margin:20px 0px 10px 0px;
+  padding:0px 0px 10px 5px;}
   
 p{color:#999;
 font-family: 'Didact Gothic', serif;
@@ -96,6 +97,7 @@ a {
 	margin:50px auto 0px auto;
 	background:#FFF;
 	padding:10px 30px 10px 30px;
+	color:#666;
 
 }
 
@@ -157,3 +159,9 @@ background-image:url(../images/Blyph-load-animation.gif)
 	margin:10px 0px 0px 0px;
 	width:150px;}
 		
+#thank-you-container
+{width:550px;
+height:auto;
+background-color:#fff;
+margin:50px auto 0px auto;
+padding:10px;}

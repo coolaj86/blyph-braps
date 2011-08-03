@@ -39,6 +39,7 @@ font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
+  margin:10px 0px 10px 0px;
 }
 h2{color:#8CC63F
 font-family: 'Didact Gothic', serif;
@@ -52,10 +53,10 @@ font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;}
-h3{color:#8CC63F;
+h3{color:#666;
 font-family: 'Didact Gothic', serif;
-	height:24px;
-  font-size: 24px;
+	height:30px;
+  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   text-shadow: none;
@@ -63,7 +64,10 @@ font-family: 'Didact Gothic', serif;
   text-transform: none;
   letter-spacing: -0.015em;
   word-spacing: 0em;
-  line-height: 1.2;}
+  line-height: 1.2;
+  margin:10px 0px 10px 0px;
+  padding:0px 0px 10px 5px;}
+  
 h4{margin:0px; padding:0px;}
 p{color:#9CCE4D}
 p.text_center{
@@ -73,7 +77,17 @@ p.text_center{
 	float:inherit;
 }
 a {
-	text-decoration:none;
+	font-family: 'Didact Gothic', serif;
+	height:12px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
 	color:#8CC63F;
 }
 
@@ -100,16 +114,19 @@ a.text_right{
 }
 
 #instruction_heading
-{
-
-	background:#FFC;
+{	background:#FFC;
 	Width:650px;
 	height:40px;
 	margin:0px auto 0px auto;
-	border:solid #FFF586;-moz-border-radius:25px 25px 0px 0px / 25px 25px 0px 0px;
+	border:solid 1px #FFF586;-moz-border-radius:25px 25px 0px 0px / 25px 25px 0px 0px;
 	border-bottom:0px;
 	padding:0px 0px 0px 0px;
 }
+#instruction_heading a{
+	font-size:16px;
+	margin:0px 3px 0px 2px;
+	}
+
 #menu_step_1{
 	float:left;
 	background-image:url(../images/step1.png);
@@ -209,6 +226,7 @@ width:260px;
 border-right:solid 1px #CCC;
 float:left;
 padding-right:2px;
+border-right:solid 1px #CCC;
 }
 
 #column2{
@@ -217,7 +235,6 @@ height:auto;
 float:left;
 font-family:Arial, Helvetica, sans-serif;
 padding:0px 2px 0px 2px;
-border-left:solid 1px #999;
 text-align:center;
 }
 #column3{
@@ -357,4 +374,10 @@ margin:0px auto 2px auto;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
+}
+#social-sharing{
+	background-color:#06C;
+	height:400px;
+	width:400px;
+	margin:0px auto 0px auto;
 }
