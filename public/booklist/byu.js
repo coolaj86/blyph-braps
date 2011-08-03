@@ -35,7 +35,8 @@
 
   // this year +1 year or -3 years
   var years = [
-      2011
+      2012
+    , 2011
     , 2010
     , 2012
     , 2009
@@ -149,11 +150,22 @@
 
   function requestComplete(xhr) {
     requests.pop();
+    loadedLists += 1;
+    $("#scrape-progress").attr('value', loadedLists);
+    $("#scrape-progress .loaded").html(loadedLists);
     if (!requests.length) {
       alert('finished importing book list (not sent to Blyph)');
       $('#blyphmas').val(JSON.stringify(allpages));
     }
   }
+
+  var totalLists = 1 + years.length * semesters.length
+    , loadedLists = 1;
+  $("<progress id='scrape-progress' value='" +
+      loadedLists + "' max='" +
+      totalLists + "'><span class='loaded'>" +
+      loadedLists + "</span>/<span class='total'>" + 
+      totalLists + "</span>").appendTo("body");
 
   years.forEach(function (year) {
     semesters.forEach(function (s, i) {
