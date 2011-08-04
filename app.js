@@ -89,6 +89,37 @@
       });
     });
 
+    // todo One-Time Tokens
+    // todo token in params
+    app.post('/booklists/:token', function (req, res) {
+      var booklist = req.body;
+
+      if (!req.params.token) {
+        res.writeHead(422);
+        res.end(JSON.stringify({ error: { message: "Bad token"} }));
+      }
+
+      if (!(booklist.student 
+        && 'booklist' === booklist.type 
+        && booklist.school 
+        && booklist.timestamp 
+        && booklist.booklist.length)) {
+        res.writeHead(422);
+        res.end(JSON.stringify({ error: { message: "Bad booklist object"} }));
+      }
+
+      db.post(booklist.student + ':booklist', function (err, data) {
+        if (err) {
+          res.writeHead(422);
+          res.end(JSON.stringify({ error: { message: "no savey to databasey"} }));
+        }
+        res.statusCode = 302;
+        res.setHeader("Location", "/haveit-needit.html#" + booklist.student);
+        //res.setHeader("Location", "/mybooklist.html#" + booklist.student);
+        res.end(JSON.stringify(data));
+      });
+    });
+
     function handleSignUp(req, res) {
       var email = req.body && req.body.email;
       var user = req.body;
