@@ -1,0 +1,2 @@
+curl https://coolaj86.couchone.com/syllabi/_design/users/_view/bySchool?key=\"byu.edu\" \
+  --user coolaj86:Wh1t3Ch3dd3r

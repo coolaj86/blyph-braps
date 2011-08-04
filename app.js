@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  var connect = require('connect')
+  var config = require('./config')
+    , connect = require('connect')
     , mailer = require('emailjs')
     , mailserver = mailer.server.connect({
           user: "aj@blyph.com"
@@ -89,6 +90,53 @@
       });
     });
 
+    // todo One-Time Tokens
+    // todo token in params
+    app.post('/booklist/:token', function (req, res) {
+      var booklist = req.body && req.body.booklist;
+
+      try { 
+        booklist = JSON.parse(booklist);
+      } catch(e) {
+        res.writeHead(422);
+        res.end(JSON.stringify({ error: { message: "Bad body", booklistText: booklist, parseError: JSON.stringify(e)} }));
+        return;
+      }
+
+      if (!booklist) {
+        res.writeHead(422);
+        res.end(JSON.stringify({ error: { message: "Bad body", parseError: JSON.stringify(e)} }));
+        return;
+      }
+
+      if (!req.params.token) {
+        res.writeHead(422);
+        res.end(JSON.stringify({ error: { message: "Bad token"} }));
+        return;
+      }
+
+      if (!((booklist.student || booklist.token)
+        && 'booklist' === booklist.type 
+        && booklist.school 
+        && booklist.timestamp 
+        && booklist.booklist.length)) {
+        res.writeHead(422);
+        res.end(JSON.stringify({ error: { message: "Bad booklist object"} }));
+        return;
+      }
+
+      db.save(booklist.student + ':booklist', booklist, function (err, data) {
+        if (err) {
+          res.writeHead(422);
+          res.end(JSON.stringify({ error: { message: "no savey to databasey: " + JSON.stringify(err) } }));
+        }
+        res.statusCode = 302;
+        res.setHeader("Location", "/haveit-needit.html#" + (booklist.student || booklist.token));
+        //res.setHeader("Location", "/mybooklist.html#" + booklist.student);
+        res.end(JSON.stringify(data));
+      });
+    });
+
     function handleSignUp(req, res) {
       var email = req.body && req.body.email;
       var user = req.body;
@@ -172,8 +220,9 @@
   );
 
   vhost = connect.createServer(
-    connect.vhost('alpha.blyph.com', server)
+    connect.vhost(config.vhost, server)
   );
+  console.log('Serving vhost ' + config.vhost);
 
   module.exports = vhost;
 }());

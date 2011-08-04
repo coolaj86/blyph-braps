@@ -1,0 +1,196 @@
+[
+    {
+        "courses": [
+            {
+                "name": "C S 236 Section 1",
+                "section": "C S 236 ",
+                "materials": [
+                    {
+                        "isbn": "9780135012062",
+                        "title": "LOGIC & DISCRETE MATHEMATICS",
+                        "author": "GRASSMANN, W",
+                        "newPrice": "$139.60",
+                        "usedPrice": "$104.70",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            },
+            {
+                "name": "C S 240 Section 1",
+                "section": "C S 240 ",
+                "materials": [
+                    {
+                        "isbn": "9780672323089",
+                        "title": "OBJECT ORIENTED PROGRAMMING IN C++ 4E",
+                        "author": "LAFORE, R",
+                        "newPrice": "$64.99",
+                        "usedPrice": "$48.75",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    },
+                    {
+                        "isbn": "9780735619678",
+                        "title": "CODE COMPLETE 2E",
+                        "author": "MCCONNELL, S",
+                        "newPrice": "$49.99",
+                        "usedPrice": "$37.50",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            },
+            {
+                "name": "C S 252 Section 1",
+                "section": "C S 252 ",
+                "materials": [
+                    {
+                        "isbn": "9780534950972",
+                        "title": "INTRO TO THEORY OF COMPUTATION 2E",
+                        "author": "SIPSER, M",
+                        "newPrice": "$177.35",
+                        "usedPrice": "$133.05",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            },
+            {
+                "name": "PHSCS 121 Section 2",
+                "section": "PHSCS 121 ",
+                "materials": [
+                    {
+                        "isbn": "9780716779391",
+                        "title": "ICLICKER REMOTE",
+                        "author": "ICLICKER",
+                        "newPrice": "$40.00",
+                        "usedPrice": "$30.00",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    },
+                    {
+                        "isbn": "9781111220815",
+                        "title": "PHYSICS FOR SCI & ENG 8E VOL 1 (CUSTOM)",
+                        "author": "SERWAY, R",
+                        "newPrice": "$112.00",
+                        "usedPrice": "$84.00",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            },
+            {
+                "name": "REL A 212 Section 16",
+                "section": "REL A 212 ",
+                "materials": [
+                    {
+                        "isbn": "9780700385577",
+                        "title": "PACKET NOTES & QUOTES REL A 212",
+                        "author": "PARKER, T",
+                        "newPrice": "$17.25",
+                        "usedPrice": "N/A",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    },
+                    {
+                        "isbn": "9786710518318",
+                        "title": "HOLY BIBLE 83164000",
+                        "author": "CHURCH - SCRIPTURES",
+                        "newPrice": "$11.70",
+                        "usedPrice": "$8.80",
+                        "rentalPrice": "N/A",
+                        "required": "OPTIONAL"
+                    },
+                    {
+                        "isbn": "9786000111274",
+                        "title": "LDS SCRIPTURES (YOU ALREADY OWN)",
+                        "author": "SEE INSTRUCTOR",
+                        "newPrice": "$0.00",
+                        "usedPrice": "$0.00",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            }
+        ],
+        "year": "2011",
+        "semester": "winter",
+        "term": "1"
+    },
+    {
+        "courses": [
+            {
+                "name": "C S 236 Section 3",
+                "section": "C S 236 ",
+                "materials": [
+                    {
+                        "isbn": "9780135012062",
+                        "title": "LOGIC & DISCRETE MATHEMATICS",
+                        "author": "GRASSMANN, W",
+                        "newPrice": "$139.60",
+                        "usedPrice": "$104.70",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            },
+            {
+                "name": "MATH 112 Section 8",
+                "section": "MATH 112 ",
+                "materials": [
+                    {
+                        "isbn": "9780495434702",
+                        "title": "SINGLE VARIABLE CALC EARLY TRANS W/ ACP VOL 1",
+                        "author": "STEWART, J",
+                        "newPrice": "$50.00",
+                        "usedPrice": "$37.50",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            },
+            {
+                "name": "PHSCS 121 Section 2",
+                "section": "PHSCS 121 ",
+                "materials": [
+                    {
+                        "isbn": "9780716779391",
+                        "title": "ICLICKER REMOTE",
+                        "author": "ICLICKER",
+                        "newPrice": "$40.00",
+                        "usedPrice": "$30.00",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    },
+                    {
+                        "isbn": "9781111220815",
+                        "title": "PHYSICS FOR SCI & ENG 8E VOL 1 (CUSTOM)",
+                        "author": "SERWAY, R",
+                        "newPrice": "$112.00",
+                        "usedPrice": "$84.00",
+                        "rentalPrice": "N/A",
+                        "required": "REQUIRED"
+                    }
+                ]
+            },
+            {
+                "name": "REL A 212 Section 9",
+                "section": "REL A 212 ",
+                "materials": [
+                    {
+                        "isbn": "9780700385577",
+                        "title": "PACKET NOTES & QUOTES REL A 212",
+                        "author": "PARKER, T",
+                        "newPrice": "$17.25",
+                        "usedPrice": "N/A",
+                        "rentalPrice": "N/A",
+                        "required": "OPTIONAL"
+                    }
+                ]
+            }
+        ],
+        "year": "2010",
+        "semester": "fall",
+        "term": "5"
+    }
+]
