@@ -1,0 +1,14 @@
+curl http://alpha.blyph.com:3080/booklist/token \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d 'invalid json'
+
+curl http://alpha.blyph.com:3080/booklist/token \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d '{ "invalid": "data" }'
+
+curl http://alpha.blyph.com:3080/booklist/token \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d '{ "timestamp": '`date +%s`', "type": "booklist", "school": "byu", "student": "beatgammit@gmail.com", "booklist": [], "booklist": '`cat public/datasets/byu-jameson-booklist.json`' }'
