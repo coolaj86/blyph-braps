@@ -93,7 +93,9 @@
     // todo One-Time Tokens
     // todo token in params
     app.post('/booklist/:token', function (req, res) {
-      var booklist = req.body && req.body.booklist;
+      var booklist = req.body && req.body.booklist
+        , redirect = req.body && req.body.redirect
+        ;
 
       try { 
         booklist = JSON.parse(booklist);
@@ -131,27 +133,49 @@
           res.end(JSON.stringify({ error: { message: "no savey to databasey: " + JSON.stringify(err) } }));
         }
         res.statusCode = 302;
-        res.setHeader("Location", "/haveit-needit.html#" + (booklist.student || booklist.token));
-        //res.setHeader("Location", "/mybooklist.html#" + booklist.student);
+        res.setHeader("Location", redirect);
         res.end(JSON.stringify(data));
       });
     });
 
+    function random() {
+      return 0.5 - Math.random();
+    }
+
+    var blyphSecret = 'thequickgreenlizard';
+    var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789')
     function handleSignUp(req, res) {
-      var email = req.body && req.body.email;
-      var user = req.body;
+      var email = req.body && req.body.email
+        , user = req.body
+        , fullUser = {}
+        ;
 
       // TODO make more robust
+      if (!user) {
+        res.statusCode = 422;
+        res.end('{ "error": { "message": "bad object" } }');
+        return;
+      }
+
       res.writeHead(200, {'Content-Type': 'application/json'});
 
       // 
       db.get(user.email, function (err, data) {
-        if (data) {
+        if (data && data.authToken) {
           res.end(JSON.stringify({email: user.email, couchdb: data}));
           return;
         }
 
-        db.save(user.email, { email: user.email, school: user.school }, function (err, data) {
+        token = token.split('').sort(random).join('');
+
+        fullUser.type = 'user';
+        fullUser.email = String(user.email);
+        fullUser.school = String(user.school);
+        // for login via email
+        fullUser.authToken = token.substr(2, 6);
+        // for link tracking among friends
+        fullUser.refToken = token.substr(10, 6);
+        db.save(user.email, { type: 'user', email: user.email, school: user.school }, function (err, data) {
           sendEmail(user, function(err, message) {
             console.log(err || message); 
           });
@@ -204,8 +228,13 @@
   }
 
   server = connect.createServer(
+      connect.favicon(__dirname + '/public/favicon.ico')
+
+    , connect.cookieParser()
+    , connect.session({ secret: 'Baby, ride your Firebolt!' })
+
     // decode html forms
-      connect.bodyParser()
+    , connect.bodyParser()
 
     // cors uploads
     , booklistscraper
@@ -213,7 +242,6 @@
     // images, css, etc
     , connect.static(__dirname + '/public')
 
-    , connect.favicon(__dirname + '/public/favicon.ico')
 
     // REST API
     , connect.router(rest)

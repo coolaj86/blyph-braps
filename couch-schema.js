@@ -51,26 +51,25 @@
             }
 
             info = doc.info;
-            info.isbn = info.isbn13 || info.isbn10;
 
-            if (!info.isbn) {
+            if (!info.isbn13) {
               return;
             }
 
             if (info.image) {
               if (info.image.match(/no_image\.gif$/)) {
-                info.image = '';
+                img = '';
               } else if (img = info.image.match(/ecx.images-amazon.com\/images\/I\/(.*?)\./)) {
-                info.image = 'amz:' + img[1];
+                img = 'amz:' + img[1];
               }
             }
 
             // days since the blyph epoch is calculated as follows
-            // 15190 - parseInt(new Date(info.timestamp).valueOf() / (1000 * 60 * 60 * 24))
+            // 15190 - parseInt(new Date(doc.timestamp).valueOf() / (1000 * 60 * 60 * 24))
             // this is to conserve bytes
             emit(doc.school, [
-                info.isbn
-              , 15190 - parseInt(new Date(info.timestamp).valueOf() / (1000 * 60 * 60 * 24))
+                info.isbn13
+              , 15190 - parseInt(new Date(doc.timestamp).valueOf() / (1000 * 60 * 60 * 24))
               , info.title
               , info.author
               , info.binding
@@ -81,7 +80,7 @@
               , info.edition
             //, info.rank
             //, info.rating
-              , info.image
+              , img
             ]);
           }
         }
