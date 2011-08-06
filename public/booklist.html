@@ -120,8 +120,23 @@
    <h1>Share with your friends</h1>
    <h3>The more of your friends who know about Blyph, the easier it will be for you to find your books.</h3>
    <!--facebook-->
-   <div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script><fb:send href="example.com" font=""></fb:send>
-   
+
+    <div id="fb-root"></div>
+    <div id="fbml"></div>
+    <script>
+      // TODO this code block will be moved to an app.js
+      // TODO replace friendId and foken with real trackable token
+      var fbScript = document.createElement('script')
+        , foken = new Date().valueOf().toString('36')
+        , xfbml = '<fb:send href="' + 'blyph.com#friendId=' + foken + '" font=""></fb:send>';
+        ;
+
+      fbScript.src = 'http://connect.facebook.net/en_US/all.js#xfbml=1';
+
+      document.getElementById('fbml').innerHTML = xfbml;
+
+      document.body.appendChild(fbScript);
+    </script>
    
    
    </div><!--social-sharing-->

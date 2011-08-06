@@ -10,6 +10,9 @@
       }
 
       $(function () {
+        var friendId = location.hash.match(/friendId=(.*)/)
+          ;
+
         $('#loading').hide();
 
         //var cb = CampusBooks.create("BLCg7q5VrmUBxsrETg5c");
@@ -18,6 +21,7 @@
             , school
             , users
             , user
+            , data = {}
             ;
 
           ev.preventDefault();
@@ -37,15 +41,22 @@
 
           loading();
 
-          $.post('/subscribe', { email: email, school: school }, function (data) {
+          data.email = email;
+          data.school = school;
+          if (friendId) {
+            // TODO prompt for referral info
+            data.friendId = friendId[1];
+          }
+
+          $.post('/subscribe', data, function (echo) {
             complete();
 
-            if (!data) {
+            if (!echo) {
               alert('Server Error');
               return;
             }
 
-            alert('Thanks for your support, ' + data.email + '! You\'ll hear from us soon!');
+            alert('Thanks for your support, ' + echo.email + '! You\'ll hear from us soon!');
           }, 'json');
 
           users = localStorage.getItem('users') || '{}';
