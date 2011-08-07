@@ -9,7 +9,7 @@
     , corsJsonSession = require('./routes/cors-json-session')
     , mailserver = mailer.server.connect(config.emailjs)
     , cradle = require('cradle')
-    , db = new(cradle.Connection)(config.cradle.host, config.cradle.port, config.cradle.options)
+    , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
         .database(config.cradle.database, function () { console.log(arguments); })
     , server
     , vhost
@@ -41,24 +41,67 @@
   }
 
   // TODO share the link
-  function sendEmail(user, fn) {
+  function sendEmailCheck(user, fn) {
     var headers = {
             from: "AJ ONeal <" + config.emailjs.user + ">"
           , to: user.email
-          , subject: "Thanks for signing up with Blyph"
-          , text: "Our monkeys are hard at work programming the trading database.\n" + 
-              "\nWe'll let you know as soon as it's ready!\n" + 
-              "\nIn the meantime, feel free to ask us questions.\n" + 
-              "\nemail: " + user.email + 
-              "\nschool: " + user.school +
+          , subject: "We heard you the first time! =^P"
+          , text: "\nHey,\n" +
+              "\nThose monkeys just aren't fast enough are they?" + 
+              "\nWe got your registration the first time, but you're on our 'A' list for being extra eager." + 
+              "\n" +
+              "\nNow take that eagerness and share away!" +
+              "\nhttp://blyph.com#/?referredBy=" + user.referrerId + 
+              "\n" +
+              "\n=8^D\n" +
               "\n" +
               "\nThanks for your support," +
-              "\nAJ ONeal & Brian Turley" +
-              "\nhttp://facebook.com/pages/Blyph/190889114300467" +
-              "\nhttp://twitter.com" + 
+              "\nAJ @coolaj86 & Brian @Brian_Turley" +
+              "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
+              "\nTweet us: http://twitter.com/blyph" + 
               "\n" +
               "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
               "including fair wages, hours, and are not subject to animal (or human) testing."
+        }
+        // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
+      , message = mailer.message.create(headers)
+      ;
+
+    mailserver.send(message, fn);
+  }
+  function sendEmail(user, fn) {
+    var headers = {
+            from: "AJ @ Blyph <" + config.emailjs.user + ">"
+          , to: user.email
+          , subject: "Thanks for signing up with Blyph"
+          , text: "Our monkeys are hard at work building Blyph.com." + 
+              "\n" +
+              "\nWe'll let you know as soon as it's ready!" + 
+              "\n" +
+              // TODO your-school-here
+              "\nIn the meantime, please share your unique link with your BYU and UVU friends:" +
+              "\nhttp://blyph.com#/?referredBy=" + user.referrerId + 
+              "\n" +
+              "\nNot only does sharing mean you're more likely to get trading matches," +
+              "\nbut the more friends you share with, the more entries you get into the $350 reimbursement drawing." +
+              "\n" +
+              "\n10 friends join - 10 entries" +
+              "\n20 friends join - 40 entries" +
+              "\n30 friends join - 90 entries" +
+              "\n10n friends join - 10(n^2) entries (for you math geeks)" +
+              "\n100 friends join - 1000 entries" +
+              "\n" +
+              "\n" +
+              "\nThanks for your support," +
+              "\nAJ ONeal <aj@blyph.com> & Brian Turley <brian@blyph.com>" +
+              "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
+              "\nTweet us: http://twitter.com/blyph" + 
+              "\n" +
+              "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
+              "including fair wages, hours, and are not subject to animal (or human) testing." +
+              "\n" +
+              "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
+              ""
         }
         // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
       , message = mailer.message.create(headers)
@@ -173,31 +216,48 @@
 
       res.writeHead(200, {'Content-Type': 'application/json'});
 
+      // same chars, but mixed up every time
+      token = token.split('').sort(random).join('');
+
       // 
       db.get(user.email, function (err, data) {
         console.log('db.get');
-        if (data && data.authToken) {
-          res.end(JSON.stringify({email: user.email, couchdb: data}));
-          return;
+        if (data && data.email) {
+          fullUser = data;
         }
-
-        token = token.split('').sort(random).join('');
 
         fullUser.type = 'user';
         fullUser.email = String(user.email);
         fullUser.school = String(user.school);
-        fullUser.referredBy = String(user.referredBy);
-        fullUser.friendId = String(user.friendId);
-        // for login via email
-        fullUser.authToken = token.substr(2, 6);
-        // for link tracking among friends
-        fullUser.refToken = token.substr(10, 6);
-        db.save(user.email, { type: 'user', email: user.email, school: user.school }, function (err, data) {
+        fullUser.referredBy = fullUser.referredBy || user.referredBy;
+        fullUser.referrerId = fullUser.referrerId || token.substr(0, 8);
+        fullUser.confirmationSent = fullUser.confirmationSent || 0;
+
+        if (fullUser.confirmationSent) {
+          sendEmailCheck(fullUser, function (err, message) {
+            console.log('send check email');
+            console.log(err || message); 
+            if (!err) {
+              fullUser.confirmationSent += 1;
+              db.save(fullUser.email, fullUser, function (err, data) {});
+            }
+          });
+          return res.end(JSON.stringify({email: email, couchdb: data}));
+        }
+
+        db.save(fullUser.email, fullUser, function (err, data) {
+
           console.log('db.save');
-          sendEmail(user, function(err, message) {
+
+          sendEmail(fullUser, function(err, message) {
             console.log('send email');
             console.log(err || message); 
+            if (!err) {
+              fullUser.confirmationSent += 1;
+              db.save(fullUser.email, fullUser, function (err, data) {});
+            }
           });
+
           res.end(JSON.stringify({email: email, couchdb: data}));
         });
       });
