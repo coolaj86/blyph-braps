@@ -1,0 +1,121 @@
+# user registers on the site (with id of friend)
+curl http://alpha.blyph.com/users \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+          "email": "coolaj86@blyph.com"
+        , "school": "byu.edu"
+        , "referreredBy": "xyz01ab"
+        , "passphrase": "I love fruit snacks"
+      }'
+
+curl http://alpha.blyph.com/sessions \
+  -X POST \
+  -H 'Content-Type: application/json' \
+
+
+# response should yield a session token and a cookie
+#        , "userSession": "abcDEFghiJKLmnoPQRstuVWXyz012345" \
+#        , "userId"
+
+# same as users/xyz
+curl http://alpha.blyph.com/me \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+          "timestamp": 1312428441765
+        , "userToken": "letMeInPrettyPrettyPlease"
+        , "email": "beatgammit@gmail.com"
+        , "school": "byu.edu"
+        , "booklist": [
+              {
+                  "term": "105"
+                , "courses": [
+                      {
+                          "department": "C S"
+                        , "number": "236 "
+                        , "section": "107 R"
+                        , "sections": ["107 R"]
+                        , "materials": [
+                              {
+                                  "isbn": "9780135012062"
+                                , "title": "LOGIC & DISCRETE MATHEMATICS"
+                                , "author": "GRASSMANN, W"
+                                , "newPrice": "139.60"
+                                , "availableNew": false
+                                , "usedPrice": "104.70"
+                                , "availableUsed": false
+                                , "studentPrice": "85"
+                                , "rentalPrice": "N/A"
+                                , "edition": "6TH"
+                                , "required": "REQUIRED"
+                              }
+                          ]
+                      }
+                  ]
+                , "year": "2011"
+                , "season": "winter"
+              }
+          ]
+      }' \
+# | jsongrep 'userSession'
+# adds   , "type": "booklist"
+
+curl http://alpha.blyph.com/booklist?userSession=${USER_SESSION}
+# response should be the same as above (minus userToken, email)
+
+# the user selects have it / need it / trade it / keep it
+# list / keep / don't have it
+curl http://alpha.blyph.com/booklist \
+  -X POST \
+  -H 'Content-Type: application/json' \
+  -d '{
+          "timestamp": 1312428441765
+        , "userSession": "letMeInPrettyPrettyPlease"
+        , "school": "byu.edu"
+        , "booklist": [
+              {
+                  "term": "105"
+                , "courses": [
+                      {
+                          "department": "C S"
+                        , "number": "236 "
+                        , "section": "107 R"
+                        , "sections": ["107 R"]
+                        , "materials": [
+                              {
+                                  "isbn": "9780135012062"
+                                , "title": "LOGIC & DISCRETE MATHEMATICS"
+                                , "author": "GRASSMANN, W"
+                                , "newPrice": "139.60"
+                                , "availableNew": false
+                                , "usedPrice": "104.70"
+                                , "availableUsed": false
+                                , "studentPrice": "85"
+                                , "rentalPrice": "N/A"
+                                , "edition": "6TH"
+                                , "required": "REQUIRED"
+                                , "haveIt": true
+                                , "needIt": true
+                                , "willTrade": true
+                              }
+                          ]
+                      }
+                  ]
+                , "year": "2011"
+                , "season": "winter"
+              }
+          ]
+      }' \
+
+curl http://alpha.blyph.com/isbn/9780135012062
+# same as campusbooks
+
+curl http://alpha.blyph.com/booklist/byu.json
+
+curl http://alpha.blyph.com/isbn/9780135012062/schools
+curl http://alpha.blyph.com/isbn/9780135012062/?offers=true
+# online offers
+curl http://alpha.blyph.com/isbn/9780135012062/byu.edu
+curl http://alpha.blyph.com/isbn/9780135012062/byu.edu/offers
+# additional info - which classes use this book, etc
