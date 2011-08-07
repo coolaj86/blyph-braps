@@ -13,7 +13,7 @@ visibility:visible;
 	background-image:url(../images/background-logos.png);
 	height:350px;
 	width:500px;
-	left:350px;
+	left:28%;
 	position:absolute;
 	z-index:-1;
 	}
@@ -93,7 +93,7 @@ a {
 }
 
 #container{
-	width:600px;
+	width:650px;
 	height:800px;
 	margin:90px auto 0px auto;
 
@@ -139,3 +139,21 @@ margin:-8px 0px 0px 320px;
 	
 footer{
 	text-align:center}
+
+#loading{
+	position:absolute;
+	top:20;
+	left:345px;
+	height:350px;
+	width:560px;
+	background:rgba(220, 245, 252, 0.75);
+	z-index:+1;
+	padding:0px;
+
+	}
+	
+#loading-animation{
+	Height:150px;
+	width:150px;
+	background-image:url(http://alpha.blyph.com/images/Blyph-load-animation.gif);
+	margin:100px auto 0px auto;

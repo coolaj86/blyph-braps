@@ -18,7 +18,7 @@ module.exports = {
                 username: 'coolaj86'
               , password: 'Wh1t3Ch3dd3r'
             }
-          , database: 'syllabi'
         }
+      , database: 'syllabi'
     }
 };
