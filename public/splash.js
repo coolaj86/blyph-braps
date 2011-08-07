@@ -58,11 +58,29 @@
             complete();
 
             if (!echo) {
-              alert('Server Error');
+              $('#email_form').html(
+                  "Error: A monkey wrench must have gotten stuck in one of the server gizmos." +
+                  "<br/>" +
+                  "If it's not working in 5 minutes please call AJ"
+                );
+              $('#gvoice').click();
               return;
             }
 
-            alert('Thanks for your support, ' + echo.email + '! You\'ll hear from us soon!');
+            $('#email_form').html(
+                'Thanks for your support, ' + echo.email +
+                '!<br/> You\'ll hear from us soon!' +
+                '<br/>' +
+                '<br/>' +
+                'In the meantime, earn yourself some more entries into our drawing by sharing this unique link with your BYU and UVU friends: ' +
+                '<br/>' +
+                '<a href="http://blyph.com/#/?referredBy=' + echo.couchdb.referrerId + '">' +
+                'http://blyph.com/#/?referredBy=' + echo.couchdb.referrerId + '</a>' + 
+                '<br/>' +
+                '<br/>' +
+                'We also just sent you an e-mail with that link. :-D' +
+                ''
+              );
           }, 'json');
 
           users = localStorage.getItem('users') || '{}';

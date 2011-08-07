@@ -236,11 +236,12 @@
         if (fullUser.confirmationSent) {
           sendEmailCheck(fullUser, function (err, message) {
             console.log('send check email');
-            console.log(err || message); 
-            if (!err) {
-              fullUser.confirmationSent += 1;
-              db.save(fullUser.email, fullUser, function (err, data) {});
+            if (err) {
+              console.log(err);
+              return;
             }
+            fullUser.confirmationSent += 1;
+            db.save(fullUser.email, fullUser, function (err, data) {});
           });
           return res.end(JSON.stringify({email: email, couchdb: data}));
         }
@@ -251,11 +252,12 @@
 
           sendEmail(fullUser, function(err, message) {
             console.log('send email');
-            console.log(err || message); 
-            if (!err) {
-              fullUser.confirmationSent += 1;
-              db.save(fullUser.email, fullUser, function (err, data) {});
+            if (err) {
+              console.log(err);
+              return;
             }
+            fullUser.confirmationSent += 1;
+            db.save(fullUser.email, fullUser, function (err, data) {});
           });
 
           res.end(JSON.stringify({email: email, couchdb: data}));

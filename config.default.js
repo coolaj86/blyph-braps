@@ -10,7 +10,7 @@ module.exports = {
       , ssl: true
     }
   , cradle: {
-        host: 'coolaj86.couchone.com'
+        hostname: 'coolaj86.couchone.com'
       , port: 443
       , options: {
             secure: true
