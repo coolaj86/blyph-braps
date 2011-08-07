@@ -11,7 +11,7 @@
 
       $(function () {
         var friendId = location.hash.match(/friendId=(.*)/)
-          , referredBy = location.hash.match(/referredBy=(.*)/)
+          , referredBy = location.hash.match(/referredBy=(.*)/) || location.hash.match(/(?:\?|&)r=(.*)/)
           ;
 
         location.hash = '#';

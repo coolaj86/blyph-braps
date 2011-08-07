@@ -335,11 +335,22 @@
 
   vhost = connect.createServer(
       connect.vhost(config.vhost, server)
-    , connect.vhost('www.' + config.vhost, function (req, res, next) {
+    , connect.vhost('www.' + config.vhost, connect.createServer(function (req, res, next) {
+        res.statusCode = 302;
         res.setHeader('Location', 'http://' + config.vhost + req.url);
-        res.write('Quit with the www already!!! It\'s not 1990 anymore!');
+        // TODO set token to notify browser to notify user about www
+        res.write(
+            'Quit with the www already!!! It\'s not 1990 anymore!'
+          + '<br/>'
+          + '<a href="http://blyph.com">blyph.com</a>'
+          + '<br/>NOT www.blyph.com'
+          + '<br/>NOT http://www.blyph.com'
+          + '<br/>just <a href="http://blyph.com">blyph.com</a>'
+          + '<br/>'
+          + ';-P'
+        );
         res.end();
-      })
+      }))
   );
   console.log('Serving vhost ' + config.vhost);
 
