@@ -111,7 +111,7 @@
   }
 
   function log(err, data) {
-    console.log('err: ' + err);
+    console.error('err: ' + err);
     console.log('data: ' + JSON.stringify(data));
   }
 
@@ -133,6 +133,9 @@
 
         data.doNotMail = true;
         db.save(data.email, data, function (err, data) {
+          if (err) {
+            console.error('db.save unsub', err);
+          }
           res.end(JSON.stringify({email: data.email, couchdb: data}));
         });
       });
@@ -201,14 +204,12 @@
     var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789')
 
     function handleSignUp(req, res) {
-      console.log('handleSignUp');
       var email = req.body && req.body.email
-        , user = req.body
-        , fullUser = {}
+        , newUser = req.body
         ;
 
       // TODO make more robust
-      if (!user) {
+      if (!newUser) {
         res.statusCode = 422;
         res.end('{ "error": { "message": "bad object" } }');
         return;
@@ -220,56 +221,72 @@
       token = token.split('').sort(random).join('');
 
       // 
-      db.get(user.email, function (err, data) {
-        console.log('db.get');
-        if (data && data.email) {
-          fullUser = data;
+      db.get(newUser.email, function (err, fullUser) {
+        if (err && 'missing' !== err.reason) {
+          console.error('db.get ERROR', err);
+          //res.end(JSON.stringify(err));
+        }
+
+        if (!fullUser || !fullUser.email) {
+          fullUser = {};
         }
 
         fullUser.type = 'user';
-        fullUser.email = String(user.email);
-        fullUser.school = String(user.school);
-        fullUser.referredBy = fullUser.referredBy || user.referredBy;
+        fullUser.email = String(newUser.email);
+        fullUser.school = String(newUser.school);
+        fullUser.referredBy = fullUser.referredBy || newUser.referredBy;
         fullUser.referrerId = fullUser.referrerId || token.substr(0, 8);
         fullUser.confirmationSent = fullUser.confirmationSent || 0;
 
         if (fullUser.confirmationSent) {
           sendEmailCheck(fullUser, function (err, message) {
-            console.log('send check email');
             if (err) {
-              console.log(err);
+              console.error('ERROR eager mail', err);
               return;
             }
+
             fullUser.confirmationSent += 1;
-            db.save(fullUser.email, fullUser, function (err, data) {
+            db.save(fullUser.email, fullUser, function (err, receipt) {
               if (err) {
-                console.log('error saving after confirmation sent', err);
+                console.error('ERROR db.save 2nd+ confirmation', err);
               }
             });
           });
-          return res.end(JSON.stringify({email: email, couchdb: fullUser}));
+
+          res.end(JSON.stringify({
+              email: email
+            , couchdb: fullUser
+            , error: err
+          }));
+          return;
         }
 
-        db.save(fullUser.email, fullUser, function (err, data) {
-          fullUser = data;
+        db.save(fullUser.email, fullUser, function (err, receipt) {
+          if (err) {
+            console.error('ERROR db.save 1st', err);
+          } 
+          fullUser._rev = receipt.rev;
 
-          console.log('db.save');
+          res.end(JSON.stringify({
+              email: email
+            , couchdb: fullUser
+            , error: err
+          }));
 
           sendEmail(fullUser, function(err, message) {
-            console.log('send email');
             if (err) {
-              console.log(err);
+              console.error('ERROR send email', err);
               return;
             }
+
             fullUser.confirmationSent += 1;
-            db.save(fullUser.email, fullUser, function (err, data) {
+            db.save(fullUser.email, fullUser, function (err, receipt) {
               if (err) {
-                console.log('error saving after first confirmation sent', err);
+                console.error('ERROR db.save 1st confirmation', err);
               }
             });
           });
 
-          res.end(JSON.stringify({email: email, couchdb: fullUser}));
         });
       });
     }
@@ -342,6 +359,7 @@
     , connect.router(rest)
   );
 
+  // TODO move up and out
   vhost = connect.createServer(
       connect.vhost(config.vhost, server)
     , connect.vhost('www.' + config.vhost, connect.createServer(function (req, res, next) {
