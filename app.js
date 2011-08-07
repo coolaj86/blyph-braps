@@ -3,28 +3,27 @@
 
   var config = require('./config')
     , connect = require('connect')
+    , CORS = require('connect-xcors')
+    , queryParser = require('connect-queryparser')
     , mailer = require('emailjs')
-    , mailserver = mailer.server.connect({
-          user: "aj@blyph.com"
-        , password: "Wh1t3Ch3dd3r"
-        , host: "smtp.gmail.com"
-        , ssl: true
-      })
+    , corsJsonSession = require('./routes/cors-json-session')
+    , mailserver = mailer.server.connect(config.emailjs)
     , cradle = require('cradle')
-    , db = new(cradle.Connection)('coolaj86.couchone.com', 443, {
-          secure: true
-        , auth: { username: 'coolaj86', password: 'Wh1t3Ch3dd3r' }
-      }).database('syllabi', function () { console.log(arguments); })
+    , db = new(cradle.Connection)(config.cradle.host, config.cradle.port, config.cradle.options)
+        .database(config.cradle.database, function () { console.log(arguments); })
     , server
     , vhost
     ;
 
   function handleSchool(school) {
-    // "http://www.byu.edu".match(/.*\b(\w+\.\w+)/);
-    // "byu.edu".match(/.*\b(\w+\.\w+)/);
+    // TODO all of these should pass
+    // "http://www.byu.edu"
+    // "http://www-apps.byu.edu"
+    // "http://www-apps.byu-i.edu"
+    // "byu.edu"
     school = school || '';
     school = school.trim().toLowerCase();
-    school = school.match(/.*\b(\w+\.\w+)/);
+    school = school.match(/.*\b([-\w]+\.\w+)/);
     if (school) {
       school = school[1];
     }
@@ -41,12 +40,25 @@
     return email;
   }
 
+  // TODO share the link
   function sendEmail(user, fn) {
     var headers = {
-            from: "AJ ONeal <aj@blyph.com>"
+            from: "AJ ONeal <" + config.emailjs.user + ">"
           , to: user.email
           , subject: "Thanks for signing up with Blyph"
-          , text: "email: " + user.email + " \nschool: " + user.school + " \n"
+          , text: "Our monkeys are hard at work programming the trading database.\n" + 
+              "\nWe'll let you know as soon as it's ready!\n" + 
+              "\nIn the meantime, feel free to ask us questions.\n" + 
+              "\nemail: " + user.email + 
+              "\nschool: " + user.school +
+              "\n" +
+              "\nThanks for your support," +
+              "\nAJ ONeal & Brian Turley" +
+              "\nhttp://facebook.com/pages/Blyph/190889114300467" +
+              "\nhttp://twitter.com" + 
+              "\n" +
+              "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
+              "including fair wages, hours, and are not subject to animal (or human) testing."
         }
         // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
       , message = mailer.message.create(headers)
@@ -144,7 +156,9 @@
 
     var blyphSecret = 'thequickgreenlizard';
     var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789')
+
     function handleSignUp(req, res) {
+      console.log('handleSignUp');
       var email = req.body && req.body.email
         , user = req.body
         , fullUser = {}
@@ -161,6 +175,7 @@
 
       // 
       db.get(user.email, function (err, data) {
+        console.log('db.get');
         if (data && data.authToken) {
           res.end(JSON.stringify({email: user.email, couchdb: data}));
           return;
@@ -171,12 +186,16 @@
         fullUser.type = 'user';
         fullUser.email = String(user.email);
         fullUser.school = String(user.school);
+        fullUser.referredBy = String(user.referredBy);
+        fullUser.friendId = String(user.friendId);
         // for login via email
         fullUser.authToken = token.substr(2, 6);
         // for link tracking among friends
         fullUser.refToken = token.substr(10, 6);
         db.save(user.email, { type: 'user', email: user.email, school: user.school }, function (err, data) {
+          console.log('db.save');
           sendEmail(user, function(err, message) {
+            console.log('send email');
             console.log(err || message); 
           });
           res.end(JSON.stringify({email: email, couchdb: data}));
@@ -209,7 +228,7 @@
   }
 
   function booklistscraper(req, res, next) {
-    console.log(req);
+    //console.log(req);
     next();
     /*
     if (!req.url.match(/^\/booklistscraper/)) {
@@ -230,14 +249,19 @@
   server = connect.createServer(
       connect.favicon(__dirname + '/public/favicon.ico')
 
-    , connect.cookieParser()
-    , connect.session({ secret: 'Baby, ride your Firebolt!' })
+  // these won't work CORS-style without an Access-Control-Allow
+  //, connect.cookieParser()
+  //, connect.session({ secret: 'Baby, ride your Firebolt!' })
 
-    // decode html forms
+    // decode http forms
     , connect.bodyParser()
+    , queryParser()
+    , CORS()
+    , corsJsonSession({ secret: config.sessionSecret })
+
 
     // cors uploads
-    , booklistscraper
+    //, booklistscraper
 
     // images, css, etc
     , connect.static(__dirname + '/public')

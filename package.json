@@ -13,7 +13,9 @@
   },
   "dependencies": {
       "connect": ">= 1.0.0"
+    , "connect-xcors": ">= 0.5.0"
     , "cradle": ">= 0.0.0"
+    , "emailjs": ">= 0.0.0"
     , "isbn": ">= 0.0.0"
   },
   "devDependencies": {}
