@@ -1,0 +1,42 @@
+# TODO authn vs authz
+# set Access-Control-Allow-Origin: to name of referrer
+# create session for user as Xyz
+curl http://xyz.com/users \
+  -X POST \
+  -d '{ 
+          "email": "coolaj86@blyph.com"
+        , "userToken: "abcDEFghiJKLmnoPQRstuVWXyz012345"
+      }'
+
+# response should contain userSession
+
+
+# inside Xyz to Blyph
+curl http://alpha.blyph.com/app-sessions \
+  -X POST \
+  -d '{
+          "appId": "xyz.com"
+        , "appToken": "abcDEFghiJKLmnoPQRstuVWXyz012345"
+      }'
+curl http://alpha.blyph.com/sessions \
+  -X POST \
+  -d '{
+          "appSession": "abcDEFghiJKLmnoPQRstuVWXyz012345"
+        , "userId": "coolaj86@blyph.com"
+      }'
+# this should create a session with the associated appId + userId at Blyph
+# TODO shared univeral accounts? email / fb / twitter / etc?
+
+
+# set Access-Control-Allow-Origin: to name of referrer
+# user registers on the site (with id of friend)
+curl http://alpha.blyph.com/users \
+  -X POST \
+  -d '{ \
+          "email": "coolaj86@blyph.com" \
+        , "school": "byu.edu" \
+        , "friendId": "xyz01ab" \
+        , "userSession": "abcDEFghiJKLmnoPQRstuVWXyz012345" \
+      }'
+
+# google auth /fb, etc

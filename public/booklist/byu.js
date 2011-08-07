@@ -75,11 +75,11 @@
         console.log('coursename', coursename);
         // "C S 237 R Section 203 B" ->  "C S"   "237 R" "203 B"
         if (coursematch = coursename.match(/^\s*(.*?)\s+(\d[\d\s\w]+)\s*Section\s+([\d\s\w]+)/)) {
-          course.department = coursematch[1];
-          course.number = coursematch[2];
-          course.section = coursematch[3];
+          course.department = coursematch[1].trim();
+          course.number = coursematch[2].trim();
+          course.section = coursematch[3].trim();
         } else {
-          course.name = coursename;
+          course.name = coursename.trim();
         }
 
         el = el.next();
@@ -101,9 +101,9 @@
           material.isbn = $(data).find('.ItemISBNText.Subtext').text().trim();
           material.title = $(data).find('.ItemTitle.Uncompressed').text().trim();
           material.author = $(data).find('.ItemAuthorText.Subtext').text().trim();
-          material.newPrice = $(data).find('.BookstorePricingNewPriceText.Subtext').text().trim();
-          material.usedPrice = $(data).find('.BookstorePricingUsedPriceText.Subtext').text().trim();
-          material.rentalPrice = $(data).find('.BookstorePricingRentalPriceText.Subtext').text().trim();
+          material.newPrice = $(data).find('.BookstorePricingNewPriceText.Subtext').text().trim().replace('$','');
+          material.usedPrice = $(data).find('.BookstorePricingUsedPriceText.Subtext').text().trim().replace('$','');
+          material.rentalPrice = $(data).find('.BookstorePricingRentalPriceText.Subtext').text().trim().replace('$','');
           material.required = $(data).find('.ItemRequired').text().trim();
           materials.push(material);
 

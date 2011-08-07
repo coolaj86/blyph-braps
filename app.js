@@ -334,7 +334,12 @@
   );
 
   vhost = connect.createServer(
-    connect.vhost(config.vhost, server)
+      connect.vhost(config.vhost, server)
+    , connect.vhost('www.' + config.vhost, function (req, res, next) {
+        res.setHeader('Location', 'http://' + config.vhost + req.url);
+        res.write('Quit with the www already!!! It\'s not 1990 anymore!');
+        res.end();
+      })
   );
   console.log('Serving vhost ' + config.vhost);
 
