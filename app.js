@@ -209,11 +209,12 @@
         ;
 
       // TODO make more robust
-      if (!newUser) {
+      if (!newUser || !newUser.email) {
         res.statusCode = 422;
         res.end('{ "error": { "message": "bad object" } }');
         return;
       }
+      newUser.email = String(newUser.email).toLowerCase();
 
       res.writeHead(200, {'Content-Type': 'application/json'});
 
