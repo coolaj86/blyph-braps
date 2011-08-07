@@ -241,12 +241,17 @@
               return;
             }
             fullUser.confirmationSent += 1;
-            db.save(fullUser.email, fullUser, function (err, data) {});
+            db.save(fullUser.email, fullUser, function (err, data) {
+              if (err) {
+                console.log('error saving after confirmation sent', err);
+              }
+            });
           });
-          return res.end(JSON.stringify({email: email, couchdb: data}));
+          return res.end(JSON.stringify({email: email, couchdb: fullUser}));
         }
 
         db.save(fullUser.email, fullUser, function (err, data) {
+          fullUser = data;
 
           console.log('db.save');
 
@@ -257,10 +262,14 @@
               return;
             }
             fullUser.confirmationSent += 1;
-            db.save(fullUser.email, fullUser, function (err, data) {});
+            db.save(fullUser.email, fullUser, function (err, data) {
+              if (err) {
+                console.log('error saving after first confirmation sent', err);
+              }
+            });
           });
 
-          res.end(JSON.stringify({email: email, couchdb: data}));
+          res.end(JSON.stringify({email: email, couchdb: fullUser}));
         });
       });
     }
