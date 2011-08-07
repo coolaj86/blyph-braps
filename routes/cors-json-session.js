@@ -35,22 +35,27 @@
     }
 
     function session(req, res, next) {
-      var sessionId
+      req.activateSession = function(cb) {
+        var sessionId
         ;
 
-      if (sessionId = req.body && req.body.userSession) {
-        req.sessionId = sessionId;
-      } else if (sessionId = req.query && req.query.userSession) {
-        req.sessionId = sessionId;
-      } else {
-        req.sessionId = sessionId = createSessionId();
-      }
+        // TODO add Cookie support
+        if (sessionId = req.body && req.body.userSession) {
+          req.sessionId = sessionId;
+        } else if (sessionId = req.query && req.query.userSession) {
+          req.sessionId = sessionId;
+        } else {
+          req.sessionId = sessionId = createSessionId();
+        }
 
-      if (!(req.session = db[sessionId])) {
-        req.session = db[sessionId] = {};
-      } else {
-        req.session.timestamp = new Date().valueOf();
-      }
+        if (!(req.session = db[sessionId])) {
+          req.session = db[sessionId] = {};
+        } else {
+          req.session.timestamp = new Date().valueOf();
+        }
+
+        cb();
+      };
 
       next();
     }
