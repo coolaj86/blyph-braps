@@ -11,7 +11,10 @@
 
       $(function () {
         var friendId = location.hash.match(/friendId=(.*)/)
+          , referredBy = location.hash.match(/referredBy=(.*)/)
           ;
+
+        location.hash = '#';
 
         $('#loading').hide();
 
@@ -46,6 +49,9 @@
           if (friendId) {
             // TODO prompt for referral info
             data.friendId = friendId[1];
+          }
+          if (referredBy) {
+            data.referredBy = referredBy[1];
           }
 
           $.post('/subscribe', data, function (echo) {
