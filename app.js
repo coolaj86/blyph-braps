@@ -1,12 +1,12 @@
 (function () {
   "use strict";
 
-  var config = require('./config')
+  var config = require(__dirname + '/config')
     , connect = require('connect')
     , CORS = require('connect-xcors')
     , queryParser = require('connect-queryparser')
     , mailer = require('emailjs')
-    , corsJsonSession = require('./routes/cors-json-session')
+    , corsJsonSession = require(__dirname + '/routes/cors-json-session')
     , mailserver = mailer.server.connect(config.emailjs)
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
@@ -334,7 +334,12 @@
   );
 
   vhost = connect.createServer(
-    connect.vhost(config.vhost, server)
+      connect.vhost(config.vhost, server)
+    , connect.vhost('www.' + config.vhost, function (req, res, next) {
+        res.setHeader('Location', 'http://' + config.vhost + req.url);
+        res.write('Quit with the www already!!! It\'s not 1990 anymore!');
+        res.end();
+      })
   );
   console.log('Serving vhost ' + config.vhost);
 
