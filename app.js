@@ -1,12 +1,12 @@
 (function () {
   "use strict";
 
-  var config = require('./config')
+  var config = require(__dirname + '/config')
     , connect = require('connect')
     , CORS = require('connect-xcors')
     , queryParser = require('connect-queryparser')
     , mailer = require('emailjs')
-    , corsJsonSession = require('./routes/cors-json-session')
+    , corsJsonSession = require(__dirname + '/routes/cors-json-session')
     , mailserver = mailer.server.connect(config.emailjs)
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
