@@ -88,5 +88,18 @@
    <br/>
     <footer><p>Blyph LLC Copyright 2011</p></footer> 
 
-  </body>
+    <a id="gvoice" href="#">Have Questions? Need Help?</a>
+    <div id="gvoiceWidget" style="display: none;">
+      Call AJ:
+      <object type="application/x-shockwave-flash" data="https://clients4.google.com/voice/embed/webCallButton" width="230" height="85"><param name="movie" value="https://clients4.google.com/voice/embed/webCallButton" /><param name="wmode" value="transparent" /><param name="FlashVars" value="id=eefa487d95b71e2a840a26f71e7bac82fbd7e2b4&style=0" /></object>
+    </div>
+    </body>
+    <script>
+      $('body').delegate('#gvoice', 'click', function (ev) {
+        ev.preventDefault();
+        $('#gvoice').hide();
+        $('#gvoiceWidget').show();
+        $('#gvoiceWidget').click();
+      });
+    </script>
 </html>
