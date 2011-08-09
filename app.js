@@ -2,6 +2,7 @@
   "use strict";
 
   var config = require(__dirname + '/config')
+    , gcf = require('express-chromeframe')
     , connect = require('connect')
     , CORS = require('connect-xcors')
     , queryParser = require('connect-queryparser')
@@ -350,7 +351,8 @@
   }
 
   server = connect.createServer(
-      connect.favicon(__dirname + '/public/favicon.ico')
+      gcf()
+    , connect.favicon(__dirname + '/public/favicon.ico')
 
   // these won't work CORS-style without an Access-Control-Allow
   //, connect.cookieParser()
