@@ -15,32 +15,6 @@
     , vhost
     ;
 
-  function handleSchool(school) {
-    // TODO all of these should pass
-    // "http://www.byu.edu"
-    // "http://www-apps.byu.edu"
-    // "http://www-apps.byu-i.edu"
-    // "byu.edu"
-    school = school || '';
-    school = school.trim().toLowerCase();
-    school = school.match(/.*\b([-\w]+\.\w+)/);
-    if (school) {
-      school = school[1];
-    }
-    return school;
-  }
-
-  function handleEmail(email) {
-    email = email.trim().toLowerCase();
-    /*
-    // TODO remove extraneous '.' and trailing '+xyz' for 
-    if (email.match(/@gmail\./) || email.match(/@googlemail\./)) {
-    }
-    */
-    return email;
-  }
-
-  // TODO share the link
   function sendEmailCheck(user, fn) {
     var headers = {
             from: "AJ ONeal <" + config.emailjs.user + ">"
@@ -58,7 +32,7 @@
               "\nThanks for your support," +
               "\nAJ @coolaj86 & Brian @Brian_Turley" +
               "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
-              "\nTweet us: http://twitter.com/blyph" + 
+              "\nFollow us: http://twitter.com/blyph" + 
               "\n" +
               "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
               "including fair wages, hours, and are not subject to animal (or human) testing."
@@ -93,9 +67,10 @@
               "\n" +
               "\n" +
               "\nThanks for your support," +
-              "\nAJ ONeal <aj@blyph.com> & Brian Turley <brian@blyph.com>" +
+              "\nAJ ONeal <aj@blyph.com>" + 
+              "\nBrian Turley <brian@blyph.com>" +
               "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
-              "\nTweet us: http://twitter.com/blyph" + 
+              "\nFollow us: http://twitter.com/blyph" + 
               "\n" +
               "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
               "including fair wages, hours, and are not subject to animal (or human) testing." +
@@ -200,6 +175,48 @@
       return 0.5 - Math.random();
     }
 
+    // RFC Allowed: ! # $ % & ' * + - / = ? ^ _ ` { | } ~
+    // Hotmail Disallowed ! # $ % * / ? ^ ` { | } ~
+    // (I agree with MS on this one!)
+    var emailRegExp = /^[-&'+=_\w\.]+@[-\w\.]+\.\w{1,8}$/i;
+    var schoolRegExp = /^(?:https?:\/\/)?(?:[-\w\.]+\.)?([-\w]+\.(?:edu|gov))$/i;
+    // "http://www.byu.edu"
+    // "http://www-apps.byu.edu"
+    // "http://www-apps.byu-i.edu"
+    // "byu.edu"
+
+    function BlyphUser(obj) {
+      this.errors = [];
+
+      this.type = 'user';
+
+      if (!obj) {
+        this.errors.push("empty user");
+        return;
+      }
+
+      if ('string' !== typeof obj.email || !emailRegExp.exec(obj.email.trim())) {
+        this.errors.push("bad email address");
+        return;
+      }
+      // TODO remove extraneous '.' and trailing '+xyz' for 
+      //if (email.match(/@gmail\./) || email.match(/@googlemail\./)) {
+      //}
+      this.email = obj.email.trim().toLowerCase();
+
+      if ('string' !== typeof obj.school || !schoolRegExp.exec(obj.school.trim())) {
+        this.errors.push("bad school address");
+        return;
+      }
+      this.school = obj.school.trim().toLowerCase();
+
+    }
+    // t: coolaj86@gmail.com
+    // t: coolaj.86+wow_z-ers@google.mail.com
+    // f: coolaj86@gmail
+    // f: coolaj86@gmail.
+    // f: @gmail.com
+
     var blyphSecret = 'thequickgreenlizard';
     var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789')
 
@@ -208,13 +225,12 @@
         , newUser = req.body
         ;
 
-      // TODO make more robust
-      if (!newUser || !newUser.email) {
+      newUser = new BlyphUser(newUser);
+      if (newUser.errors.length) {
         res.statusCode = 422;
         res.end('{ "error": { "message": "bad object" } }');
         return;
       }
-      newUser.email = String(newUser.email).toLowerCase();
 
       res.writeHead(200, {'Content-Type': 'application/json'});
 
@@ -232,12 +248,10 @@
           fullUser = {};
         }
 
-        fullUser.type = 'user';
-        fullUser.email = String(newUser.email);
-        fullUser.school = String(newUser.school);
         fullUser.referredBy = fullUser.referredBy || newUser.referredBy;
         fullUser.referrerId = fullUser.referrerId || token.substr(0, 8);
         fullUser.confirmationSent = fullUser.confirmationSent || 0;
+
 
         if (fullUser.confirmationSent) {
           sendEmailCheck(fullUser, function (err, message) {
