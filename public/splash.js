@@ -29,15 +29,16 @@
 
           ev.preventDefault();
 
-          email = $('input[name=email]').val();
-          school = $('input[name=school]').val();
+          // TODO this must be done on the application side as well!!!
+          email = $('input[name=email]').val().toLowerCase();
+          school = $('input[name=school]').val().toLowerCase();
 
           if (!email || !email.match(/\w+@\w+.\w+/)) {
             alert('bad email address');
             return;
           }
 
-          if (!school || !school.match(/\w+.edu/) && !school.match(/\w+.gov/)) {
+          if (!school || !school.match(/\w+.edu/i) && !school.match(/\w+.gov/i)) {
             alert('Put a University url such as "byu.edu"');
             return;
           }
