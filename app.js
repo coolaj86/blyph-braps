@@ -414,8 +414,7 @@
   }
 
   server = connect.createServer(
-      gcf()
-    , connect.favicon(__dirname + '/public/favicon.ico')
+      connect.favicon(__dirname + '/public/favicon.ico')
 
   // these won't work CORS-style without an Access-Control-Allow
   //, connect.cookieParser()
