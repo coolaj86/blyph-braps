@@ -30,6 +30,10 @@ cursor:pointer;
 	float:left;
 	}
 
+.item_frame img {
+	height:150px;
+}
+
 .item_info{
 	width:480px;
 	height:130px;

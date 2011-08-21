@@ -2,11 +2,8 @@
   "use strict";
 
   var config = require(__dirname + '/config')
-    , connect = require('connect')
-    , CORS = require('connect-xcors')
-    , queryParser = require('connect-queryparser')
+    , connect = require('jason')
     , mailer = require('emailjs')
-    , corsJsonSession = require(__dirname + '/routes/cors-json-session')
     , mailserver = mailer.server.connect(config.emailjs)
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
@@ -43,6 +40,7 @@
 
     mailserver.send(message, fn);
   }
+
   function sendEmail(user, fn) {
     var headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
@@ -96,13 +94,13 @@
       var email = req.body && req.body.email;
 
       if (!email) {
-        res.end(JSON.stringify({ error: { message: "no email given" } }));
+        res.json({ error: { message: "no email given" } });
         return;
       }
 
       db.get(email, function (err, data) {
         if (!data || !data.doNotMail) {
-          res.end(JSON.stringify({ error: { message: "No subscription found. Please email us if you wish to permanently delete your account" } }));
+          res.json({ error: { message: "No subscription found. Please email us if you wish to permanently delete your account" } });
           return;
         }
 
@@ -111,7 +109,7 @@
           if (err) {
             console.error('db.save unsub', err);
           }
-          res.end(JSON.stringify({email: data.email, couchdb: data}));
+          res.json({email: data.email, couchdb: data});
         });
       });
       
@@ -119,7 +117,33 @@
 
     app.get('/schools', function (req, res) {
       db.view('schools/all', function (err, schools) {
-        res.end(JSON.stringify(schools));
+        res.json(schools);
+      });
+    });
+
+    /*
+     *
+     * Create and Retrieve Student Booklists
+     *
+     */
+    // TODO convert to use session
+    app.get('/booklist/:email', function (req, res) {
+      console.log('map booklist');
+      var email = req.params.email
+        ;
+
+      if (!email) {
+        res.json({ error: { message: "bad token" } });
+        return;
+      }
+
+      email.toLowerCase();
+      db.get(email + ':booklist', function (err, data) {
+        if (data) {
+          res.json(data);
+        } else {
+          res.json(err);
+        }
       });
     });
 
@@ -129,6 +153,8 @@
       var booklist = req.body && req.body.booklist
         , redirect = req.body && req.body.redirect
         ;
+
+      console.log('blablaaoeusnthoeu')
 
       try { 
         booklist = JSON.parse(booklist);
@@ -150,25 +176,63 @@
         return;
       }
 
-      if (!((booklist.student || booklist.token)
+      // TODO token should cause lookup for email?
+      if (!(booklist.token
         && 'booklist' === booklist.type 
         && booklist.school 
         && booklist.timestamp 
-        && booklist.booklist.length)) {
+        && 'object' === typeof booklist.booklist
+        )) {
         res.writeHead(422);
         res.end(JSON.stringify({ error: { message: "Bad booklist object"} }));
         return;
       }
 
-      db.save(booklist.student + ':booklist', booklist, function (err, data) {
+      // TODO check if the book is in the isbn db
+      // if it isn't, or the info is bad, update it
+      console.log('blah blah blah');
+
+      function redirectBack(err, data) {
         if (err) {
           res.writeHead(422);
           res.end(JSON.stringify({ error: { message: "no savey to databasey: " + JSON.stringify(err) } }));
         }
-        res.statusCode = 302;
+        console.log('####Location####');
         res.setHeader("Location", redirect);
+        res.statusCode = 302;
+        console.log(res.statusCode, 'Location: ' + redirect);
         res.end(JSON.stringify(data));
-      });
+      }
+
+      function merge(a, b) {
+        Object.keys(b).forEach(function (key) {
+          a[key] = b[key] || a[key];
+        });
+      }
+
+      function mergeLists(err, data) {
+        var isbns = {};
+
+        if (err || 'object' !== data.booklist || Array.isArray(data.booklist)) { 
+          data = { booklist: {} };
+        }
+
+        Object.keys(booklist.booklist).forEach(function (isbn) {
+          var oldMaterial = data.booklist[isbn]
+            , newMaterial = booklist.booklist[isbn]
+            ;
+
+          if (oldMaterial) {
+            newMaterial = merge(oldMaterial, newMaterial);
+          }
+          data.booklist[isbn] = newMaterial;
+        });
+
+
+        db.save(booklist.student + ':booklist', data, redirectBack);
+      }
+
+      db.get(booklist.student + ':booklist', mergeLists);
     });
 
     function random() {
@@ -358,10 +422,6 @@
 
     // decode http forms
     , connect.bodyParser()
-    , queryParser()
-    , CORS()
-    , corsJsonSession({ secret: config.sessionSecret })
-
 
     // cors uploads
     //, booklistscraper
@@ -377,22 +437,6 @@
   // TODO move up and out
   vhost = connect.createServer(
       connect.vhost(config.vhost, server)
-    , connect.vhost('www.' + config.vhost, connect.createServer(function (req, res, next) {
-        res.statusCode = 302;
-        res.setHeader('Location', 'http://' + config.vhost + req.url);
-        // TODO set token to notify browser to notify user about www
-        res.write(
-            'Quit with the www already!!! It\'s not 1990 anymore!'
-          + '<br/>'
-          + '<a href="http://blyph.com">blyph.com</a>'
-          + '<br/>NOT www.blyph.com'
-          + '<br/>NOT http://www.blyph.com'
-          + '<br/>just <a href="http://blyph.com">blyph.com</a>'
-          + '<br/>'
-          + ';-P'
-        );
-        res.end();
-      }))
   );
   console.log('Serving vhost ' + config.vhost);
 
