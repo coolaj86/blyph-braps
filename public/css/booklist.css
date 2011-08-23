@@ -8,6 +8,14 @@ background:#FC0;
 position:fixed;
 }
 
+.book-image {
+  width: 150px;
+}
+.book-image-tall {
+  width: auto;
+  height: 150px;
+}
+
 .booklist_container{
 	height:auto;
 	width:260px;

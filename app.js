@@ -177,7 +177,8 @@
       // TODO token should cause lookup for email?
       if (!(booklist.token
         && 'booklist' === booklist.type 
-        && booklist.school 
+        // TODO figure this crap out!
+        //&& booklist.school 
         && booklist.timestamp 
         && 'object' === typeof booklist.booklist
         )) {
