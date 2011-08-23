@@ -102,3 +102,25 @@ font-family: 'Didact Gothic', serif;
   word-spacing: 0em;
   line-height: 1.2;
 }
+.semester{
+	background:#FFC;
+	color:#333;
+	height:20px;
+	min-width:100px;
+	width:auto;
+	display:inline-block;
+	margin:0px 0px 0px 0px;
+	padding:2px 0px 0px 5px;
+	float:right;
+	}
+.book_course{
+	background:#FFC;
+	color:#333;
+	height:20px;
+	min-width:100px;
+	width:auto;
+	display:inline-block;
+	margin:0px 0px 0px 0px;
+	padding:2px 0px 0px 5px;
+	float:right;
+	}

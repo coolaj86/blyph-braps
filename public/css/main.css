@@ -53,6 +53,7 @@ font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;}
+
 h3{color:#666;
 font-family: 'Didact Gothic', serif;
 	height:30px;
@@ -79,10 +80,9 @@ h4{font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
-  margin:10px 0px 10px 0px;
+  margin:10px 0px 15px 0px;
   padding:0px 0px 10px 5px;
   color:#666;
-  margin:0px; padding:0px;
 }
 
 p{color:#9CCE4D}

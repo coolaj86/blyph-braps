@@ -190,17 +190,17 @@ background:#fff;
 	}
 	
 .school_course{
-	width:100px;
+	width:120px;
 	height:20px;
-	background-color:#CCC;
+	background-color:#FFC;
 	float:right;
-	color:#FFF;
+	color:#666;
 	cursor:pointer;
 	text-align:left;
-	padding:2px 0px 0px 5px;
+	padding:2px 0px 2px 5px;
 	margin:2px 15px 0px 0px;
 	font-family: 'Didact Gothic', serif;
-  font-size: 14px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 400;
   text-shadow: none;
@@ -211,7 +211,7 @@ background:#fff;
   line-height: 1.2;
   list-style:none;}
 
-.teacher{width:140px;
+.teacher{width:120px;
 	height:20px;
 	background-color:#CCC;
 	float:right;
