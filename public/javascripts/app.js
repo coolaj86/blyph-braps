@@ -2,16 +2,19 @@ var ignoreme
     , searchCache = {}
     , searchKeywords = {}
     , userBooks
+    , fullBooklist
+    , token
+    , updateListsG
   ;
 
 (function () {
+  "use strict";
 
   var $ = require('jQuery')
     , Futures = require('futures')
     , request = require('ahr2')
     , CampusBooks = require('campusbooks')
     , ISBN = require('isbn').ISBN
-    , token
     , display_item_template
     , form_item_template
     , bookinfoHeader =  [
@@ -31,6 +34,9 @@ var ignoreme
       ];
     ;
 
+  // TODO remove
+  window.$ = $;
+
   // for jeesh / jQuery compat
   $.domReady = $.domReady || $;
 
@@ -38,9 +44,27 @@ var ignoreme
     if (console && console.log) {
       console.log(a, b, c, d);
     }
-    if ($ && $.jGrowl) {
-      $.jGrowl.apply(null, arguments);
-    } 
+  }
+
+  function saveBooklist() {
+    var booklist;
+    fullBooklist.booklist = userBooks;
+    fullBooklist.type = 'booklist';
+    booklist = JSON.stringify(fullBooklist);
+
+    // TODO fix stringify on serverside
+    request({
+        "method": "POST"
+      , "href": "/booklist/" + token
+      , "body": { "booklist": booklist }
+      // TODO make a shortcut in ahr for this
+      , "contentType": "application/json"
+      , "headers": {
+          "Content-Type": "application/json"
+        }
+    }).when(function (err, ahr, data) {
+      console.log('saveBooklist', err, ahr, data);
+    });
   }
 
   function noop() {}
@@ -64,7 +88,8 @@ var ignoreme
     href: "/bookinfo.table.json"
   }).when(reconstituteBookCache);
 
-  function appendBook(book) {
+  function appendBook(book, i) {
+    console.log(book, i);
     var bookhtml = $(display_item_template)
       , isbn
       ;
@@ -106,7 +131,7 @@ var ignoreme
     bookhtml.find(".course").text((book.courseDept||'').replace(/\s+/, '') + (book.courseNum||''));
     //bookhtml.find(".course").text(book.courseDept);
 
-    $("#item_list").append(bookhtml);
+    $('#item_list').append(bookhtml);
   }
 
   var bindingRe = [
@@ -164,22 +189,23 @@ var ignoreme
   }
 
   function updateLists() {
-    $('.booklist_need .booklist-item').remove();
-    $('.booklist_have .booklist-item').remove();
-    $('.booklist_keep .booklist-item').remove();
+    $('.booklist-need-data .booklist-item').remove();
+    $('.booklist-have-data .booklist-item').remove();
+    $('.booklist-keep-data .booklist-item').remove();
 
     Object.keys(userBooks).forEach(function (isbn) {
       var book = userBooks[isbn];
 
       if (false === book.haveIt && true === book.wantIt) {
-        $('.booklist_need ul').append("<li class='booklist-item'>" + book.title + "</li>");
+        $('.booklist-need-data ul').append("<li class='booklist-item'>" + book.title + "</li>");
       } else if (true === book.haveIt && false === book.wantIt) {
-        $('.booklist_have ul').append("<li class='booklist-item'>" + book.title + "</li>");
+        $('.booklist-have-data ul').append("<li class='booklist-item'>" + book.title + "</li>");
       } else if (true === book.haveIt && true === book.wantIt) {
-        $('.booklist_keep ul').append("<li class='booklist-item'>" + book.title + "</li>");
+        $('.booklist-keep-data ul').append("<li class='booklist-item'>" + book.title + "</li>");
       }
     });
   }
+  updateListsG = updateLists;
 
   function create(app) {
     function slowKeyup(wait, getData, shouldWait, cb) {
@@ -402,11 +428,11 @@ var ignoreme
   function listUploads() {
     var books
       , unsorted = []
-      , $ = require('jQuery')
       , ISBN = require('isbn').ISBN
       ;
 
     function display() {
+      console.log('#### START DISPLAY');
       Object.keys(books).forEach(function (isbn, i) {
         var book = books[isbn];
 
@@ -415,22 +441,43 @@ var ignoreme
         }
       });
 
-      unsorted.forEach(appendBook);
+      console.log('#### START append');
 
+      //unsorted.forEach(appendBook);
+      unsorted.forEach(function (book, i) {
+        try {
+          appendBook(book, i);
+        } catch(e) {
+          console.error(e, book);
+        }
+      });
+
+      console.log('#### FINISHED');
       $("#item_list .button-list2").hide();
       $("#item_list .button-want2").hide();
+      console.log('#### FINISHED and HID');
 
       transitionBookList();
     }
 
+    // http://localhost:3080
     request({
-        href: "http://localhost:3080/booklist/" + token + "?_no_cache_=" + new Date().valueOf()
+        href: "/booklist/" + token + "?_no_cache_=" + new Date().valueOf()
     /*
       , headers: {
             "X-User-Session": "badSession"
         }
     */
     }).when(function (err, ahr, data) {
+        if (err) {
+          console.error(err);
+          alert(JSON.stringify(err));
+          return;
+        }
+
+        console.log('token');
+        console.log('arguments: ', err, ahr, data);
+        fullBooklist = data;
         books = userBooks = data.booklist;
 
         // TODO this may chance to happen before
@@ -452,11 +499,12 @@ var ignoreme
         });
 
         display();
+        updateLists();
     });
   }
 
   function transitionBookList() {
-    if (!$('.item').length) {
+    if (!$('.item') || !$('.item').length) {
       $('#list-button-container').fadeOut();
       $('#searchbar').slideDown();
     }
@@ -492,6 +540,7 @@ var ignoreme
       transitionBookList();
     });
     updateLists();
+    saveBooklist();
   }
 
   function updateBook(bookEl, haveIt, wantIt) {
@@ -516,6 +565,7 @@ var ignoreme
       transitionBookList();
     });
     updateLists();
+    saveBooklist();
   }
 
   //$.domReady(run);
