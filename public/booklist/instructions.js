@@ -29,7 +29,7 @@
 
     // dev
     if ('http://blyph.com' !== origin) {
-      textarea.val(textarea.val().replace("javascript:", "javascript:window.ORIGIN='" + origin + "';").replace(originTpl, origin));
+      textarea.val(textarea.val().replace("avascript:", "avascript:window.ORIGIN='" + origin + "';").replace(originTpl, origin));
     }
 
     function validateToken(token) {

@@ -154,8 +154,6 @@
         , redirect = req.body && req.body.redirect
         ;
 
-      console.log('blablaaoeusnthoeu')
-
       try { 
         booklist = JSON.parse(booklist);
       } catch(e) {
@@ -184,23 +182,36 @@
         && 'object' === typeof booklist.booklist
         )) {
         res.writeHead(422);
-        res.end(JSON.stringify({ error: { message: "Bad booklist object"} }));
+        var status =
+        {
+            token: !!booklist.token
+          , 'type': !!('booklist' === booklist.type)
+          , school: !!booklist.school 
+          , timestamp: !!booklist.timestamp 
+          , booklist: !!('object' === typeof booklist.booklist)
+        };
+        res.end(JSON.stringify({ error: { message: "Bad booklist object (token, type, school, timestamp, booklist)"}, status: status }));
         return;
       }
 
       // TODO check if the book is in the isbn db
       // if it isn't, or the info is bad, update it
-      console.log('blah blah blah');
 
       function redirectBack(err, data) {
         if (err) {
           res.writeHead(422);
-          res.end(JSON.stringify({ error: { message: "no savey to databasey: " + JSON.stringify(err) } }));
+          res.error(err);
+          res.json();
+          return;
         }
-        console.log('####Location####');
+
+        if (!redirect) {
+          res.json(data);
+          return;
+        }
+
         res.setHeader("Location", redirect);
         res.statusCode = 302;
-        console.log(res.statusCode, 'Location: ' + redirect);
         res.end(JSON.stringify(data));
       }
 
@@ -228,6 +239,15 @@
           data.booklist[isbn] = newMaterial;
         });
 
+        //
+        // copy over just the desired objects
+        // TODO have a validate function
+        //
+        data.token = booklist.token;
+        data.type = booklist.type;
+        data.school = booklist.school;
+        data.timestamp = booklist.timestamp;
+        data.student = booklist.student;
 
         db.save(booklist.student + ':booklist', data, redirectBack);
       }
