@@ -1,130 +1,114 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Blyph</title>
-
-    <script src="./javascripts/CFInstall.min.js"></script>
-    <script src="./javascripts/ender.js"></script>
-    <script src="./javascripts/app.js"></script>
- 
-    <link href="css/main.css" rel="stylesheet" type="text/css"/>
-    <link href="css/item.css" rel="stylesheet" type="text/css"/>
-    <link href="css/booklist.css" rel="stylesheet" type="text/css" />
-    <link href="http://fonts.googleapis.com/css?family=Nunito:300,400,700&v1" rel="stylesheet" type="text/css" >
-    <link href="http://fonts.googleapis.com/css?family=Bevan:regular&v1" rel="stylesheet" type="text/css" >
-    <link href="http://fonts.googleapis.com/css?family=Didact+Gothic:regular&v1" rel="stylesheet" type="text/css" > 
-  </head>
-
-
-  <body>
-    <div id="logo"></div>  
-
-    <div id="instruction_heading">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Blyph</title>
+<script src="./javascripts/CFInstall.min.js"></script>
+<script src="./javascripts/ender.js"></script>
+<script src="./javascripts/app.js"></script>
+<link href="css/main.css" rel="stylesheet" type="text/css"/>
+<link href="css/item.css" rel="stylesheet" type="text/css"/>
+<link href="css/booklist.css" rel="stylesheet" type="text/css" />
+<link href="http://fonts.googleapis.com/css?family=Nunito:300,400,700&v1" rel="stylesheet" type="text/css" >
+<link href="http://fonts.googleapis.com/css?family=Bevan:regular&v1" rel="stylesheet" type="text/css" >
+<link href="http://fonts.googleapis.com/css?family=Didact+Gothic:regular&v1" rel="stylesheet" type="text/css" >
+</head>
+<body>
+<div id="logo"></div>
+<div id="instruction_heading">
+  <ul>
+    <li id="menu_step_1"><a href="help.html">Tell us what books you have</a></li>
+    <li id="menu_step_2"><a href="http://www/gmail.com">Tell us what books you need</a></li>
+    <li id="menu_step_3"><a href="http://www/gmail.com">We'll set up a swap</a></li>
+  </ul>
+</div>
+<!--instructional_heading-->
+<div style="clear:both;"></div>
+<div id="wrapper">
+  <div id="column1">
+    
+    <div class="booklist_container">
+      <header class="booklist_need">Books I need</header>
       <ul>
-        <li id="menu_step_1"><a href="help.html">Tell us what books you have</a></li>
-        <li id="menu_step_2"><a href="http://www/gmail.com">Tell us what books you need</a></li>
-        <li id="menu_step_3"><a href="http://www/gmail.com">We'll set up a swap</a></li>
+        <li class="booklist-item"> &nbsp;book name here</li>
       </ul>
-    </div><!--instructional_heading--> 
+    </div>
+    <!--booklist_container-->
     
-
-    <div style="clear:both;"></div> 
-
-    <div id="wrapper">
- 
-      <div id="column1">
-   
-        <div class="booklist_need">
-          <header>Books I need</header>
-          <ul>
-            <li class="booklist-item"> &nbsp;book name here</li>
-          </ul>
-        </div>
-       
-        <div class="booklist_have">
-          <header>Books I have</header>
-          <ul>
-            <li class="booklist-item"> &nbsp;book name here</li>
-          </ul>
-        </div>
-
-        <div class="booklist_keep">
-          <header>Keeping</header>
-          <ul>
-            <li class="booklist-item"> &nbsp;book name here</li>
-          </ul>
-        </div>
-     
-	    </div><!--column1-->   
-   
+    <div class="booklist_container">
+      <header class="booklist_have">Books I need</header>
+      <ul>
+        <li class="booklist-item"> &nbsp;book name here</li>
+      </ul>
+    </div>
+    <!--booklist_container-->
     
-      <div id="column2">
-
-        <div id="searchbar" style="display: none;">
-            <form id="search_form">
-              <input name="search" type="text" id="search"/></form>
-              <input type="image" img src="images/Search-icon.png" height"35" width="35" align="right"/>
-            </form><!--search_form-->
-        </div><!--searchbar-->
-
-        <div>
-          <h1>Thanks for loading your booklist.</h1>
-          <h3>Now tell us what books you have and need.</h3>
+    <div class="booklist_container">
+      <header class="booklist_keep">Books I need</header>
+      <ul>
+        <li class="booklist-item"> &nbsp;book name here</li>
+      </ul>
+    </div>
+    <!--booklist_container-->
+    
+  </div><!--column1-->
+  
+  <div id="column2">
+    <div id="searchbar" style="display: none;">
+      <form id="search_form">
+        <input name="search" type="text" id="search"/>
+      </form>
+      <input type="image" img src="images/Search-icon.png" height"35" width="35" align="right"/>
+      </form>
+      <!--search_form-->
+    </div>
+    <!--searchbar-->
+    <div>
+      <h1>Thanks for loading your booklist.</h1>
+      <h3>Now tell us what books you have and need.</h3>
+    </div>
+    <!--Results-->
+    <div id="item_list">
+      <div class="item">
+        <div class="image_frame">
+          <div class="item_picture"> <img src="css/default-book.jpg"/> </div>
+          <!--item_picture-->
         </div>
-
-        <!--Results-->
-        <div id="item_list">  
-
-          <div class="item">
-
-            <div class="image_frame">
-              <div class="item_picture">
-                <img src="css/default-book.jpg"/>
-              </div><!--item_picture-->
-            </div><!--image_frame-->
-      
-            <div class="item_info">
-              <div class="title">
-                Book Title
-              </div><!--item_info-->
-          
-              <div class="isbn">   
-                <div class="isbn_10">
-                  ISBN10: <span class="isbn10">1234567890</span>
-                </div><!--isbn_10-->
-                <div class="isbn_13">
-                  ISBN13: <span class="isbn13">1234567890123</span>
-                </div><!--isbn_13-->
-              </div><!--isbn-->
-            
-              <div class="edition">
-                1st
-              </div><!--edition-->
-              <div class="authors">
-                authors:Gray Bot, willhelm, Conto,
-              </div><!--authors-->
-            </div><!--item_info-->
-
-            <div id="item-bottom-container">
-              <div class="button-list2">Trade/Sell</div>
-              <div class="button-want2">Need</div>
-              <div class="school_course">Class <span class="course"> </span></div>
-              <div class="teacher">Teacher <span class="professor"> </span></div>
-            </div><!--item-bottom-container-->
-      
-          </div><!--item-->
-       
-        </div><!--item_list-->
-   
-        <div id="social-sharing">
-          <h1>Share with your friends</h1>
-          <h3>The more of your friends who know about Blyph, the easier it will be for you to find your books.</h3>
-
-          <!--facebook-->
-          <div id="fb-root"></div>
-          <div id="fbml"></div>
-          <script>
+        <!--image_frame-->
+        <div class="item_info">
+          <div class="title"> Book Title </div>
+          <!--item_info-->
+          <div class="isbn">
+            <div class="isbn_10"> ISBN10: <span class="isbn10">1234567890</span> </div>
+            <!--isbn_10-->
+            <div class="isbn_13"> ISBN13: <span class="isbn13">1234567890123</span> </div>
+            <!--isbn_13-->
+          </div>
+          <!--isbn-->
+          <div class="edition"> 1st </div>
+          <!--edition-->
+          <div class="authors"> authors:Gray Bot, willhelm, Conto, </div>
+          <!--authors-->
+        </div>
+        <!--item_info-->
+        <div id="item-bottom-container">
+          <div class="button-list2">Trade/Sell</div>
+          <div class="button-want2">Need</div>
+          <div class="school_course">Class <span class="course"> </span></div>
+          <div class="teacher">Teacher <span class="professor"> </span></div>
+        </div>
+        <!--item-bottom-container-->
+      </div>
+      <!--item-->
+    </div>
+    <!--item_list-->
+    <div id="social-sharing">
+      <h1>Share with your friends</h1>
+      <h4>The more of your friends who know about Blyph, the easier it will be for you to find your books.</h4>
+      <!--facebook-->
+      <div id="fb-root"></div>
+      <div id="fbml"></div>
+      <script>
           // TODO this code block will be moved to an app.js
           // TODO replace friendId and foken with real trackable token
           var fbScript = document.createElement('script')
@@ -138,33 +122,26 @@
 
           document.body.appendChild(fbScript);
           </script>
-       
-        </div><!--social-sharing-->
-
-        <a href="booklist-thank-you.html">No thanks</a>
-       
-      </div><!--column2-->
-   
-   
-      <div id="column3">
-
-        <div id="list-button-container">
-          <div class="button-want">Need</div>
-          <div class="button-list">Trade/Sell</div>
-          <div class="button-keep">Keep</div>
-          <div class="button-ignore">Ignore</div>
-        </div><!--list-button-container-->
-
-      </div><!--column3-->
-    
-    
-      <div style="clear:both;"></div> 
-    
-    </div><!--wrapper-->
-
-    <div id="footer">
-      <p>&copy;Blyph 2011</p>
-    </div><!--footer-->
-    
-  </body>
+    </div>
+    <!--social-sharing-->
+    <a href="booklist-thank-you.html">No thanks</a> </div>
+  <!--column2-->
+  <div id="column3">
+    <div id="list-button-container">
+      <div class="button-want">Need</div>
+      <div class="button-list">Trade/Sell</div>
+      <div class="button-keep">Keep</div>
+      <div class="button-ignore">Ignore</div>
+    </div>
+    <!--list-button-container-->
+  </div>
+  <!--column3-->
+  <div style="clear:both;"></div>
+</div>
+<!--wrapper-->
+<div id="footer">
+  <p>&copy;Blyph 2011</p>
+</div>
+<!--footer-->
+</body>
 </html>
