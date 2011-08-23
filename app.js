@@ -335,6 +335,8 @@
         fullUser.referredBy = fullUser.referredBy || newUser.referredBy;
         fullUser.referrerId = fullUser.referrerId || token.substr(0, 8);
         fullUser.confirmationSent = fullUser.confirmationSent || 0;
+        fullUser.email = fullUser.email || newUser.email;
+        fullUser.school = fullUser.school || newUser.school;
 
 
         if (fullUser.confirmationSent) {

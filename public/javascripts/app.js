@@ -121,14 +121,18 @@ var ignoreme
     if (/^amz:/.exec(book.image)) {
       book.image = book.image.substr(4);
       book.image = 'http://ecx.images-amazon.com/images/I/' + book.image + '._SL150_.jpg';
+    } else if (!/\w+/.exec(book.image)) {
+      delete book.image;
     }
+
     bookhtml.find(".item_picture img").attr('src', book.image);
     bookhtml.find(".title").html(truncateTitle(book, 50));
     bookhtml.find(".isbn10").text(book.isbn10);
     bookhtml.find(".isbn13").text(book.isbn13);
     bookhtml.find(".authors").text(book.author);
     bookhtml.find(".edition").text(book.edition);
-    bookhtml.find(".course").text((book.courseDept||'').replace(/\s+/, '') + (book.courseNum||''));
+    bookhtml.find(".course").text((book.courseDept||'').toUpperCase() + ' ' + (book.courseNum||''));
+    bookhtml.find(".semester").text((book.termSeason||'').toUpperCase() + ' ' + (book.termYear||''));
     //bookhtml.find(".course").text(book.courseDept);
 
     $('#item_list').append(bookhtml);
@@ -442,6 +446,15 @@ var ignoreme
       });
 
       console.log('#### START append');
+
+      unsorted.sort(function (a, b) {
+        // chorological (future -> past)
+        if (a.term !== b.term) {
+          return a.term < b.term;
+        }
+        // alphabetical (a -> z)
+        return a.title.toUpperCase() > b.title.toUpperCase();
+      });
 
       //unsorted.forEach(appendBook);
       unsorted.forEach(function (book, i) {

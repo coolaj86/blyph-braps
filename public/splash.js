@@ -68,6 +68,11 @@
               return;
             }
 
+            if ('byu.edu' === echo.couchdb.school) {
+              location.replace('/' + 'byu' + '.html#/?token=' + echo.couchdb.email);
+              return;
+            }
+
             $('#email_form').html(
                 'Thanks for your support, ' + echo.email +
                 '!<br/> You\'ll hear from us soon!' +
