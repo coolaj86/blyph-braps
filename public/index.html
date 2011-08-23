@@ -9,6 +9,9 @@
     <link  href="http://fonts.googleapis.com/css?family=Didact+Gothic:regular&v1" rel="stylesheet" type="text/css" >
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script> 
+    <!--[if IE]>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+    <![endif]-->
     <script src="./splash.js"></script>
   
   
@@ -105,4 +108,16 @@
         $('#gvoiceWidget').click();
       });
     </script>
+    <!--[if IE]>
+    <script src="vendor/CFInstall.min.js"></script>
+    <script>
+      $.domReady = $;
+      $.domReady(function () {
+        CFInstall.check({
+          mode: "overlay",
+          url: "gcf.html",
+        });
+      });
+    </script>
+    <![endif]-->
 </html>

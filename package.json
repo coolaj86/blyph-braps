@@ -12,11 +12,8 @@
     "node": ">= 0.4.8"
   },
   "dependencies": {
-      "connect": ">= 1.0.0"
-    , "connect-xcors": ">= 0.5.0"
-    , "connect-queryparser": ">= 1.0.0"
+      "jason": ">= 0.1.4"
     , "cradle": ">= 0.0.0"
-    , "express-chromeframe": ">= 0.0.0"
     , "emailjs": ">= 0.0.0"
     , "isbn": ">= 0.0.0"
   },
