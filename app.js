@@ -460,27 +460,28 @@
   // TODO move up and out
   vhost = connect.createServer(
       connect.vhost(config.vhost, server)
-    , connect.vhost('www.' + config.vhost, server)
+    , connect.vhost('www.' + config.vhost, connect.createServer(function (req, res, next) {
+        // TODO fix nowww module
+        var hostname = 'blyph.com'
+          , url = req.url.replace(/\/\/www\./, '//')
+          ;
+
+        res.statusCode = 302;
+        res.setHeader('Location', url);
+        // TODO set token to notify browser to notify user about www
+        res.write(
+            'Quit with the www already!!! It\'s not 1990 anymore!'
+          + '<br/>'
+          + '<a href="' + url + '">' + hostname + '</a>'
+          + '<br/>NOT www.' + hostname
+          + '<br/>NOT http://' + hostname
+          + '<br/>just <a href="http://' + hostname + '">' + hostname + '</a> !!!'
+          + '<br/>'
+          + ';-P'
+        );
+        res.end();
+      }))
   );
-/*
-  console.log('Serving vhost ' + connect.createServer(function (req, res, next) {
-    hostname = 'blyph.com'
-    res.statusCode = 302;
-    res.setHeader('Location', );
-    // TODO set token to notify browser to notify user about www
-    res.write(
-        'Quit with the www already!!! It\'s not 1990 anymore!'
-      + '<br/>'
-      + '<a href="' + url + '">' + hostname + '</a>'
-      + '<br/>NOT www.' + hostname
-      + '<br/>NOT http://' + hostname
-      + '<br/>just <a href="http://' + hostname + '">' + hostname + '</a> !!!'
-      + '<br/>'
-      + ';-P'
-    );
-    res.end();
-  }));
-*/
 
   module.exports = vhost;
 }());
