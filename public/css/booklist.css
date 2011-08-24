@@ -123,12 +123,15 @@ font-family: 'Didact Gothic', serif;
 	}
 .book_course{
 	background:#FFC;
-	color:#333;
+	color:#fff;
 	height:20px;
 	min-width:100px;
 	width:auto;
-	display:inline-block;
 	margin:0px 5px 0px 0px;
 	padding:2px 0px 0px 5px;
 	float:left;
 	}
+<<<<<<< HEAD
+	
+=======
+>>>>>>> 4f694985b953f521886ca26dcec586fb4764801c
