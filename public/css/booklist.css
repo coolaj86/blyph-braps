@@ -20,14 +20,16 @@ position:fixed;
 	height:auto;
 	width:260px;
 	}
-.slide-up{
-	-webkit-transition:3s ease-in-out;
-	-moz-transition:3s ease-in-out;
-	-o-transition:3s ease-in-out;
-	-ms-transition:3s ease-in-out;
-	max-height:0px;
-	opacity:0;
-	}
+.slide-up {
+    -webkit-transition:     all .5s ease;
+	-moz-transition:        all .5s ease;
+	-o-transition:          all .5s ease;
+	-ms-transition:         all .5s ease;
+	transition:             all .5s ease;
+
+	opacity:        0;
+	overflow:       hidden;
+}
 
 .booklist_need{
 background-color:#ECECEC;
