@@ -598,9 +598,19 @@ var ignoreme
 
     location.hash = '';
 
+    if (!token) {
+      token = localStorage.getItem('token');
+    }
     while (!token) {
       token = prompt('Your Email Address:');
     }
+    localStorage.setItem('token', token);
+
+    setTimeout(function () {
+    var href = $(".load-booklist a").attr('href');
+    $(".load-booklist a").attr('href', href + '#/?token=' + token);
+    console.log($(".load-booklist a").attr('href'));
+    }, 100);
 
     $("div.item").remove();
     $("div.change_item").remove();
@@ -625,6 +635,11 @@ var ignoreme
     });
     $('body').delegate('.button-list2', 'click', function (ev) {
       addBook($($('.item')[0]), true, false);
+    });
+
+    $('body').delegate('a.logout', 'click', function (ev) {
+      // TODO
+      localStorage.removeItem('token');
     });
   });
 

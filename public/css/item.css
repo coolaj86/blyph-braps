@@ -293,7 +293,7 @@ background:#fff;
 #list-button-container{
 	width:105px;
 	height:auto;
-	margin:125px 0px 0px 0px;
+	margin:310px 0px 0px 0px;
 	}  
 
 .button-want {
@@ -399,7 +399,7 @@ background:#fff;
 }
 
 .load-booklist {
-	width:250px;
+	width:300px;
 	height:30px;
 	background-color:#8CC63F;
 	border:2px solid #CCC;-moz-border-radius:5px; /*Firefox*/ border-radius:5px;
