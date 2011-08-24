@@ -8,6 +8,14 @@ background:#FC0;
 position:fixed;
 }
 
+.book-image {
+  width: 150px;
+}
+.book-image-tall {
+  width: auto;
+  height: 150px;
+}
+
 .booklist_container{
 	height:auto;
 	width:260px;
@@ -123,4 +131,7 @@ font-family: 'Didact Gothic', serif;
 	padding:2px 0px 0px 5px;
 	float:left;
 	}
+<<<<<<< HEAD
 	
+=======
+>>>>>>> 4f694985b953f521886ca26dcec586fb4764801c

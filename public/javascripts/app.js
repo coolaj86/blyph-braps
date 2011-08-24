@@ -48,7 +48,11 @@ var ignoreme
 
   function saveBooklist() {
     var booklist;
+    // TODO figure this the heck out!!! wtf?
+    fullBooklist.token = token;
+    fullBooklist.student = token;
     fullBooklist.booklist = userBooks;
+    fullBooklist.timestamp = new Date().valueOf();
     fullBooklist.type = 'booklist';
     booklist = JSON.stringify(fullBooklist);
 
@@ -121,14 +125,22 @@ var ignoreme
     if (/^amz:/.exec(book.image)) {
       book.image = book.image.substr(4);
       book.image = 'http://ecx.images-amazon.com/images/I/' + book.image + '._SL150_.jpg';
+    } else if (!/\w+/.exec(book.image)) {
+      delete book.image;
     }
-    bookhtml.find(".item_picture img").attr('src', book.image);
+
+    bookhtml.find(".item_picture img").attr('src', book.image).load(function (ev) {
+      if (ev.target.height > ev.target.width) {
+        $(ev.target).addClass('book-image-tall');
+      }
+    });
     bookhtml.find(".title").html(truncateTitle(book, 50));
     bookhtml.find(".isbn10").text(book.isbn10);
     bookhtml.find(".isbn13").text(book.isbn13);
     bookhtml.find(".authors").text(book.author);
     bookhtml.find(".edition").text(book.edition);
-    bookhtml.find(".course").text((book.courseDept||'').replace(/\s+/, '') + (book.courseNum||''));
+    bookhtml.find(".course").text((book.courseDept||'').toUpperCase() + ' ' + (book.courseNum||''));
+    bookhtml.find(".semester").text((book.termSeason||'').toUpperCase() + ' ' + (book.termYear||''));
     //bookhtml.find(".course").text(book.courseDept);
 
     $('#item_list').append(bookhtml);
@@ -386,6 +398,8 @@ var ignoreme
           $("div.item").remove();
           if (!err && Array.isArray(books)) {
             books.forEach(appendBook);
+            $("#item_list .book_course").hide();
+            $("#item_list .semester").hide();
           }
         }
 
@@ -432,7 +446,6 @@ var ignoreme
       ;
 
     function display() {
-      console.log('#### START DISPLAY');
       Object.keys(books).forEach(function (isbn, i) {
         var book = books[isbn];
 
@@ -441,21 +454,26 @@ var ignoreme
         }
       });
 
-      console.log('#### START append');
+      unsorted.sort(function (a, b) {
+        // chorological (future -> past)
+        if (a.term !== b.term) {
+          return a.term < b.term;
+        }
+        // alphabetical (a -> z)
+        return a.title.toUpperCase() > b.title.toUpperCase();
+      });
 
       //unsorted.forEach(appendBook);
       unsorted.forEach(function (book, i) {
         try {
           appendBook(book, i);
         } catch(e) {
-          console.error(e, book);
+          console.error('TODO', e, book);
         }
       });
 
-      console.log('#### FINISHED');
       $("#item_list .button-list2").hide();
       $("#item_list .button-want2").hide();
-      console.log('#### FINISHED and HID');
 
       transitionBookList();
     }

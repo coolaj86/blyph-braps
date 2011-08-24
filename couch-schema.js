@@ -112,7 +112,7 @@
       views: {
         all: {
           map: function (doc) {
-            if (doc.type && 'user' !== doc.type) {
+            if ('user' !== doc.type) {
               return;
             }
 
@@ -120,7 +120,7 @@
               return;
             }
 
-            emit(doc.email, doc);
+            emit(null, doc);
           }
         },
         bySchool: {
