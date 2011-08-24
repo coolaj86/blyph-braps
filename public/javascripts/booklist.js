@@ -554,10 +554,10 @@ var ignoreme
     myBook.wantIt = wantIt;
 
     bookEl.addClass('slide-up');
-	setTimeout(function () {
-        transitionBookList();
-        bookEl.remove();
-	}, 500);
+    setTimeout(function () {
+      bookEl.remove();
+      transitionBookList();
+	  }, 500);
     updateLists();
     saveBooklist();
   }
@@ -580,10 +580,10 @@ var ignoreme
     book.wantIt = wantIt;
 
     bookEl.addClass('slide-up');
-	setTimeout(function () {
-        transitionBookList();
-        bookEl.remove();
-	}, 500);
+	  setTimeout(function () {
+      bookEl.remove();
+      transitionBookList();
+	  }, 500);
     updateLists();
     saveBooklist();
   }
