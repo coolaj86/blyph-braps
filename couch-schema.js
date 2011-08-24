@@ -4,7 +4,10 @@
   var cradle = require('cradle')
     , db = new(cradle.Connection)('coolaj86.couchone.com', 443, {
           secure: true
-        , auth: { username: 'coolaj86', password: 'Wh1t3Ch3dd3r' }
+        , auth: {
+            username: 'coolaj86'
+          , password: 'Wh1t3Ch3dd3r'
+        }
       }).database('syllabi', function () { console.log('connected to database', arguments); })
     ;
 
@@ -93,14 +96,37 @@
       views: {
         all: {
           map: function (doc) {
-            var id = doc.email || doc.student || doc.token;
+            if ('booklist' !== doc.type) {
+              return;
+            }
+
+            emit(null, doc);
+          }
+        },
+        byTrade: {
+          map: function (doc) {
+            var booklist
+              , token = doc.token || doc.student || doc.email
+              ;
 
             if ('booklist' !== doc.type) {
               return;
             }
 
-            delete doc.type;
-            emic([id, doc.term], doc);
+            booklist = doc.booklist;
+
+            Object.keys(doc.booklist).forEach(function (isbn) {
+              // a few books creep in without ISBNs somehow
+              // i.e. LDS SCRIPTURES (YOU ALREADY HAVE THEM)
+              if (!(isbn||'').trim()) {
+                return;
+              }
+
+              emit([isbn, doc.school], {
+                  book: booklist[isbn]
+                , token: token
+              });
+            });
           }
         }
       }
