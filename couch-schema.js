@@ -96,14 +96,11 @@
       views: {
         all: {
           map: function (doc) {
-            var id = doc.email || doc.student || doc.token;
-
             if ('booklist' !== doc.type) {
               return;
             }
 
-            delete doc.type;
-            emic([id, doc.term], doc);
+            emit(null, doc);
           }
         },
         byTrade: {
