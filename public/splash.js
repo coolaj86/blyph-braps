@@ -56,6 +56,8 @@
           if (referredBy) {
             data.referredBy = referredBy[1];
           }
+          data.friendId = data.friendId || data.referredBy;
+          data.referredBy = data.referredBy || data.friendId;
 
           $.post('/subscribe', data, function (echo) {
             complete();
