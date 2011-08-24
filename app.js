@@ -466,16 +466,18 @@
     , connect.vhost('www.' + config.vhost, connect.createServer(function (req, res, next) {
         // TODO fix nowww module
         var hostname = 'blyph.com'
-          , url = req.url.replace(/\/\/www\./, '//')
+          , host = req.headers.host.replace(/^www\./, '')
+          , href = 'http://' + host + req.url
           ;
 
         res.statusCode = 302;
-        res.setHeader('Location', url);
+        // TODO how to determine http vs https?
+        res.setHeader('Location', href);
         // TODO set token to notify browser to notify user about www
         res.write(
             'Quit with the www already!!! It\'s not 1990 anymore!'
           + '<br/>'
-          + '<a href="' + url + '">' + hostname + '</a>'
+          + '<a href="' + href + '">' + hostname + '</a>'
           + '<br/>NOT www.' + hostname
           + '<br/>NOT http://' + hostname
           + '<br/>just <a href="http://' + hostname + '">' + hostname + '</a> !!!'
