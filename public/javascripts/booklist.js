@@ -1,16 +1,17 @@
 var ignoreme
-    , searchCache = {}
-    , searchKeywords = {}
-    , userBooks
-    , fullBooklist
-    , token
-    , updateListsG
+  , searchCache = {}
+  , searchKeywords = {}
+  , userBooks
+  , fullBooklist
+  , token
+  , updateListsG
   ;
 
 (function () {
   "use strict";
 
   var $ = require('jQuery')
+    , hasImportedList = false
     , Futures = require('futures')
     , request = require('ahr2')
     , CampusBooks = require('campusbooks')
@@ -514,6 +515,10 @@ var ignoreme
             book.binding = bookinfo.binding;
             book.title = bookinfo.title || book.title;
           }
+
+          if (book.term) {
+            hasImportedList = true;
+          }
         });
 
         display();
@@ -524,7 +529,11 @@ var ignoreme
   function transitionBookList() {
     if (!$('.item') || !$('.item').length) {
       $('#list-button-container').fadeOut();
+      $('.autoloader').fadeOut();
       $('#searchbar').slideDown();
+      if (hasImportedList) {
+        $('#import-prompt').remove();
+      }
     }
   }
 
