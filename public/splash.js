@@ -1,6 +1,8 @@
 (function () {
   "use strict";
 
+  var db = localStorage;
+
       function loading() {
         $('#loading').show();
       }
@@ -69,7 +71,7 @@
             }
 
             if ('byu.edu' === echo.couchdb.school) {
-              location.replace('/' + 'byu' + '.html#/?token=' + echo.couchdb.email);
+              location.replace('/' + 'booklist' + '.html#/?token=' + echo.couchdb.email);
               return;
             }
 

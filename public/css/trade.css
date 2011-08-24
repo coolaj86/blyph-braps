@@ -19,19 +19,17 @@ hr {
 	text-align:left;
 }
 .trade_item_container{
-width:144px;
+width:100px;
 height:auto;
 margin:15px 5px 10px 5px;
-padding:0px;
+padding:0px 0px 0px 0px;
 float:left;
+overflow:hidden;
+border:#CCC 2px solid;
+
 }
-.trade_item{
-width:140px;
-height:auto;
-border:2px solid #E3E3E3;
-padding:0px 0px 2px 0px;
-}
-.trade_item p{
+
+.trade_item_container li{
 	color:#333;
 	height:10px;
 	margin:1px 0px 0px 10px;
@@ -50,131 +48,17 @@ padding:0px 0px 2px 0px;
 
 
 .trade_image_frame{
-	margin:0px 0px 0px 10px;
-	height:150px;
-	width:120px;
+	margin:5px auto 0px auto;
+	height:100px;
+	width:80px;
 	border:solid 1px #E3E3E3;
 	background:#FFF;
 	}
 
-
-.trade_item_info{
-	width:380px;
-	height:130px;
-	margin:10px;
-	float:right;
-	border-bottom:#09F;
-	background:#60F;
-	}	
-	
 .trade_title{
-	text-overflow:ellipsis;
-	width:120px;
-	height:20px;
-	border-left:none;
-	border-right:none;
-	border-top:none;
-	padding-bottom:1px;
-	font-family: 'Didact Gothic', serif;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  text-shadow: none;
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: -0.015em;
-  word-spacing: 0em;
-  line-height: 1.2;
-  list-style:none;
-  margin:0px 0px 0px 10px}
-
-.trade_title:hover{ 
-background:#fff;
-width:auto;
-}
-.trade_isbn{
-	width:120px;
+	width:80px;
 	height:auto;
-	margin:0px 0px 0px 10px;	
-}
-
-.isbn_10{
-	width:170px;
-	height:10px;
-	border-left:none;
-	border-right:none;
-	border-top:none;
-	border-bottom-color:#666;
-	padding-bottom:1px;
-	margin:1px 0px 3px 0px;
-	font-family: 'Didact Gothic', serif;
-	  font-size: 12px;
-	  font-style: normal;
-	  font-weight: 400;
-	  text-shadow: none;
-	  text-decoration: none;
-	  text-transform: none;
-	  letter-spacing: -0.015em;
-	  word-spacing: 0em;
-	  line-height: 1.2;
-	  list-style:none;}
-	  
-.isbn_13{
-	width:170px;
-	height:10px;
-	border-left:none;
-	border-right:none;
-	border-top:none;
-	border-bottom-color:#666;
-	padding-bottom:1px;
-	margin:1px 0px 3px 0px;
-	font-family: 'Didact Gothic', serif;
-	  font-size: 12px;
-	  font-style: normal;
-	  font-weight: 400;
-	  text-shadow: none;
-	  text-decoration: none;
-	  text-transform: none;
-	  letter-spacing: -0.015em;
-	  word-spacing: 0em;
-	  line-height: 1.2;
-	  list-style:none;}
-	  
-
-.edition{
-	width:170px;
-	height:20px;
-	margin:10px 0px 0px 0px;
-	float:right;
-	text-align:center;
-	padding:10px;
-	font-size:20px;
-	border-left:none;
-	border-right:none;
-	border-top:none;
-	border-bottom-color:#666;
-	padding-bottom:1px;
-	font-family: 'Didact Gothic', serif;
-	  font-size: 20px;
-	  font-style: normal;
-	  font-weight: 400;
-	  text-shadow: none;
-	  text-decoration: none;
-	  text-transform: none;
-	  letter-spacing: -0.015em;
-	  word-spacing: 0em;
-	  line-height: 1.2;
-	  list-style:none;
-	
-	}
-.edition:hover{ 
-background:#fff;
-}	
-
-.authors{
-	width:120px;
-	height:15px;
-	margin:0px 0px 0px 10px;
+	margin:0px 0px 0px 0px;
 	padding-bottom:1px;
 	font-family: 'Didact Gothic', serif;
 	  font-size: 14px;
@@ -185,14 +69,9 @@ background:#fff;
 	  text-transform: none;
 	  letter-spacing: -0.015em;
 	  word-spacing: 0em;
-	  line-height: 1.2;
+	  line-height: 1;
 	  list-style:none;
 }
-.authors:hover{ 
-background:#fff;
-width:auto;
-}
-
 
 .price-container{
 	height:20px;
@@ -254,7 +133,7 @@ width:auto;
 	}		
 	
 .textbox-title{
-	height:20px;
+	height:auto;
 	width:auto;
 	background:#C00;
 	margin:20px;
@@ -494,5 +373,21 @@ width:650px;
 border:solid 2px #EFEFEF;
 margin:0px 0px 5px 0px;
 	}
-
-
+.activate{
+	height:20px;
+	width:20px;
+	z-index:+1;
+	float:right;
+	margin:5px;
+	background-image:url(../images/plus.png);
+	background-repeat:no-repeat;}
+	
+.deactivate{
+	height:20px;
+	width:23px;
+	z-index:+1;
+	float:right;
+	margin:5px;
+	background-image:url(../images/minus.png);
+	background-repeat:no-repeat;
+	}

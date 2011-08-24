@@ -22,6 +22,7 @@ li{
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
+  color:#333;
 }
 
 hr{ text-decoration:none;color:#333;
@@ -136,12 +137,24 @@ a.text_right{
 	margin:0px auto 0px auto;
 	border:solid 1px #FFF586;-moz-border-radius:25px 25px 0px 0px / 25px 25px 0px 0px;
 	border-bottom:0px;
-	padding:0px 0px 0px 0px;
+	padding:px 0px 0px 5px;
 }
-#instruction_heading a{
-	font-size:16px;
+#instruction_heading li{
 	margin:0px 3px 0px 2px;
-	}
+	font-family: 'Didact Gothic', serif;
+	height:30px;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
+	color:#8CC63F;
+}
+	
 
 #menu_step_1{
 	float:left;
