@@ -456,10 +456,17 @@ var ignoreme
       });
 
       unsorted.sort(function (a, b) {
+        var year
+          , term
+          ;
         // chorological (future -> past)
-        if (a.term !== b.term) {
-          return a.term < b.term;
+        if (a.termYear !== b.termYear) {
+          return (parseInt(a.termYear) > parseInt(b.termYear)) ? -1 : 1;
         }
+        if (a.term !== b.term) {
+          return (parseInt(a.term) < parseInt(b.term)) ? -1 : 1;
+        }
+
         // alphabetical (a -> z)
         return a.title.toUpperCase() > b.title.toUpperCase();
       });
@@ -521,6 +528,9 @@ var ignoreme
           }
         });
 
+        if (hasImportedList) {
+          $('#import-prompt').remove();
+        }
         display();
         updateLists();
     });
