@@ -553,10 +553,10 @@ var ignoreme
     myBook.haveIt = haveIt;
     myBook.wantIt = wantIt;
 
-    bookEl.slideUp(300, function () {
-      bookEl.remove();
-      transitionBookList();
-    });
+    bookEl.css("max-height", 0); //(300, function () {
+      //bookEl.remove();
+      //transitionBookList();
+    //});
     updateLists();
     saveBooklist();
   }
