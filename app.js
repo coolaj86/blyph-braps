@@ -341,6 +341,7 @@
 
 
         if (fullUser.confirmationSent) {
+          /*
           sendEmailCheck(fullUser, function (err, message) {
             if (err) {
               console.error('ERROR eager mail', err);
@@ -354,6 +355,7 @@
               }
             });
           });
+          */
 
           res.end(JSON.stringify({
               email: email
