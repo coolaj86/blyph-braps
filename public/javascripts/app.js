@@ -496,7 +496,7 @@ var ignoreme
         console.log('token');
         console.log('arguments: ', err, ahr, data);
         fullBooklist = data;
-        books = userBooks = data.booklist;
+        books = userBooks = data.booklist || {};
 
         // TODO this may chance to happen before
         // the bookinfo.table.json is loaded
