@@ -41,21 +41,25 @@
     mailserver.send(message, fn);
   }
 
+  // August 24th, 2011
+  // iClicker
+
   function sendEmail(user, fn) {
     var headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
           , to: user.email
-          , subject: "Thanks for signing up with Blyph"
-          , text: "Our monkeys are hard at work building Blyph.com." + 
+          , subject: "Share more Blyph, Get more Matches (and win up to $350 in Textbook Reimbursement)"
+          , text: "" +
+              "\nThanks for signing up. We're glad to have you." +
               "\n" +
-              "\nWe'll let you know as soon as it's ready!" + 
+              "\nWith only a few days before classes start, we really need your help to get the word out!" +
               "\n" +
-              // TODO your-school-here
-              "\nIn the meantime, please share your unique link with your BYU and UVU friends:" +
-              "\nhttp://blyph.com#/?referredBy=" + user.referrerId + 
+              "\nWhy? Simple: More people means more trading matches." +
               "\n" +
-              "\nNot only does sharing mean you're more likely to get trading matches," +
-              "\nbut the more friends you share with, the more entries you get into the $350 reimbursement drawing." +
+              "\nPlease share this unique link with your BYU friends:" +
+              "\nhttp://blyph.com#/?referredBy=" + user.referrerId +
+              "\n" +
+              "\nAs a bonus, the more friends you share with, the more entries you get into the $350 reimbursement drawing." +
               "\n" +
               "\n10 friends join - 10 entries" +
               "\n20 friends join - 40 entries" +
@@ -65,13 +69,10 @@
               "\n" +
               "\n" +
               "\nThanks for your support," +
-              "\nAJ ONeal <aj@blyph.com>" + 
-              "\nBrian Turley <brian@blyph.com>" +
-              "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
-              "\nFollow us: http://twitter.com/blyph" + 
-              "\n" +
-              "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
-              "including fair wages, hours, and are not subject to animal (or human) testing." +
+              "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
+              "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
+              "\nLike us: http://fb.com/pages/Blyph/190889114300467" +
+              "\nFollow us: http://twitter.com/blyph" +
               "\n" +
               "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
               ""

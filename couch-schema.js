@@ -103,6 +103,48 @@
             emit(null, doc);
           }
         },
+        byUnsorted: {
+          map: function (doc) {
+            var booklist
+              , token = doc.token || doc.student || doc.email
+              ;
+
+            if ('booklist' !== doc.type) {
+              return;
+            }
+
+            booklist = doc.booklist;
+
+            Object.keys(booklist).forEach(function (isbn) {
+              var knowsWant
+                , knowsHave
+                , book = booklist[isbn]
+                ;
+
+              // a few books creep in without ISBNs somehow
+              // i.e. LDS SCRIPTURES (YOU ALREADY HAVE THEM)
+              if (!(isbn||'').trim()) {
+                return;
+              }
+
+              // in this rare case, moore's law does not hold (null / undefined IS NOT false)
+              if (true === book.wantIt || false === book.wantIt) {
+                knowsWant = true;
+              }
+              if (true === book.haveIt || false === book.haveIt) {
+                knowsHave = true;
+              }
+              if (knowsWant && knowsHave) {
+                return;
+              }
+
+              emit([isbn, doc.school], {
+                  book: book
+                , token: token
+              });
+            });
+          }
+        },
         byTrade: {
           map: function (doc) {
             var booklist
@@ -115,17 +157,117 @@
 
             booklist = doc.booklist;
 
-            Object.keys(doc.booklist).forEach(function (isbn) {
+            Object.keys(booklist).forEach(function (isbn) {
+              var book = booklist[isbn]
+                ;
+
+              // a few books creep in without ISBNs somehow
+              // i.e. LDS SCRIPTURES (YOU ALREADY HAVE THEM)
+              if (!(isbn||'').trim()) {
+                return;
+              }
+              
+              if (false === book.wantIt && true === book.haveIt) {
+                emit([isbn, doc.school], {
+                    book: book
+                  , token: token
+                });
+              }
+            });
+          }
+        },
+        byNeed: {
+          map: function (doc) {
+            var booklist
+              , token = doc.token || doc.student || doc.email
+              ;
+
+            if ('booklist' !== doc.type) {
+              return;
+            }
+
+            booklist = doc.booklist;
+
+            Object.keys(booklist).forEach(function (isbn) {
+              var book = booklist[isbn]
+                ;
+
               // a few books creep in without ISBNs somehow
               // i.e. LDS SCRIPTURES (YOU ALREADY HAVE THEM)
               if (!(isbn||'').trim()) {
                 return;
               }
 
-              emit([isbn, doc.school], {
-                  book: booklist[isbn]
-                , token: token
-              });
+              // in this rare case, moore's law does not hold (null / undefined IS NOT false)
+              if (true === book.wantIt && false === book.haveIt) {
+                emit([isbn, doc.school], {
+                    book: book
+                  , token: token
+                });
+              }
+            });
+          }
+        },
+        byKeep: {
+          map: function (doc) {
+            var booklist
+              , token = doc.token || doc.student || doc.email
+              ;
+
+            if ('booklist' !== doc.type) {
+              return;
+            }
+
+            booklist = doc.booklist;
+
+            Object.keys(booklist).forEach(function (isbn) {
+              var book = booklist[isbn]
+                ;
+              // a few books creep in without ISBNs somehow
+              // i.e. LDS SCRIPTURES (YOU ALREADY HAVE THEM)
+              if (!(isbn||'').trim()) {
+                return;
+              }
+
+              // in this rare case, moore's law does not hold (null / undefined IS NOT false)
+              if (true === book.wantIt && true === book.haveIt) {
+                emit([isbn, doc.school], {
+                    book: book
+                  , token: token
+                });
+              }
+            });
+          }
+        },
+        byIgnore: {
+          map: function (doc) {
+            var booklist
+              , token = doc.token || doc.student || doc.email
+              ;
+
+            if ('booklist' !== doc.type) {
+              return;
+            }
+
+            booklist = doc.booklist;
+
+            Object.keys(booklist).forEach(function (isbn) {
+              var book = booklist[isbn]
+                ;
+
+              // a few books creep in without ISBNs somehow
+              // i.e. LDS SCRIPTURES (YOU ALREADY HAVE THEM)
+              if (!(isbn||'').trim()) {
+                return;
+              }
+
+              // in this rare case, moore's law does not hold (null / undefined IS NOT false)
+              if (false === book.wantIt && false === book.haveIt) {
+                emit([isbn, doc.school], {
+                    book: book
+                  , token: token
+                });
+              }
             });
           }
         }
