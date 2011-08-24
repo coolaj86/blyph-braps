@@ -553,10 +553,11 @@ var ignoreme
     myBook.haveIt = haveIt;
     myBook.wantIt = wantIt;
 
-    bookEl.slideUp(300, function () {
-      bookEl.remove();
-      transitionBookList();
-    });
+    bookEl.addClass('slide-up');
+	setTimeout(function () {
+        transitionBookList();
+        bookEl.remove();
+	}, 500);
     updateLists();
     saveBooklist();
   }
@@ -578,10 +579,11 @@ var ignoreme
     book.haveIt = haveIt;
     book.wantIt = wantIt;
 
-    bookEl.slideUp(300, function () {
-      bookEl.remove();
-      transitionBookList();
-    });
+    bookEl.addClass('slide-up');
+	setTimeout(function () {
+        transitionBookList();
+        bookEl.remove();
+	}, 500);
     updateLists();
     saveBooklist();
   }
