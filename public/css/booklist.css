@@ -16,10 +16,11 @@ position:fixed;
   height: 150px;
 }
 
-.booklist_container{
+.booklist_container {
 	height:auto;
 	width:260px;
-	}
+}
+
 .slide-up {
     -webkit-transition:     all .5s ease;
 	-moz-transition:        all .5s ease;
@@ -31,76 +32,43 @@ position:fixed;
 	overflow:       hidden;
 }
 
-.booklist_need{
-background-color:#ECECEC;
-width:97%;
-height:15px;
+.booklist_container-whole {
+  background-color: #FFC;
+}
+.booklist_container header {
+  cursor: pointer;
+  background-color:#ECECEC;
+  width:97%;
+  height:15px;
+  border:0px;
+  border-bottom:#E0E0E0 solid 1px;
+  border-left:#8CC63F solid 5px;
+  padding:0px 0px 5px 2px;
+  margin:10px 0px 0px 2px;
+  font-family: 'Didact Gothic', serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
+}
+header.booklist_unsorted {
+  border-left:#CCC solid 5px;
+}
+header.booklist_need {
+  border-left:#8CC63F solid 5px;
+}
+header.booklist_have {
+  border-left:#75CAD8 solid 5px;
+}
+header.booklist_keep {
+  border-left:#CCC solid 5px;
+}
 
-border:0px;
-border-bottom:#E0E0E0 solid 1px;
-border-left:#8CC63F solid 5px;
-padding:0px 0px 5px 2px;
-margin:10px 0px 0px 2px;
-font-family: 'Didact Gothic', serif;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  text-shadow: none;
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: -0.015em;
-  word-spacing: 0em;
-  line-height: 1.2;
-
-}
-.booklist_have{
-background-color:#ECECEC;
-width:97%;
-height:15px;
-border:0px;
-border-bottom:#E0E0E0 solid 1px;
-border-left:#75CAD8 solid 5px;
-padding:0px 0px 5px 2px;
-margin:20px 0px 0px 2px;
-font-family:Arial, Helvetica, sans-serif;
-font-size:16px;
-font-weight:300;
-color:#333;
-font-family: 'Didact Gothic', serif;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  text-shadow: none;
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: -0.015em;
-  word-spacing: 0em;
-  line-height: 1.2;
-}
-.booklist_keep{
-background-color:#ECECEC;
-width:97%;
-height:15px;
-border:0px;
-border-bottom:#E0E0E0 solid 1px;
-border-left:#CCC solid 5px;
-padding:0px 0px 5px 2px;
-margin:20px 0px 0px 2px;
-font-family:Arial, Helvetica, sans-serif;
-font-size:16px;
-font-weight:300;
-color:#333;
-font-family: 'Didact Gothic', serif;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  text-shadow: none;
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: -0.015em;
-  word-spacing: 0em;
-  line-height: 1.2;
-}
 .booklist-item{
 width:255px;
 height:auto;
@@ -119,6 +87,10 @@ font-family: 'Didact Gothic', serif;
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
+}
+.booklist-item:hover {
+  background-color: #FFC;
+  cursor: pointer;
 }
 .semester{
 	background:#FFC;

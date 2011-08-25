@@ -47,6 +47,22 @@ var ignoreme
     }
   }
 
+  function sortBySemester(a, b) {
+    var year
+      , term
+      ;
+    // chorological (future -> past)
+    if (a.termYear !== b.termYear) {
+      return (parseInt(a.termYear) > parseInt(b.termYear)) ? -1 : 1;
+    }
+    if (a.term !== b.term) {
+      return (parseInt(a.term) < parseInt(b.term)) ? -1 : 1;
+    }
+
+    // alphabetical (a -> z)
+    return a.title.toUpperCase() > b.title.toUpperCase();
+  }
+
   function saveBooklist() {
     var booklist;
     // TODO figure this the heck out!!! wtf?
@@ -83,7 +99,7 @@ var ignoreme
         book[header] = b[i]; 
       });
 
-      searchCache[book.isbn13 || book.isbn10 || book.isbn] = book;
+      searchCache[book.isbn13 || book.isbn || book.isbn10] = book;
     });
 
     // now show my list
@@ -93,13 +109,21 @@ var ignoreme
     href: "/bookinfo.table.json"
   }).when(reconstituteBookCache);
 
+  function showBooks(books) {
+    $('#imported-booklist .item').remove();
+    books.forEach(appendBook);
+  }
+  function showBook(book) {
+    showBooks([book]);
+  }
+
+  // TODO needs all four options
   function appendBook(book, i) {
-    console.log(book, i);
     var bookhtml = $(display_item_template)
       , isbn
       ;
 
-    isbn = ISBN.parse(book.isbn || book.isbn13 || book.isbn10);
+    isbn = ISBN.parse(book.isbn13 || book.isbn || book.isbn10);
 
     if (isbn) {
       book.isbn10 = isbn.asIsbn10();
@@ -130,11 +154,16 @@ var ignoreme
       delete book.image;
     }
 
-    bookhtml.find(".item_picture img").attr('src', book.image).load(function (ev) {
+    function onImageLoad(ev) {
       if (ev.target.height > ev.target.width) {
         $(ev.target).addClass('book-image-tall');
       }
-    });
+    };
+    var image = bookhtml.find(".item_picture img").attr('src', book.image);
+    if (image.load) {
+      image.load(onImageLoad);
+    }
+    bookhtml.find(".item_picture img").attr('src', book.image).onload = 
     bookhtml.find(".title").html(truncateTitle(book, 50));
     bookhtml.find(".isbn10").text(book.isbn10);
     bookhtml.find(".isbn13").text(book.isbn13);
@@ -144,7 +173,7 @@ var ignoreme
     bookhtml.find(".semester").text((book.termSeason||'').toUpperCase() + ' ' + (book.termYear||''));
     //bookhtml.find(".course").text(book.courseDept);
 
-    $('#item_list').append(bookhtml);
+    $('#imported-booklist').append(bookhtml);
   }
 
   var bindingRe = [
@@ -201,20 +230,39 @@ var ignoreme
     return title;
   }
 
+  var booklistItemTpl;
+  function templateBooklistItem(book) {
+    var item = $(booklistItemTpl);
+    item.find('.bli-title').html(book.title);
+    item.find('.bli-isbn').html(book.isbn);
+    return item;
+  }
   function updateLists() {
+    if (!booklistItemTpl) {
+      booklistItemTpl = $('.booklist-need-data ul')[0].innerHTML;
+    }
+    
+    $('.booklist-unsorted-data .booklist-item').remove();
     $('.booklist-need-data .booklist-item').remove();
     $('.booklist-have-data .booklist-item').remove();
     $('.booklist-keep-data .booklist-item').remove();
 
     Object.keys(userBooks).forEach(function (isbn) {
-      var book = userBooks[isbn];
+      var book = userBooks[isbn]
+        ;
+
+      book.isbn = isbn;
 
       if (false === book.haveIt && true === book.wantIt) {
-        $('.booklist-need-data ul').append("<li class='booklist-item'>" + book.title + "</li>");
+        $('.booklist-need-data ul').append(templateBooklistItem(book));
       } else if (true === book.haveIt && false === book.wantIt) {
-        $('.booklist-have-data ul').append("<li class='booklist-item'>" + book.title + "</li>");
+        $('.booklist-have-data ul').append(templateBooklistItem(book));
       } else if (true === book.haveIt && true === book.wantIt) {
-        $('.booklist-keep-data ul').append("<li class='booklist-item'>" + book.title + "</li>");
+        $('.booklist-keep-data ul').append(templateBooklistItem(book));
+      } else if (false === book.haveIt && false === book.wantIt) {
+        // do nothing
+      } else {
+        $('.booklist-unsorted-data ul').append(templateBooklistItem(book));
       }
     });
   }
@@ -334,7 +382,7 @@ var ignoreme
       // Note that it only works with Half.com, not the other 20 textbook sites, 
       // so it's not very useful, but good enough for this demo
     var campusbooks = CampusBooks.create("BDz21GvuL6RgTKiSbwe3")
-      //, display_item_template = $("#item_list").html()
+      //, display_item_template = $("#imported-booklist").html()
       ;
 
     create({
@@ -385,7 +433,7 @@ var ignoreme
           }
 
           function cacheBook(book) {
-            searchCache[book.isbn13||book.isbn10] = book;
+            searchCache[book.isbn13||book.isbn||book.isbn10] = book;
             book.timestamp = new Date().valueOf();
           }
 
@@ -396,11 +444,13 @@ var ignoreme
         }
 
         function onSearchComplete(err, books) {
-          $("div.item").remove();
+          //$("div.item").remove();
           if (!err && Array.isArray(books)) {
-            books.forEach(appendBook);
-            $("#item_list .book_course").hide();
-            $("#item_list .semester").hide();
+            showBooks(books);
+            //books.forEach(appendBook);
+            $("#imported-booklist .book_course").hide();
+            $("#imported-booklist .semester").hide();
+            $("#imported-booklist .button-ignore2").hide();
           }
         }
 
@@ -455,21 +505,7 @@ var ignoreme
         }
       });
 
-      unsorted.sort(function (a, b) {
-        var year
-          , term
-          ;
-        // chorological (future -> past)
-        if (a.termYear !== b.termYear) {
-          return (parseInt(a.termYear) > parseInt(b.termYear)) ? -1 : 1;
-        }
-        if (a.term !== b.term) {
-          return (parseInt(a.term) < parseInt(b.term)) ? -1 : 1;
-        }
-
-        // alphabetical (a -> z)
-        return a.title.toUpperCase() > b.title.toUpperCase();
-      });
+      unsorted.sort(sortBySemester);
 
       //unsorted.forEach(appendBook);
       unsorted.forEach(function (book, i) {
@@ -480,8 +516,6 @@ var ignoreme
         }
       });
 
-      $("#item_list .button-list2").hide();
-      $("#item_list .button-want2").hide();
 
       transitionBookList();
     }
@@ -510,18 +544,19 @@ var ignoreme
         // the bookinfo.table.json is loaded
         Object.keys(books).forEach(function (isbn) {
           var book = books[isbn]
-            , bookinfo = searchCache[book.isbn13 || book.isbn10 || book.isbn]
+            , bookinfo = searchCache[book.isbn13 || book.isbn || book.isbn10]
             ;
 
           if (bookinfo) {
             book.image = bookinfo.image;
             book.author = bookinfo.author || book.author;
-            book.isbn13 = bookinfo.isbn13;
-            book.isbn10 = bookinfo.isbn10;
+            book.isbn13 = bookinfo.isbn13 || book.isbn13;
+            book.isbn10 = bookinfo.isbn10 || book.isbn10;
             book.edition = bookinfo.edition;
             book.binding = bookinfo.binding;
             book.title = bookinfo.title || book.title;
           }
+          book.isbn = book.isbn13 || book.isbn || book.isbn10;
 
           if (book.term) {
             hasImportedList = true;
@@ -540,7 +575,6 @@ var ignoreme
     if (!$('.item') || !$('.item').length) {
       $('#list-button-container').fadeOut();
       $('.autoloader').fadeOut();
-      $('#searchbar').slideDown();
       if (hasImportedList) {
         $('#import-prompt').remove();
       }
@@ -554,11 +588,14 @@ var ignoreme
       , book = searchCache[isbn13] || searchCache[isbn10]
       ;
 
+    // TODOwhere did searchCache go?
+    if (book) {
     if (myBook) {
       // TODO
       myBook.image = book.image;
     } else {
       myBook = userBooks[isbn13||isbn10] = book;
+    }
     }
 
     if (!myBook) {
@@ -609,7 +646,7 @@ var ignoreme
 
   //$.domReady(run);
   $.domReady(function () {
-    display_item_template = $("#item_list").html();
+    display_item_template = $("#imported-booklist").html();
     form_item_template = $("#item_form").html()
 
     token = patternToken.exec(location.hash);
@@ -636,6 +673,7 @@ var ignoreme
   });
 
   $.domReady(function () {
+    /*
     $('body').delegate('.button-want', 'click', function (ev) {
       updateBook($($('.item')[0]), false, true);
     });
@@ -648,17 +686,74 @@ var ignoreme
     $('body').delegate('.button-ignore', 'click', function (ev) {
       updateBook($($('.item')[0]), false, false);
     });
+    */
+
 
     $('body').delegate('.button-want2', 'click', function (ev) {
-      addBook($($('.item')[0]), false, true);
+      ev.stopPropagation();
+      addBook($(this).closest('.item'), false, true);
     });
     $('body').delegate('.button-list2', 'click', function (ev) {
-      addBook($($('.item')[0]), true, false);
+      ev.stopPropagation();
+      addBook($(this).closest('.item'), true, false);
+    });
+    $('body').delegate('.button-keep2', 'click', function (ev) {
+      ev.stopPropagation();
+      addBook($(this).closest('.item'), true, true);
+    });
+    $('body').delegate('.button-ignore2', 'click', function (ev) {
+      ev.stopPropagation();
+      addBook($(this).closest('.item'), false, false);
     });
 
     $('body').delegate('a.logout', 'click', function (ev) {
       // TODO
       localStorage.removeItem('token');
+    });
+
+    $('body').delegate('.booklist-item', 'click', function (ev) {
+      ev.stopPropagation();
+
+      var isbn = $(this).find('.bli-isbn').text().trim()
+        , book = userBooks[isbn]
+        ;
+
+      showBook(book);
+    });
+    $('body').delegate('.booklist_container', 'click', function (ev) {
+      ev.stopPropagation();
+
+      var books = []
+        , isbnEls = $(this).find('.bli-isbn')
+        , i
+        ;
+
+      function getEachIsbn(el) {
+        var isbnEl = el
+          , isbn = isbnEl && isbnEl.innerHTML
+          , book
+          ;
+
+        isbn = isbn.trim();
+        book = userBooks[isbn];
+
+        if (book) {
+          books.push(book);
+        }
+      }
+
+      for (i = 0; i < isbnEls.length; i += 1) {
+        getEachIsbn(isbnEls[i]);
+      }
+
+      books.sort(sortBySemester);
+      showBooks(books);
+    });
+    $('body').delegate('.booklist_container header', 'mouseover', function (ev) {
+      $(this).closest('.booklist_container').addClass('booklist_container-whole');
+    });
+    $('body').delegate('.booklist_container header', 'mouseout', function (ev) {
+      $(this).closest('.booklist_container').removeClass('booklist_container-whole');
     });
   });
 

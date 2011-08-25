@@ -26,31 +26,38 @@
 <div style="clear:both;"></div>
 <div id="wrapper">
   <div id="column1">
-    <div class="booklist_container booklist-need-data">
-      <header class="booklist_need">I need</header>
+    <div class="booklist_container booklist-unsorted-data">
+      <header class="booklist_unsorted">Unsorted</header>
       <ul>
-        <li class="booklist-item"> &nbsp;book name here</li>
+        <li class="booklist-item"><span class='bli-title'>Elementary Linear Algebra</span> [<span class='bli-isbn'></span>]</li>
+      </ul>
+    </div>
+    <!--booklist_container-->
+    <div class="booklist_container booklist-need-data">
+      <header class="booklist_need">I Need</header>
+      <ul>
+        <li class="booklist-item"><span class='bli-title'>Elementary Linear Algebra</span> [<span class='bli-isbn'></span>]</li>
       </ul>
     </div>
     <!--booklist_container-->
     <div class="booklist_container booklist-have-data">
       <header class="booklist_have">For Trade</header>
       <ul>
-        <li class="booklist-item"> &nbsp;book name here</li>
+        <li class="booklist-item"><span class='bli-title'>Elementary Linear Algebra</span> [<span class='bli-isbn'></span>]</li>
       </ul>
     </div>
     <!--booklist_container-->
     <div class="booklist_container booklist-keep-data">
       <header class="booklist_keep">Keeping</header>
       <ul>
-        <li class="booklist-item"> &nbsp;book name here</li>
+        <li class="booklist-item"><span class='bli-title'>Elementary Linear Algebra</span> [<span class='bli-isbn'></span>]</li>
       </ul>
     </div>
     <!--booklist_container-->
   </div>
   <!--column1-->
   <div id="column2">
-    <div id="searchbar" style="display: none;">
+    <div id="searchbar">
       <form id="search_form">
         <input name="search" type="text" id="search" placeholder="Search by title or ISBN"/>
       </form>
@@ -64,6 +71,9 @@
       <h3>Tag old books for Trade. Tag this semester's books as Need</h3>
  
     </div>  
+
+    <div id="search-booklist" class="item_list">
+    </div>
     
     <div id="import-prompt">
       <ul>
@@ -78,7 +88,7 @@
     </div>
     
     <!--Results-->
-    <div id="item_list">
+    <div id="imported-booklist" class="item_list">
       
       <div class="item">
         <div class="image_frame">
@@ -107,10 +117,10 @@
         </div>
         <!--item_info-->
         <div id="item-bottom-container">
-          <div class="button-list2">Trade/Sell</div>
-          <div class="button-want2">Need</div>
-          
-          
+          <div class="ibc-button button-list2">Trade/Sell</div>
+          <div class="ibc-button button-want2">Need</div>
+          <div class="ibc-button button-keep2">Keep</div>
+          <div class="ibc-button button-ignore2">Ignore</div>
         </div>
         <!--item-bottom-container-->
         
@@ -143,13 +153,14 @@
     <!--<a href="booklist-thank-you.html">No thanks</a>--> </div>
   <!--column2-->
   <div id="column3">
+    <!--
     <div id="list-button-container" class="autoloader">
       <div class="button-want">Need</div>
       <div class="button-list">Trade/Sell</div>
       <div class="button-keep">Keep</div>
       <div class="button-ignore">Ignore</div>
     </div>
-    <!--list-button-container-->
+    list-button-container-->
   </div>
   <!--column3-->
   <div style="clear:both;"></div>
