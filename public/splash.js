@@ -72,6 +72,8 @@
               return;
             }
 
+            localStorage.setItem('user', JSON.stringify(echo.couchdb));
+            localStorage.setItem('referrerId', echo.couchdb.referrerId);
             if ('byu.edu' === echo.couchdb.school) {
               location.replace('/' + 'booklist' + '.html#/?token=' + echo.couchdb.email);
               return;
