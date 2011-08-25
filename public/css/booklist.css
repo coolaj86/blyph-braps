@@ -1,6 +1,25 @@
 @charset "UTF-8";
 /* CSS Document */
 
+#social-sharing{
+  background-color:#fff;
+  height:auto;
+  width:650px;
+  margin:0px auto 0px auto;
+}
+
+#social-sharing h3 {
+  color:#8CC63F;
+} 
+
+#sweepstakes-photo {
+  background:#0FC;
+  height:413px;
+  width:620px;
+  margin:0px auto 0px auto;
+  background-image:url(../images/apple-ipad-2.jpg);
+}
+
 #booklist{float:left;
 width:260;
 height:auto;
