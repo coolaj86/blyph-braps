@@ -280,7 +280,7 @@
       views: {
         all: {
           map: function (doc) {
-            if ('user' !== doc.type) {
+            if (doc.type && 'user' !== doc.type) {
               return;
             }
 

@@ -334,6 +334,7 @@
           fullUser = {};
         }
 
+        fullUser.type = 'user';
         fullUser.referredBy = fullUser.referredBy || newUser.referredBy;
         fullUser.referrerId = fullUser.referrerId || token.substr(0, 8);
         fullUser.confirmationSent = fullUser.confirmationSent || 0;
