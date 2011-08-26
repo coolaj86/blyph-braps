@@ -20,7 +20,6 @@ width:660px;
 height:190px;
 border:2px solid #E3E3E3;-moz-border-radius:10px; /*Firefox*/ border-radius:10px;
 margin:5px auto 5px auto;
-cursor:pointer;
 }
 
 .image_frame{
