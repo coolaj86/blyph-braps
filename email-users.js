@@ -28,111 +28,66 @@
     user.confirmationSent += 1;
     user.referrerId = user.referrerId || token.substr(0, 8);
 
+    if (user.knowsAboutIpad) {
+      callback();
+    }
 
-    sendEmail(user, function (err) {
+    informAboutUpdates(user, function (err) {
       if (err) {
-        console.log('error1:', err);
-      } else {
-        console.log(user.email + ' sent first email');
-      }
+        console.error('ERROR Email:', err);
+        return;
+      } 
 
-      setTimeout(function () {
-        sendUniqueLink(user, function (err) {
-          if (err) {
-            console.log('error2:', err);
-          } else {
-            console.log(user.email + ' sent second email');
-          }
+      console.log(user.email + ' sent first email');
+      user.knowsAboutIpad = true;
 
-          user.sentListInvite = true;
-          db.save(user.email, user, function (err, res) {
-            if (err) {
-              console.error('ERROR: (update 2)', err, user.email);
-            }
-            console.log(user.email + ' saved second email notification');
-            callback();
-          });
-        });
-      }, 30 * 1000);
-    });
-  }
-
-  function sendEmail(user, fn) {
-    var headers = {
-            from: "AJ @ Blyph <" + config.emailjs.user + ">"
-          , to: user.email
-          , subject: "Hey BYU-ers: List your books on Blyph!"
-          , text: "After much toil our monkeys have finally got it so that you can list your books." +
-              "\nWe're still working the kinks out so please be patient, but don't hesitate to give us feedback." +
-              "\n" +
-              "\n" +
-              "\nListing the books you have and need will make it easier for you to find a good exchange with other students and save money this semester." +
-              "\n" +
-              "\nYou can try the autolister:" +
-              "\nhttp://blyph.com/byu.html#/?token=" + user.email +
-              "\n" +
-              "\nOr list books yourself by searching by title or ISBN:" +
-              "\nhttp://blyph.com/booklist.html#/?token=" + user.email +
-              "\n" +
-              "\n" +
-              "\nYou can expect another email from us as soon as there are enough books listed for us to start making matches!" +
-              "\n" +
-              "\n" +
-              "\nThanks for your support," +
-              "\nAJ ONeal <aj@blyph.com>" +
-              "\nBrian Turley <brian@blyph.com>" +
-              "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
-              "\nFollow us: http://twitter.com/blyph" +
-              ""
+      db.save(user.email, user, function (err, res) {
+        if (err) {
+          console.error('ERROR Db:', err, user.email);
+          return;
         }
-        // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
-      , message = mailer.message.create(headers)
-      ;
-
-    mailserver.send(message, function (err) {
-      if (err) {
-        console.log(err);
-      }
-      fn();
+        setTimeout(function () {
+          callback();
+        }, 5 * 1000);
+      });
     });
   }
 
-  function sendUniqueLink(user, fn) {
+  function informAboutUpdates(user, fn) {
     var headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
           , to: user.email
-          , subject: "Share Blyph and get rewarded"
+          , subject: "Better Book Listing. Also: iPad sexier than reimbursement, study says"
           , text: "" +
               // TODO your-school-here
-              "\nWe're working hard to make exchanging your books easier than ever before, but we need your help." +
+              "\nHey guys," + 
               "\n" +
-              "\nIn order for Blyph to work, we need more people listing books." +
-              "\nSo we're rewarding you for sharing - 2 students will be reimbursed up to $350 each for Fall 2011 textbook expenses*." +
+              "\nWe've been listening to your feedback and we're meeting your demands:" +
               "\n" +
-              "\nHere's how it works:" +
+              "\n * We've greatly enhanced the book lister to be much easier to use." +
+              "\n * We've scratched the book reimbursement in favor of a 16gb iPad2 giveaway." +
               "\n" +
-              "\n1. Copy your unique URL:" +
+              "\nIf you've listed books, but haven't tagged them as 'Have' or 'Need', *please* do so. We've got *hundreds* of books listed, but we can't finish making the matches until we know who wants them. So get on that!" +
+              "\n" +
+              "\nWe've been pulling some late-nighters (3am, y'know, no big deal) to get the matching service up ASAP." +
+              "\nWe expect that you will be able to see your matches and start trades on Saturday." +
+              "\n" +
+              "\nAs always, your biggest help will be to share Blyph with your friends, frenemies, and the like." +
+              "\n" +
+              "\nRemember: Sharing == More Trades AND Sharing == iPad. 'nuff said" +
+              "\n" +
+              "\n" +
+              "\nYour unique URL to share on Facebook, Twitter, Email, etc:" +
               "\nhttp://blyph.com#/?referredBy=" + user.referrerId +
               "\n" +
-              "\n2. Share it with friends on Facebook, Twitter, through Email, etc." +
               "\n" +
-              "\n3. For every friend that signs up through your link you will earn multiple entries into the reimbursement drawing:" +
-              "\n" +
-              "\n10 friends join - 10 entries" +
-              "\n20 friends join - 40 entries" +
-              "\n30 friends join - 90 entries" +
-              "\n10n friends join - 10(n^2) entries (for you math geeks)" +
-              "\n100 friends join - 1000 entries" +
-              "\n" +
-              "\nMost importantly: the more friends you invite, the greater your chance for finding the books you need at the price you deserve, and the more you save!" +
-              "\n" +
-              "\n/=8^P" +
+              "\n=/8^D" +
               "\n" +
               "\n" +
               "\nThanks for your support," +
               "\nAJ ONeal <aj@blyph.com> (not actually a Zoobie)" +
               "\nBrian Turley <brian@blyph.com> (actually a Zoobie)" +
-              "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
+              "\nLike us: http://fb.com/pages/Blyph/190889114300467" +
               "\nFollow us: http://twitter.com/blyph" +
               "\n" +
               "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
@@ -155,6 +110,7 @@
     });
     data = users;
     console.log(users.length);
+    //
     /*
     data = [
     {
@@ -168,7 +124,7 @@
       , referrerId: 'aj@blyph'
     }
     ];
-    */
+    //*/
     var count = 0;
 
     function next() {
@@ -188,7 +144,7 @@
         return;
       } 
 
-      if (user.sentListInvite) {
+      if (user.knowsAboutIpad) {
         console.log('skip:', user.email, count);
         next();
         return;
@@ -199,7 +155,7 @@
         console.log('done with: ', user.email);
         setTimeout(function () {
           next();
-        }, 30 * 1000);
+        }, 35 * 1000);
       });
 
     }

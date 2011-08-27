@@ -12,35 +12,6 @@
     , vhost
     ;
 
-  function sendEmailCheck(user, fn) {
-    var headers = {
-            from: "AJ ONeal <" + config.emailjs.user + ">"
-          , to: user.email
-          , subject: "We heard you the first time! =^P"
-          , text: "\nHey,\n" +
-              "\nThose monkeys just aren't fast enough are they?" + 
-              "\nWe got your registration the first time, but you're on our 'A' list for being extra eager." + 
-              "\n" +
-              "\nNow take that eagerness and share away!" +
-              "\nhttp://blyph.com#/?referredBy=" + user.referrerId + 
-              "\n" +
-              "\n=8^D\n" +
-              "\n" +
-              "\nThanks for your support," +
-              "\nAJ @coolaj86 & Brian @Brian_Turley" +
-              "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
-              "\nFollow us: http://twitter.com/blyph" + 
-              "\n" +
-              "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
-              "including fair wages, hours, and are not subject to animal (or human) testing."
-        }
-        // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
-      , message = mailer.message.create(headers)
-      ;
-
-    mailserver.send(message, fn);
-  }
-
   // August 24th, 2011
   // iClicker
 
@@ -116,6 +87,69 @@
       
     });
 
+    // sorted and unsorted booklists
+    ['byTrade', 'byNeed', 'byUnsorted', 'byIgnore', 'byKeep'].forEach(function (bySort) {
+      var cache = {}
+        , inProgress = false
+        ;
+
+      cache.timestamp = 0;
+
+      function updateCache(cb) {
+        console.log('asked for booklist');
+        db.view('booklist/' + bySort, function (err, books) {
+          console.log('got booklist');
+          if (err) {
+            return cb(err);
+          }
+          cache = {};
+          books.forEach(function (value) {
+            var book = value.book
+              ;
+
+            book.token = value.token;
+
+            if (book.isbn) {
+              if (book.isbn === book.isbn13) {
+                // nada
+              } else if (book.isbn === book.isbn10) {
+                // nada
+              } else {
+                cache[book.isbn] = cache[book.isbn] || [];
+                cache[book.isbn].push(book);
+              }
+            } 
+
+            if (book.isbn10) {
+              cache[book.isbn10] = cache[book.isbn10] || [];
+              cache[book.isbn10].push(book);
+            }
+
+            if (book.isbn13) {
+              cache[book.isbn13] = cache[book.isbn13] || [];
+              cache[book.isbn13].push(book);
+            }
+          });
+
+          cache.timestamp = new Date().valueOf();
+          cb();
+        });
+      }
+
+      app.get('/books/' + bySort + '/:isbn', function (req, res) {
+        console.log("HERE I AM", req.params.isbn);
+        function respond(err) {
+          console.log('responded');
+          var result = cache[req.params.isbn];
+          res.json({ books: result });
+        }
+        if (cache.timestamp >= new Date().valueOf() - 60 * 60 * 1000) {
+          respond();
+        } else {
+          updateCache(respond);
+        }
+      });
+    });
     app.get('/schools', function (req, res) {
       db.view('schools/all', function (err, schools) {
         res.json(schools);

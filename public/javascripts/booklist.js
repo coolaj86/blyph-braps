@@ -11,10 +11,12 @@ var ignoreme
   "use strict";
 
   var $ = require('jQuery')
+    , Join = require('join')
     , hasImportedList = false
     , Futures = require('futures')
     , request = require('ahr2')
     , CampusBooks = require('campusbooks')
+    , campusbooks = CampusBooks.create("BDz21GvuL6RgTKiSbwe3")
     , ISBN = require('isbn').ISBN
     , display_item_template
     , form_item_template
@@ -63,6 +65,7 @@ var ignoreme
     return a.title.toUpperCase() > b.title.toUpperCase();
   }
 
+  // TODO be efficient-ish
   function saveBooklist() {
     var booklist;
     // TODO figure this the heck out!!! wtf?
@@ -109,12 +112,49 @@ var ignoreme
     href: "/bookinfo.table.json"
   }).when(reconstituteBookCache);
 
+
+  function clearConsumers() {
+  }
+  function showConsumers() {
+  }
+  function showProviders() {
+  }
+
   function showBooks(books) {
     $('#imported-booklist .item').remove();
     books.forEach(appendBook);
   }
   function showBook(book) {
+    var count = 0;
     showBooks([book]);
+
+    // Find the Fair Price, if Possible
+    book.fairest_price = 0;
+    if (book.highest_buyback_price > 0 && book.highest_buyback_price < Infinity) {
+      count += 1;
+      book.fairest_price += book.highest_buyback_price;
+    }
+    if (book.lowest_buy_price > 0 && book.lowest_buy_price < Infinity) {
+      count += 1;
+      book.fairest_price += book.lowest_buy_price;
+    }
+    if (count) {
+      book.fairest_price /= count;
+    }
+    if (!book.fairest_price) {
+      delete book.fairest_price;
+    }
+    console.log('fair_price', book.fairest_price);
+
+    // 
+    if (book.wantIt && !book.haveIt && book.providers) {
+      // TODO get lowest used price
+      showProviders(book.providers);
+    }
+    if (!book.wantIt && book.haveIt && book.consumers) {
+      // TODO get highest buyback price
+      showConsumers(book.consumers);
+    }
   }
 
   // TODO needs all four options
@@ -381,7 +421,7 @@ var ignoreme
       // This key is a special dummy key from CampusBooks for public testing purposes 
       // Note that it only works with Half.com, not the other 20 textbook sites, 
       // so it's not very useful, but good enough for this demo
-    var campusbooks = CampusBooks.create("BDz21GvuL6RgTKiSbwe3")
+    //var campusbooks = CampusBooks.create("BDz21GvuL6RgTKiSbwe3")
       //, display_item_template = $("#imported-booklist").html()
       ;
 
@@ -581,6 +621,156 @@ var ignoreme
     }
   }
 
+  // TODO move to a campusbooks wrapper library
+  function cbPrices(data) {
+    var list = []
+      , conditions
+      ;
+
+    // XML is so fupt...
+    conditions = data 
+              && data.response 
+              && data.response.page 
+              && data.response.page.offers 
+              && data.response.page.offers.condition
+              || []
+              ;
+
+    conditions = Array.isArray(conditions) ? conditions : [conditions];
+    conditions.forEach(function (offers) {
+      offers = offers.offer;
+      if (!offers) {
+        offers = [];
+      }
+      offers = Array.isArray(offers) ? offers : [offers];
+      offers.forEach(function (offer) {
+        list.push(offer);
+      });
+    });
+    return list;
+  }
+  function cbBuyBackPrices(data) {
+    var merchants
+      ;
+
+    // XML is so fupt...
+    merchants = data 
+              && data.response 
+              && data.response.page 
+              && data.response.page.offers 
+              && data.response.page.offers.merchant
+              || []
+              ;
+
+    merchants = Array.isArray(merchants) ? merchants : [merchants];
+    merchants.forEach(function (merchant) {
+      merchant.prices = merchant.prices.price;
+    });
+
+    return merchants;
+  }
+
+  function getProviders(book) {
+    var join = Join()
+      , isbn = book.isbn13 || book.isbn || book.isbn
+      ;
+
+    campusbooks.prices({isbn: isbn}).when(join.add());
+    request({
+      "href": "/books/byTrade/" + isbn
+    }).when(join.add());
+    request({
+      "href": "/books/byUnsorted/" + isbn
+    }).when(join.add());
+
+    join.when(function (online, trade, unsorted) {
+      var data = {}
+        , lowest
+        ;
+
+      data.timestamp = new Date().valueOf();
+      data.online = cbPrices(online[2]).filter(function (offer) { return 6 !== parseInt(offer.condition_id) });
+      data.trade = trade[2] && trade[2].books || [];
+      data.unsorted = unsorted[2].books || [];
+
+      data.online.sort(function (a, b) {
+        if (a.total_price && b.total_price) {
+          return parseFloat(a.total_price) < parseFloat(b.total_price) ? -1 : 1;
+        }
+
+        return parseFloat(a.price) < parseFloat(b.price);
+      });
+      lowest = data.online[0] || { price: Infinity, total_price: Infinity };
+
+      // prevent JSON send
+      // TODO realize that this is the bookstore price
+      // and give them credit if they're the best (not likely)
+      console.log('lowest_buy_price_debug', book, lowest);
+      book.usedPrice = parseFloat(book.usedPrice) || Infinity;
+      book.lowest_buy_price = Math.min(book.usedPrice, lowest.total_price || lowest.price);
+
+      book.providers = function () {
+        return data;
+      };
+
+      window.gotProviders = {
+          online: online
+        , trade: trade
+        , unsorted: unsorted
+      };
+      console.log('gotProviders', data.online, data.trade, data.unsorted);
+      // show matched icon
+      updateLists();
+    });
+  }
+  function getConsumers(book) {
+    var join = Join()
+      , isbn = book.isbn13 || book.isbn || book.isbn
+      ;
+
+    campusbooks.buybackprices({isbn: isbn}).when(join.add());
+    request({
+      "href": "/books/byNeed/" + isbn
+    }).when(join.add());
+    request({
+      "href": "/books/byUnsorted/" + isbn
+    }).when(join.add());
+
+    join.when(function (online, need, unsorted) {
+      var data = {}
+        ;
+
+      data.timestamp = new Date().valueOf();
+      data.online = cbBuyBackPrices(online[2]);
+      data.need = need[2].books || [];
+      data.unsorted = unsorted[2].books || [];
+
+      data.online.sort(function (o0, o1) {
+        var a, b;
+        a = parseFloat(o0.prices.sort().reverse()[0], 10)||0;
+        b = parseFloat(o1.prices.sort().reverse()[0], 10)||0;
+        console.log(a, b);
+        return a > b ? -1 : 1;
+      });
+
+      book.highest_buyback_price = parseFloat(((data.online[0]||{}).prices||[]).sort().reverse()[0]||0, 10);
+      console.log(book);
+
+      // prevent JSON send
+      book.consumers = function () {
+        return data;
+      };
+      window.gotConsumers = {
+          online: data.online
+        , need: data.need
+        , unsorted: data.unsorted
+      };
+      console.log('gotConsumers', data.online, data.need, data.unsorted);
+      // show matched icon
+      updateLists();
+    });
+  }
+
   function addBook(bookEl, haveIt, wantIt) {
     var isbn10 = bookEl.find('.isbn10').text().trim()
       , isbn13 = bookEl.find('.isbn13').text().trim()
@@ -588,26 +778,26 @@ var ignoreme
       , book = searchCache[isbn13] || searchCache[isbn10]
       ;
 
-    // TODOwhere did searchCache go?
+    // TODO where did searchCache go?
     if (book) {
-    if (myBook) {
-      // TODO
-      myBook.image = book.image;
-    } else {
-      myBook = userBooks[isbn13||isbn10] = book;
-    }
-    }
-
-    if (!myBook) {
-      if (isbn13 || isbn10) {
-        alert('TODO: local search book info \n' + bookEl.text());
-        return;
+      if (myBook) {
+        // TODO
+        myBook.image = book.image;
+      } else {
+        myBook = userBooks[isbn13||isbn10] = book;
       }
-
     }
 
     myBook.haveIt = haveIt;
     myBook.wantIt = wantIt;
+    if ((haveIt & !wantIt) || (!haveIt & wantIt)) {
+      if (!myBook.consumers) {
+        getConsumers(myBook);
+      }
+      if (!myBook.providers) {
+        getProviders(myBook);
+      }
+    }
 
     bookEl.addClass('slide-up');
     setTimeout(function () {
