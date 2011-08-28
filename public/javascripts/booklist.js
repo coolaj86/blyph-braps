@@ -64,7 +64,16 @@ var ignoreme
   }
 
   // TODO be efficient-ish
-  function saveBooklist() {
+  var pending; // delay updates by 5 seconds
+  function saveBooklist(fosure) {
+    if (pending) {
+      clearTimeout(pending);
+      pending = setTimeout(function () {
+        saveBooklist();
+      }, 5 * 1000);
+    }
+    pending = true;
+
     var booklist;
     // TODO figure this the heck out!!! wtf?
     fullBooklist.token = token;
@@ -88,6 +97,9 @@ var ignoreme
           "Content-Type": "application/json"
         }
     }).when(function (err, ahr, data) {
+      setTimeout(function () {
+        pending = false;
+      }, 5 * 1000);
       console.log('saveBooklist', err, ahr, data);
     });
   }
