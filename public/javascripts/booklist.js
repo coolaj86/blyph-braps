@@ -64,7 +64,20 @@ var ignoreme
   }
 
   // TODO be efficient-ish
-  function saveBooklist() {
+  var pending
+    ; // delay updates by 5 seconds
+  function saveBooklist(fosure) {
+    if (pending) {
+      console.log('pending')
+      clearTimeout(pending);
+      pending = setTimeout(function () {
+        pending = false;
+        saveBooklist();
+      }, 5 * 1000);
+      return;
+    }
+    pending = true;
+
     var booklist;
     // TODO figure this the heck out!!! wtf?
     fullBooklist.token = token;
@@ -88,6 +101,9 @@ var ignoreme
           "Content-Type": "application/json"
         }
     }).when(function (err, ahr, data) {
+      setTimeout(function () {
+        pending = false;
+      }, 5 * 1000);
       console.log('saveBooklist', err, ahr, data);
     });
   }
@@ -461,10 +477,12 @@ var ignoreme
           clearTimeout(key_timeout);
 
           var data = getData();
+          /*
           if (lastData === data) {
             return;
           }
           lastData = data;
+          */
 
           ignore_me = true;
           cb(data);
@@ -751,7 +769,7 @@ var ignoreme
       }).when(onBooklistHttp);
     }
 
-    booklist = jsonStorage.get('user-booklist');
+    booklist = undefined; //jsonStorage.get('user-booklist');
 
     // 10 minutes
     if (!booklist || !booklist.data || new Date().valueOf() - booklist.timestamp > 10 * 60 * 60 * 1000) {
