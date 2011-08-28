@@ -4,6 +4,7 @@
   var config = require(__dirname + '/config')
     , mailer = require('emailjs')
     , mailserver = mailer.server.connect(config.emailjs)
+    , htmlEmail = fs.readSync('./emails/launch-email.html')
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
         .database(config.cradle.database, function () { console.log(arguments); })
@@ -28,7 +29,7 @@
     user.confirmationSent += 1;
     user.referrerId = user.referrerId || token.substr(0, 8);
 
-    if (user.knowsAboutIpad) {
+    if (user.knowsAboutLaunch) {
       callback();
     }
 
@@ -39,7 +40,7 @@
       } 
 
       console.log(user.email + ' sent first email');
-      user.knowsAboutIpad = true;
+      user.knowsAboutLaunch = true;
 
       db.save(user.email, user, function (err, res) {
         if (err) {
@@ -57,25 +58,14 @@
     var headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
           , to: user.email
-          , subject: "Better Book Listing. Also: iPad sexier than reimbursement, study says"
+          , subject: "Up and Running! And Matches Available"
           , text: "" +
               // TODO your-school-here
               "\nHey guys," + 
               "\n" +
-              "\nWe've been listening to your feedback and we're meeting your demands:" +
+              "\nWe've launched. Time to save to moolahlah!"
               "\n" +
-              "\n * We've greatly enhanced the book lister to be much easier to use." +
-              "\n * We've scratched the book reimbursement in favor of a 16gb iPad2 giveaway." +
-              "\n" +
-              "\nIf you've listed books, but haven't tagged them as 'Have' or 'Need', *please* do so. We've got *hundreds* of books listed, but we can't finish making the matches until we know who wants them. So get on that!" +
-              "\n" +
-              "\nWe've been pulling some late-nighters (3am, y'know, no big deal) to get the matching service up ASAP." +
-              "\nWe expect that you will be able to see your matches and start trades on Saturday." +
-              "\n" +
-              "\nAs always, your biggest help will be to share Blyph with your friends, frenemies, and the like." +
-              "\n" +
-              "\nRemember: Sharing == More Trades AND Sharing == iPad. 'nuff said" +
-              "\n" +
+              "\nhttp://blyph.com/booklist.html#/?token=" + user.email +
               "\n" +
               "\nYour unique URL to share on Facebook, Twitter, Email, etc:" +
               "\nhttp://blyph.com#/?referredBy=" + user.referrerId +
@@ -93,7 +83,7 @@
               "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
               ""
         }
-        // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
+        message.attach_alternative(htmlEmail.replace(/@TOKEN@/g, user.email));
       , message = mailer.message.create(headers)
       ;
 
@@ -144,7 +134,7 @@
         return;
       } 
 
-      if (user.knowsAboutIpad) {
+      if (user.knowsAboutLaunch) {
         console.log('skip:', user.email, count);
         next();
         return;

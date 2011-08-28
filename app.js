@@ -12,37 +12,42 @@
     , vhost
     ;
 
-  function sendEmailCheck(user, fn) {
+  // August 24th, 2011
+  // iClicker
+
+  function emailMatchMessage(message, fn) {
     var headers = {
-            from: "AJ ONeal <" + config.emailjs.user + ">"
-          , to: user.email
-          , subject: "We heard you the first time! =^P"
-          , text: "\nHey,\n" +
-              "\nThose monkeys just aren't fast enough are they?" + 
-              "\nWe got your registration the first time, but you're on our 'A' list for being extra eager." + 
+            from: "AJ @ Blyph <" + config.emailjs.user + ">"
+            // TODO sanatize / validate this carefully
+          , to: message.to
+          , cc: message.from
+          , 'reply-to': message.from
+          , subject: message.from.replace(/@.*/i, '') + " wants to exchange " + message.bookTitle
+          , text: "" +
+              "\n Who: " + message.from +
+              "\n What: " + message.bookTitle +
+              (message.fairPrice ? ("\n Our Fair Price Guesstimate: " + "we recommend " + message.fairPrice) : '') + 
+              "\n Quoted Message:" +
               "\n" +
-              "\nNow take that eagerness and share away!" +
-              "\nhttp://blyph.com#/?referredBy=" + user.referrerId + 
+              "\n" + message.body +
               "\n" +
-              "\n=8^D\n" +
+              "\n ===============" +
+              "\n" +
+              "\n" +
+              "\nIf the above message contains offensive or otherwise inappropriate content please forward it directly to aj@blyph.com" +
               "\n" +
               "\nThanks for your support," +
-              "\nAJ @coolaj86 & Brian @Brian_Turley" +
-              "\nLike us: http://facebook.com/pages/Blyph/190889114300467" +
-              "\nFollow us: http://twitter.com/blyph" + 
-              "\n" +
-              "\nP.S. Our monkeys are treated in accordance with the Animal Welfare Act of 1966, " +
-              "including fair wages, hours, and are not subject to animal (or human) testing."
+              "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
+              "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
+              "\nLike us: http://fb.com/pages/Blyph/190889114300467" +
+              "\nFollow us: http://twitter.com/blyph" +
+              ""
         }
-        // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
       , message = mailer.message.create(headers)
       ;
 
     mailserver.send(message, fn);
   }
-
-  // August 24th, 2011
-  // iClicker
 
   function sendEmail(user, fn) {
     var headers = {
@@ -116,6 +121,69 @@
       
     });
 
+    // sorted and unsorted booklists
+    ['byTrade', 'byNeed', 'byUnsorted', 'byIgnore', 'byKeep'].forEach(function (bySort) {
+      var cache = {}
+        , inProgress = false
+        ;
+
+      cache.timestamp = 0;
+
+      function updateCache(cb) {
+        console.log('asked for booklist');
+        db.view('booklist/' + bySort, function (err, books) {
+          console.log('got booklist');
+          if (err) {
+            return cb(err);
+          }
+          cache = {};
+          books.forEach(function (value) {
+            var book = value.book
+              ;
+
+            book.token = value.token;
+
+            if (book.isbn) {
+              if (book.isbn === book.isbn13) {
+                // nada
+              } else if (book.isbn === book.isbn10) {
+                // nada
+              } else {
+                cache[book.isbn] = cache[book.isbn] || [];
+                cache[book.isbn].push(book);
+              }
+            } 
+
+            if (book.isbn10) {
+              cache[book.isbn10] = cache[book.isbn10] || [];
+              cache[book.isbn10].push(book);
+            }
+
+            if (book.isbn13) {
+              cache[book.isbn13] = cache[book.isbn13] || [];
+              cache[book.isbn13].push(book);
+            }
+          });
+
+          cache.timestamp = new Date().valueOf();
+          cb();
+        });
+      }
+
+      app.get('/books/' + bySort + '/:isbn', function (req, res) {
+        console.log("HERE I AM", req.params.isbn);
+        function respond(err) {
+          console.log('responded');
+          var result = cache[req.params.isbn];
+          res.json({ books: result });
+        }
+        if (cache.timestamp >= new Date().valueOf() - 60 * 60 * 1000) {
+          respond();
+        } else {
+          updateCache(respond);
+        }
+      });
+    });
     app.get('/schools', function (req, res) {
       db.view('schools/all', function (err, schools) {
         res.json(schools);
@@ -148,6 +216,27 @@
       });
     });
 
+    app.post('/match', function (req, res) {
+      var message = req.body || {};
+
+      if (
+             emailRegExp.exec(message.to)
+          && emailRegExp.exec(message.from)
+          && 'string' === typeof message.bookTitle
+          && 'string' === typeof message.body
+      ) {
+        emailMatchMessage(message, function (err) {
+          if (err) {
+            res.error(err);
+          }
+          res.json(message);
+        });
+        return;
+      }
+
+      res.error(new Error('some bad params'));
+      res.json(req.body);
+    });
     // todo One-Time Tokens
     // todo token in params
     app.post('/booklist/:token', function (req, res) {
@@ -304,7 +393,7 @@
     // f: @gmail.com
 
     var blyphSecret = 'thequickgreenlizard';
-    var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789')
+    var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789');
 
     function handleSignUp(req, res) {
       var email = req.body && req.body.email
