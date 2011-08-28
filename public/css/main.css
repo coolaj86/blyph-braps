@@ -130,11 +130,11 @@ a.text_right {
 	min-height:500px;
 	height:auto;
 	margin:0px auto 0px auto;
-	background-color: ghostwhite;
+	background-color:#F8F8F8;
 	border:2px solid  #E3E3E3;
   border-radius:5px;
     /*Firefox*/
-    -moz-border-radius:25px;
+    -moz-border-radius:5px;
 }
 
 #instruction_heading {
@@ -230,6 +230,7 @@ a.text_right {
   margin:5px auto 0px auto;
   float:inherent;
   padding:5px;
+  background:#FFF;
 }
 
 #search {
@@ -343,10 +344,13 @@ a.text_right {
   letter-spacing: -0.015em;
   word-spacing: 0em;
   line-height: 1.2;
+  background:F8F8F8;
 }
 
 #social-sharing{
 	height:400px;
 	width:400px;
 	margin:0px auto 0px auto;
+	background:#f8F8F8;
+
 }

@@ -22,9 +22,12 @@
 	}
 
 .result{
+	background:#FFF;
 	min-height:55px;
-	width:665px;
+	width:655px;
 	border-bottom:#666;
+	border-right:#666;
+	border-left:#666;
 	color:#333;
 	font-family: 'Didact Gothic', serif;
   font-size: 18px;
@@ -39,8 +42,10 @@
   list-style:none;
    margin:0px 0px 0px 0px;
    border-bottom:#CCC 1px solid;
-   padding:2px;
-	}
+   padding:2px 0px 2px 5px;
+	width:650px;
+	border:#CCC solid 1px;
+}
 	
 .result-name{
 	height:55px;
@@ -119,10 +124,17 @@
 	
 	}	
 	
-.person-or-store {
+.person{
 	height:50px;
 	width:50px;
 	border:#CCC 2px solid;
+	display:inline-block;
+	float:left;
+}
+
+.store-image{
+	height:50px;
+	width:150px;
 	display:inline-block;
 	float:left;
 }
@@ -134,6 +146,7 @@
 	margin:5px 0px 0px 0px;
 	padding:5px 0px 0px 5px;
 	font-size:18px;
+	
 }
 
 .message-box {
@@ -143,3 +156,80 @@
   margin:0px 0px 5px 0px;
   font-size:14px;
 }
+
+.ppl-widget{
+	width:650px;
+	border:#CCC solid 1px;
+}
+
+.match-available{
+	width:auto;
+}
+.match-available-title{
+	color:#FFF;
+	width:248px;
+	height:15px;
+	background:#CCC;
+	font-family: 'Didact Gothic', serif;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
+  border-bottom:#0CF 1px solid;
+  padding-bottom:2px;
+}
+
+.person-match{
+	display:inline;
+	margin:0px 5px 0px 5px;
+	color:#8CC63F;
+	margin:5px;
+	font-size:18px;
+	padding:0px;
+}
+
+.online-match{
+	display:inline;
+	color:#75CAD8;
+	margin:0px 5px 2px 5px;
+	padding:2px;
+	font-size:18px;
+	padding:0px;
+}
+.match-description{
+	display:inline;
+	color:#333;
+	margin-left:5px;
+	font-size:14px;
+	}
+	
+.ols-edition{
+	height:55px;
+	width:auto;
+	display:inline-block;
+	float:right;
+	border-left:#CCC 1px solid;
+	padding-left:5px;
+	text-align:right;
+	margin:20px 10px 0px 5px;
+	height:20px;
+}
+.no-match{
+	width:auto;
+	height:30px;
+	font-family: 'Didact Gothic', serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  text-shadow: none;
+  text-decoration: none;
+  text-transform: none;
+  letter-spacing: -0.015em;
+  word-spacing: 0em;
+  line-height: 1.2;
+  padding-bottom:2px;}

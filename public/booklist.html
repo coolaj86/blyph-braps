@@ -34,7 +34,19 @@
     <div class="booklist_container booklist-unsorted-data">
       <header class="booklist_unsorted">Unsorted</header>
       <ul>
-        <li class="booklist-item"><span class="mbl-trade-matches"> </span><span class="mbl-online-matches"> </span><span class='bli-title'>Elementary Linear Algebra</span> [<span class='bli-isbn'></span>]</li>
+        <li class="booklist-item"><span class='bli-title'>Elementary Linear Algebra</span> [<span class='bli-isbn'></span>]
+        
+        <div class="mbl-trade-matches match-available">
+        <div class="person-match">
+        
+        
+        (1)<span class="match-description"> trades available</span></div>
+        
+        <div class="mbl-online-matches online-match">(5)<span class="match-description">Online Results</span>
+        
+        </div>
+        
+        </li>
       </ul>
     </div>
     <!--booklist_container-->
@@ -138,14 +150,16 @@
       <!--item-->
     </div>
     <!--item_list-->
-    <div id="matches" style="display: none;">
+    <div id="matches">
+      
+      <div class="no-match">We didn't find any trades for you at this time. But we did find some other results for you:</div><!--no-match-->
       <div id="person-matches">
         <div class="online-store-heading">
           Fellow BYU Students
         </div>
         <ul>
           <li class="result ppl-widget">
-            <div class="person-or-store">
+            <div class="person">
               <img alt="Logo" src="no-image.jpeg"/>
             </div>
             <!-- TODO use the gravatar identifier instead of an actual email address -->
@@ -187,7 +201,7 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
           </li><!--result-->
         </ul>
 
-        <hr>
+    
       </div>      
       <div id="online-matches">
         <div class="online-store-heading">
@@ -195,16 +209,17 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
         </div>
         <ul>
         <li class="result">
-          <div class="person-or-store">
+          <div class="store-image">
             <img alt="Logo" src="no-image.jpeg"/>
           </div>
           <!--div class="result-name">Amazon
           </div-->
-          <div class="ols-edition"><!--Int'l Edition--></div>
           <a href="#link-goes-here" class="button-get-it ols-buy-sell" target="_blank">Buy / Sell</a>
           <div class="result-for-price">
             $800.00
-          </div>
+          </div><!--price-->
+          <div class="ols-edition">EDITION<!--Int'l Edition--></div>
+          
         </li><!--result-->
         </ul>
         <div style="clear:both;"></div>
@@ -212,7 +227,7 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
     </div>
 
     <div style="clear:both;"></div>
-    <div id="social-sharing">
+    
       <h3>Share with your friends and get the chance to win an ipad!</h3>
       <h4>Plus, The more of your friends who know about Blyph, the easier it will be for you to find your books.</h4>
       
@@ -241,8 +256,7 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
           document.body.appendChild(fbScript);
           }, 300);
       </script>
-    </div>
-    <!--social-sharing-->
+
     <div id="sweepstakes-photo"></div>
     <div style="clear:both;"></div>
     <!--social-sharing-->
