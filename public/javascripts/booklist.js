@@ -13,6 +13,8 @@ var ignoreme
   var $ = require('jQuery')
     , MD5 = require('md5')
     , Join = require('join')
+    , localStorage = require('localStorage')
+    , JsonStorage = require('json-storage')
     , hasImportedList = false
     , Futures = require('futures')
     , request = require('ahr2')
@@ -35,7 +37,8 @@ var ignoreme
       //, info.rank
       //, info.rating
         , 'image'
-      ];
+      ]
+    , jsonStorage = JsonStorage(localStorage)
     ;
 
   // TODO remove
@@ -69,6 +72,9 @@ var ignoreme
     fullBooklist.booklist = userBooks;
     fullBooklist.timestamp = new Date().valueOf();
     fullBooklist.type = 'booklist';
+
+    jsonStorage.set('user-booklist', fullBooklist);
+
     booklist = JSON.stringify(fullBooklist);
 
     // TODO fix stringify on serverside
@@ -153,7 +159,7 @@ var ignoreme
     
     storesArea.find('li').remove();
 
-    consumers.online.forEach(function (consumer) {
+    consumers.retailBuyBack.forEach(function (consumer) {
       var onlineStores;
       onlineStores = $(onlineStoresTpl);
       onlineStores.find('.person-or-store img').attr('src', consumer.merchant_image);
@@ -178,14 +184,14 @@ var ignoreme
     
     storesArea.find('li').remove();
 
-    providers.online.forEach(function (provider) {
+    providers.retailSale.forEach(function (provider) {
       provider.total_price = Number(provider.total_price);
       provider.price = Number(provider.price);
     });
-    providers.online.sort(function (a, b) {
+    providers.retailSale.sort(function (a, b) {
       return a.total_price < b.total_price ? -1 : 1;
     });
-    providers.online.forEach(function (provider) {
+    providers.retailSale.forEach(function (provider) {
       console.log('appendProvider', provider);
       var onlineStores;
       onlineStores = $(onlineStoresTpl);
@@ -210,6 +216,9 @@ var ignoreme
   }
   function showBook(book) {
     var count = 0;
+
+    // TODO make sure this is redundant and remove
+    getProviders(book);
     showBooks([book]);
 
     // Find the Fair Price, if Possible
@@ -236,13 +245,13 @@ var ignoreme
       // TODO get lowest used price
       console.log('showProviders');
       showProviders(book.providers());
-      showTraders(book.providers().trade.concat(book.participants()));
+      showTraders(book.providers().trade.concat(book.participants().unsorted));
     }
     if (!book.wantIt && book.haveIt && book.consumers) {
       // TODO get highest buyback price
       console.log('showConsumers');
       showConsumers(book.consumers());
-      showTraders(book.consumers().need.concat(book.participants()));
+      showTraders(book.consumers().need.concat(book.participants().unsorted));
     }
   }
 
@@ -622,6 +631,7 @@ var ignoreme
     var books
       , unsorted = []
       , ISBN = require('isbn').ISBN
+      , booklist
       ;
 
     function display() {
@@ -648,21 +658,7 @@ var ignoreme
       transitionBookList();
     }
 
-    // http://localhost:3080
-    request({
-        href: "/booklist/" + token + "?_no_cache_=" + new Date().valueOf()
-    /*
-      , headers: {
-            "X-User-Session": "badSession"
-        }
-    */
-    }).when(function (err, ahr, data) {
-        if (err) {
-          console.error(err);
-          alert(JSON.stringify(err));
-          return;
-        }
-
+    function onBooklist(data) {
         fullBooklist = data;
         books = userBooks = data.booklist || {};
 
@@ -683,6 +679,7 @@ var ignoreme
             book.title = bookinfo.title || book.title;
           }
           book.isbn = book.isbn13 || book.isbn || book.isbn10;
+          getProviders(book);
 
           if (book.term) {
             hasImportedList = true;
@@ -694,7 +691,44 @@ var ignoreme
         }
         display();
         updateLists();
-    });
+    }
+
+    function onBooklistHttp(err, ahr, data) {
+        if (err) {
+          console.error(err);
+          alert(JSON.stringify(err));
+          return;
+        }
+
+        jsonStorage.set('user-booklist', {
+            timestamp: new Date().valueOf()
+          , data: data
+        });
+
+        onBooklist(data);
+    }
+
+    function getBooklistHttp() {
+      // http://localhost:3080
+      request({
+          href: "/booklist/" + token + "?_no_cache_=" + new Date().valueOf()
+      /*
+        , headers: {
+              "X-User-Session": "badSession"
+          }
+      */
+      }).when(onBooklistHttp);
+    }
+
+    booklist = jsonStorage.get('user-booklist');
+
+    // 10 minutes
+    if (!booklist || new Date().valueOf() - booklist.timestamp > 10 * 60 * 60 * 1000) {
+      getBooklistHttp();
+    } else {
+      onBooklist(booklist.data);
+    }
+
   }
 
   function transitionBookList() {
@@ -759,118 +793,157 @@ var ignoreme
   function getProviders(book) {
     var join = Join()
       , isbn = book.isbn13 || book.isbn || book.isbn
+      , cbProviders
+      , cbConsumers
+      , blyphProviders
+      , blyphConsumers
+      , blyphUnsorted
+      , staletime = 10 * 60 * 60 * 1000
+      , now = new Date().valueOf()
       ;
 
-    campusbooks.prices({isbn: isbn}).when(join.add());
-    request({
-      "href": "/books/byTrade/" + isbn
-    }).when(join.add());
-    request({
-      "href": "/books/byUnsorted/" + isbn
-    }).when(join.add());
-
-    join.when(function (online, trade) {
+    function sortData(retailSale, trade, retailBuyBack, need, unsorted) {
       var data = {}
         , lowest
         ;
 
-      data.timestamp = new Date().valueOf();
-      data.online = cbPrices(online[2]).filter(function (offer) { return 6 !== parseInt(offer.condition_id) });
-      data.trade = trade[2] && trade[2].books || [];
-
-      data.online.sort(function (a, b) {
+      function sortOnlineBooks(a, b) {
         if (a.total_price && b.total_price) {
           return parseFloat(a.total_price) < parseFloat(b.total_price) ? -1 : 1;
         }
-
         return parseFloat(a.price) < parseFloat(b.price);
-      });
-      lowest = data.online[0] || { price: Infinity, total_price: Infinity };
+      }
 
-      // prevent JSON send
-      // TODO realize that this is the bookstore price
-      // and give them credit if they're the best (not likely)
-      book.usedPrice = parseFloat(book.usedPrice) || Infinity;
-      book.lowest_buy_price = Math.min(book.usedPrice, lowest.total_price || lowest.price);
-      console.log('lowest_buy_price_debug', book, book.lowest_buy_price);
-
-      book.providers = function () {
-        return data;
-      };
-
-      // show matched icon
-      updateLists();
-    });
-  }
-  function getConsumers(book) {
-    var join = Join()
-      , isbn = book.isbn13 || book.isbn || book.isbn
-      ;
-
-    campusbooks.buybackprices({isbn: isbn}).when(join.add());
-    request({
-      "href": "/books/byNeed/" + isbn
-    }).when(join.add());
-    request({
-      "href": "/books/byUnsorted/" + isbn
-    }).when(join.add());
-
-    join.when(function (online, need) {
-      var data = {}
-        ;
-
-      data.timestamp = new Date().valueOf();
-      data.online = cbBuyBackPrices(online[2]);
-      data.need = need[2].books || [];
-
-      data.online.sort(function (o0, o1) {
+      function sortBuyBackByPrice(o0, o1) {
         var a, b;
         a = parseFloat(o0.prices.sort().reverse()[0], 10)||0;
         b = parseFloat(o1.prices.sort().reverse()[0], 10)||0;
         return a > b ? -1 : 1;
-      });
+      }
 
-      book.highest_buyback_price = parseFloat(((data.online[0]||{}).prices||[]).sort().reverse()[0]||0, 10);
-      console.log('highest_buyback_price_debug', book, book.highest_buyback_price);
-
-      // prevent JSON send
-      book.consumers = function () {
+      function getPrivateData() {
         return data;
-      };
-      window.gotConsumers = {
-          online: data.online
-        , need: data.need
-      };
+      }
+
+      data.timestamp = now;
+      data.retailSale = retailSale;
+      data.trade = trade;
+      data.retailBuyBack = retailBuyBack;
+      data.need = need;
+      data.unsorted = unsorted;
+
+      data.retailSale.sort(sortOnlineBooks);
+      data.retailBuyBack.sort(sortBuyBackByPrice);
+
+      lowest = data.retailSale[0] || { price: Infinity, total_price: Infinity };
+
+      // TODO realize that this is the bookstore price
+      // and give them credit if they're the best (not likely)
+      book.usedPrice = parseFloat(book.usedPrice) || Infinity;
+      book.lowest_buy_price = Math.min(book.usedPrice, lowest.total_price || lowest.price);
+      book.highest_buyback_price = parseFloat(((data.retailBuyBack[0]||{}).prices||[]).sort().reverse()[0]||0, 10);
+
+      // prevent JSON stringification by using a function
+      book.providers = getPrivateData;
+      book.consumers = getPrivateData;
+      book.participants = getPrivateData;
 
       // show matched icon
       updateLists();
-    });
+    }
+
+    function onProviderDataHttp(retailSales, trade, retailBuyBacks, need, unsorted) {
+
+      // Rentals don't save you any money. Really.
+      function loseRentals(offer) {
+        return 6 !== parseInt(offer.condition_id);
+      }
+
+      retailSales = cbPrices(retailSales[2]).filter(loseRentals);
+      trade = trade[2] && trade[2].books || [];
+
+      retailBuyBacks = cbBuyBackPrices(retailBuyBacks[2]);
+      need = need[2].books || [];
+      unsorted = unsorted[2].books || [];
+
+      jsonStorage.set('cbp:' + isbn, {
+          timestamp: now
+        , data: retailSales
+      });
+
+      jsonStorage.set('blyphp:' + isbn, {
+          timestamp: now
+        , data: trade
+      });
+
+      jsonStorage.set('cbc:' + isbn, {
+          timestamp: now
+        , data: retailBuyBacks
+      });
+
+      jsonStorage.set('blyphc:' + isbn, {
+          timestamp: now
+        , data: need
+      });
+
+      jsonStorage.set('blyphu:' + isbn, {
+          timestamp: now
+        , data: unsorted
+      });
+
+      sortData(retailSales, trade, retailBuyBacks, need, unsorted);
+      book.downloadInProgress = false;
+    }
+
+    function getProviderData() {
+      if (book.downloadInProgress) {
+        console.log('waiting on download in progress');
+        return;
+      }
+      book.downloadInProgress = true;
+      setTimeout(function () {
+        book.downloadInProgress = false;
+      }, 15 * 1000);
+
+      // traders
+      campusbooks.prices({isbn: isbn}).when(join.add());
+      request({
+        "href": "/books/byTrade/" + isbn
+      }).when(join.add());
+
+      // needers
+      campusbooks.buybackprices({isbn: isbn}).when(join.add());
+      request({
+        "href": "/books/byNeed/" + isbn
+      }).when(join.add());
+
+      // TODO remove
+      request({
+        "href": "/books/byUnsorted/" + isbn
+      }).when(join.add());
+
+      // join all requests
+      join.when(onProviderDataHttp);
+    }
+
+    cbProviders = jsonStorage.get('cbp:' + isbn);
+    blyphProviders = jsonStorage.get('blyphp:' + isbn);
+    cbConsumers = jsonStorage.get('cbc:' + isbn);
+    blyphConsumers = jsonStorage.get('blyphc:' + isbn);
+
+    if (
+           !cbProviders || now - cbProviders.timestamp > staletime
+        || !blyphProviders || now - blyphProviders.timestamp > staletime
+        || !cbConsumers || now - cbConsumers.timestamp > staletime
+        || !blyphConsumers || now - blyphConsumers.timestamp > staletime
+        || !blyphUnsorted || now - blyphUnsorted.timestamp > staletime
+        ) {
+      getProviderData();
+    } else {
+      sortData(cbProviders.data, blyphProviders.data, cbConsumers.data, blyphProviders.data, blyphUnsorted.data);
+    }
   }
-  function getParticipants(book) {
-    var join = Join()
-      , isbn = book.isbn13 || book.isbn || book.isbn
-      ;
 
-    request({
-      "href": "/books/byUnsorted/" + isbn
-    }).when(join.add());
-
-    join.when(function (unsorted) {
-      var data = {}
-        ;
-
-      data.timestamp = new Date().valueOf();
-      data.unsorted = unsorted[2].books || [];
-
-      // prevent JSON send
-      book.participants = function () {
-        return data.unsorted;
-      };
-
-      console.log('gotParticipants');
-      updateLists();
-    });
-  }
 
   function addBook(bookEl, haveIt, wantIt) {
     var isbn10 = bookEl.find('.isbn10').text().trim()
@@ -895,14 +968,8 @@ var ignoreme
     myBook.haveIt = haveIt;
     myBook.wantIt = wantIt;
     if ((haveIt & !wantIt) || (!haveIt & wantIt)) {
-      if (!myBook.consumers) {
-        getConsumers(myBook);
-      }
-      if (!myBook.providers) {
+      if (!myBook.providers || !myBook.consumers) {
         getProviders(myBook);
-      }
-      if (!myBook.participants) {
-        getParticipants(myBook);
       }
     }
 
@@ -912,6 +979,7 @@ var ignoreme
       transitionBookList();
 	  }, 500);
     updateLists();
+    getProviders(book);
     saveBooklist();
   }
 
