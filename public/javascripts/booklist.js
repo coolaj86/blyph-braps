@@ -64,13 +64,17 @@ var ignoreme
   }
 
   // TODO be efficient-ish
-  var pending; // delay updates by 5 seconds
+  var pending
+    ; // delay updates by 5 seconds
   function saveBooklist(fosure) {
     if (pending) {
+      console.log('pending')
       clearTimeout(pending);
       pending = setTimeout(function () {
+        pending = false;
         saveBooklist();
       }, 5 * 1000);
+      return;
     }
     pending = true;
 
