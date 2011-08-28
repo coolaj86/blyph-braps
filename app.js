@@ -15,6 +15,40 @@
   // August 24th, 2011
   // iClicker
 
+  function emailMatchMessage(message, fn) {
+    var headers = {
+            from: "AJ @ Blyph <" + config.emailjs.user + ">"
+            // TODO sanatize / validate this carefully
+          , to: message.to
+          , cc: message.from
+          , 'reply-to': message.from
+          , subject: message.from.replace(/@.*/i, '') + " wants to exchange " + message.bookTitle
+          , text: "" +
+              "\n Who: " + message.from +
+              "\n What: " + message.bookTitle +
+              (message.fairPrice ? ("\n Our Fair Price Guesstimate: " + "we recommend " + message.fairPrice) : '') + 
+              "\n Quoted Message:" +
+              "\n" +
+              "\n" + message.body +
+              "\n" +
+              "\n ===============" +
+              "\n" +
+              "\n" +
+              "\nIf the above message contains offensive or otherwise inappropriate content please forward it directly to aj@blyph.com" +
+              "\n" +
+              "\nThanks for your support," +
+              "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
+              "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
+              "\nLike us: http://fb.com/pages/Blyph/190889114300467" +
+              "\nFollow us: http://twitter.com/blyph" +
+              ""
+        }
+      , message = mailer.message.create(headers)
+      ;
+
+    mailserver.send(message, fn);
+  }
+
   function sendEmail(user, fn) {
     var headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
@@ -182,6 +216,27 @@
       });
     });
 
+    app.post('/match', function (req, res) {
+      var message = req.body || {};
+
+      if (
+             emailRegExp.exec(message.to)
+          && emailRegExp.exec(message.from)
+          && 'string' === typeof message.bookTitle
+          && 'string' === typeof message.body
+      ) {
+        emailMatchMessage(message, function (err) {
+          if (err) {
+            res.error(err);
+          }
+          res.json(message);
+        });
+        return;
+      }
+
+      res.error(new Error('some bad params'));
+      res.json(req.body);
+    });
     // todo One-Time Tokens
     // todo token in params
     app.post('/booklist/:token', function (req, res) {
@@ -338,7 +393,7 @@
     // f: @gmail.com
 
     var blyphSecret = 'thequickgreenlizard';
-    var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789')
+    var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789');
 
     function handleSignUp(req, res) {
       var email = req.body && req.body.email
