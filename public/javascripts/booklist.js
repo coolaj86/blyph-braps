@@ -461,10 +461,12 @@ var ignoreme
           clearTimeout(key_timeout);
 
           var data = getData();
+          /*
           if (lastData === data) {
             return;
           }
           lastData = data;
+          */
 
           ignore_me = true;
           cb(data);
@@ -751,7 +753,7 @@ var ignoreme
       }).when(onBooklistHttp);
     }
 
-    booklist = jsonStorage.get('user-booklist');
+    booklist = undefined; //jsonStorage.get('user-booklist');
 
     // 10 minutes
     if (!booklist || !booklist.data || new Date().valueOf() - booklist.timestamp > 10 * 60 * 60 * 1000) {

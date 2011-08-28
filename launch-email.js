@@ -1,10 +1,11 @@
 (function () {
   "use strict";
 
-  var config = require(__dirname + '/config')
+  var fs = require('fs')
+    , config = require(__dirname + '/config')
     , mailer = require('emailjs')
     , mailserver = mailer.server.connect(config.emailjs)
-    , htmlEmail = fs.readSync('./emails/launch-email.html')
+    , htmlEmail = fs.readFileSync('./emails/launch-email.html').toString('utf8')
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
         .database(config.cradle.database, function () { console.log(arguments); })
@@ -63,7 +64,7 @@
               // TODO your-school-here
               "\nHey guys," + 
               "\n" +
-              "\nWe've launched. Time to save to moolahlah!"
+              "\nWe've launched. Time to save to moolahlah!" +
               "\n" +
               "\nhttp://blyph.com/booklist.html#/?token=" + user.email +
               "\n" +
@@ -83,9 +84,10 @@
               "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
               ""
         }
-        message.attach_alternative(htmlEmail.replace(/@TOKEN@/g, user.email));
       , message = mailer.message.create(headers)
       ;
+
+    message.attach_alternative(htmlEmail.replace(/@TOKEN@/g, user.email))
 
     mailserver.send(message, fn);
   }
@@ -100,8 +102,7 @@
     });
     data = users;
     console.log(users.length);
-    //
-    /*
+    ///*
     data = [
     {
         email: 'coolaj86+take10@gmail.com'
