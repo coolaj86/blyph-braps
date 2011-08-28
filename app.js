@@ -48,7 +48,7 @@
     var headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
           , to: user.email
-          , subject: "Share more Blyph, Get more Matches (and win up to $350 in Textbook Reimbursement)"
+          , subject: "Share more Blyph, Get more Matches (and win an iPad)"
           , text: "" +
               "\nThanks for signing up. We're glad to have you." +
               "\n" +
@@ -59,7 +59,7 @@
               "\nPlease share this unique link with your BYU friends:" +
               "\nhttp://blyph.com#/?referredBy=" + user.referrerId +
               "\n" +
-              "\nAs a bonus, the more friends you share with, the more entries you get into the $350 reimbursement drawing." +
+              "\nAs a bonus, the more friends you share with, the more entries you get into the 16gb iPad2 drawing." +
               "\n" +
               "\n10 friends join - 10 entries" +
               "\n20 friends join - 40 entries" +
