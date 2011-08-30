@@ -1043,6 +1043,16 @@ var ignoreme
     saveBooklist();
   }
 
+  function getLogin() {
+    var user;
+    jsonStorage.set('user', user);
+  }
+
+  function logout() {
+    localStorage.removeItem('token');
+    jsonStorage.remove('token');
+  }
+
   //$.domReady(run);
   $.domReady(function () {
     var urlObj

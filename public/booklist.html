@@ -242,39 +242,7 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
 
     <div style="clear:both;"></div>
     
-      <h3>Share with your friends and get the chance to win an ipad!</h3>
-      <h4>Plus, The more of your friends who know about Blyph, the easier it will be for you to find your books.</h4>
-      
-     
-      <!--facebook-->
-      <div id="fb-root"></div>
-      <div id="fbml"></div>
-      <script>
-          setTimeout(function () {
-          // TODO this code block will be moved to an app.js
-          // TODO replace friendId and foken with real trackable token
-          var fbScript = document.createElement('script')
-            , xfbml
-            ;
-
-          var token = localStorage.getItem('referrerId') || localStorage.getItem('token');
-          while (!token) {
-            token = prompt('Email Address:');
-          }
-          xfbml = '<fb:send href="' + 'blyph.com#/?referredBy=' + token + '" font=""></fb:send>';
-
-          fbScript.src = 'http://connect.facebook.net/en_US/all.js#xfbml=1';
-
-          document.getElementById('fbml').innerHTML = xfbml;
-
-          document.body.appendChild(fbScript);
-          }, 300);
-      </script>
-
-    <div id="sweepstakes-photo"></div>
-    <div style="clear:both;"></div>
-    <!--social-sharing-->
-    <!--<a href="booklist-thank-you.html">No thanks</a>--> </div>
+  </div>
   <!--column2-->
 
 
@@ -282,21 +250,71 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
 
 
   <div id="column3">
-    <!--
-    <div id="list-button-container" class="autoloader">
-      <div class="button-want">Need</div>
-      <div class="button-list">Trade/Sell</div>
-      <div class="button-keep">Keep</div>
-      <div class="button-ignore">Ignore</div>
+
+    <div id="promotion-offer">
+      <h4>Share Blyph with your friends and have the chance to win a new ipad!</h4>
+    </div><!--promotional offer-->
+
+    <div id="ipad">
+    </div><!--ipad-->
+
+    <div style="clear:both;"></div>
+
+    <div id="social-sharing">
+      <!--facebook-->
+      <div id="fb-root"></div>
+      <div id="fbml"></div>
     </div>
-    list-button-container-->
+
+    <!--twitter-->
+    <a href="http://twitter.com/share" class="twitter-share-button">Tweet</a>
+    <!--twitter-->
+
+    <p id="unique-link">blyph.com</p>
+    <p>Input this custom url into your message and get more points into the drawing.</p>
+    <script>
+        // TODO this code block will be moved to an app.js
+        // TODO replace friendId and foken with real trackable token
+        var fbScript
+          , referrerId
+          , xfbml
+          ;
+
+        referrerId = localStorage.getItem('referrerId') || localStorage.getItem('token');
+
+        while (!referrerId) {
+          referrerId = prompt('Email Address:');
+        }
+
+        xfbml = '<fb:send href="' + 'blyph.com#friendId=' + referrerId + '" font=""></fb:send>';
+        document.getElementById('fbml').innerHTML = xfbml;
+        document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + referrerId;
+
+        fbScript = document.createElement('script')
+        fbScript.src = 'http://connect.facebook.net/en_US/all.js#xfbml=1';
+        document.body.appendChild(fbScript);
+    </script>
+    <script>
+      /*
+      $('body').delegate('.twitter-share-button', 'click', function (ev) {
+        ev.preventDefault();
+        location.hash = '/?referredBy=testetest';
+        setTimeout(function () {
+          location.hash = '';
+        }, 5 * 1000);
+      });
+      */
+    </script>
+    <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+    <!--social-sharing-->
+
   </div>
-
-
-
-
-
   <!--column3-->
+
+
+
+
+
   <div style="clear:both;"></div>
 </div>
 <!--wrapper-->

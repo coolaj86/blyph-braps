@@ -5,12 +5,12 @@
 <title>Blyph.com</title>
 <link href="css/splash.css" rel="stylesheet" type="text/css"/>
 <link  href="http://fonts.googleapis.com/css?family=Didact+Gothic:regular&v1" rel="stylesheet" type="text/css" >
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script src="./javascripts/global-es5.js"></script>
 <!--[if IE]>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
     <![endif]-->
-<script src="./javascripts/global-es5.js"></script>
-<script src="./splash.js"></script>
+<script src="javascripts/ender.js"></script>
+<script src="javascripts/splash.js"></script>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -90,12 +90,6 @@ If no matches are available we'll show you the best available <strong>online</st
   </object>
 </div>
     <script>
-      $('body').delegate('#gvoice', 'click', function (ev) {
-        ev.preventDefault();
-        $('#gvoice').hide();
-        $('#gvoiceWidget').show();
-        $('#gvoiceWidget').click();
-      });
     </script>
   <!--[if IE]>
     <script src="vendor/CFInstall.min.js"></script>
