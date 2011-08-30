@@ -11,6 +11,7 @@ var ignoreme
   "use strict";
 
   var $ = require('jQuery')
+    , url = require('url')
     , MD5 = require('md5')
     , Join = require('join')
     , localStorage = require('localStorage')
@@ -1040,11 +1041,17 @@ var ignoreme
 
   //$.domReady(run);
   $.domReady(function () {
+    var urlObj
+      , queryObj
+      ;
+
     display_item_template = $("#imported-booklist").html();
     form_item_template = $("#item_form").html()
 
-    token = patternToken.exec(location.hash);
-    token = token && token[1];
+    urlObj = url.parse(location.hash.substr(1), true);
+    queryObj = urlObj.query || {};
+
+    token = queryObj.token;
 
     location.hash = '';
 
