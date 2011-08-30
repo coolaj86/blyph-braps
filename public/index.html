@@ -1,108 +1,24 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Blyph.com</title>
-<link href="css/splash.css" rel="stylesheet" type="text/css"/>
-<link  href="http://fonts.googleapis.com/css?family=Didact+Gothic:regular&v1" rel="stylesheet" type="text/css" >
-<script src="./javascripts/global-es5.js"></script>
-<!--[if IE]>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
-    <![endif]-->
-<script src="javascripts/ender.js"></script>
-<script src="javascripts/splash.js"></script>
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-24506591-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
-<!-- Place this tag in your head or just before your close body tag -->
-</head>
-<body>
-<div id="social-media">
-  <!--social media-->
-  <div id="fb-root"></div>
-  <script src="http://connect.facebook.net/en_US/all.js#appId=220950287941840&amp;xfbml=1"></script>
-  <fb:like href="www.facebook.com/pages/Blyph/190889114300467" send="true" width="450" show_faces="true" font=""></fb:like>
-  <!-- Place this tag where you want the +1 button to render -->
-  <g:plusone></g:plusone>
-</div>
-<!--social media-->
-<div id="logo"></div>
-<div id="background-logo"> </div>
-<!--background-logo-->
-<div id="loading">
-  <div id="loading-animation"></div>
-  <!--container-->
-</div>
-<!--loading-->
-<div id="container">
-<div id="title-container">
-  <h1>Search. List. Trade. Save $$.<br/> Get your textbooks Free</h1>
-</div>
-<br/>
-<form id="email_form">
-  <li>
-    <input type="text" name="email" value= "your email" width="500px" class="form_field" />
-  </li>
-  <li>
-    <input type="text" name="school" value= "your-school.edu" width="500px" class="form_field" />
-  </li>
-  <p>Currently serving BYU, expanding soon.
-  <li>
-    <input type="submit" name="submit" value="Try It" class="button"/>
-  </li>
-</form>
-<h2>Trade textbooks in your university community</h2>
-<p>
-We give you the best price for your textbooks by matching you up <strong>with other studets</strong> who <strong>have what you need</strong> or <strong>need what you have</strong>.
-If no matches are available we'll show you the best available <strong>online</strong> prices.
-&nbsp;
-<br/>
-<br/>
-<br/>
-<h2> </h2>
-<h2>Share Blyph and Win up to $350 for textbooks</h2>
-<p>Use Blyph and be entered our textbook reimbursement drawing. 2 students will be reimbursed up to <strong>$350 dollars each</strong> for the cost of their textbooks.</p>
-<h3>Increase your chances of winning.</h3>
-<p><b>Share with friends.</b> Up to 10 entries will be awarded per friend who signs up using your unique link (sent to you in email when you sign up).</p>
-<br/>
-<p>See official <a href="sweepstakes-rules.html">sweepstakes rules and conditions</a> for more info.</p>
-<br/>
-<br/>
-<footer>
-  <p>Blyph LLC Copyright 2011</p>
-</footer>
-<a id="gvoice" href="#">Have Questions? Need Help?</a>
-<div id="gvoiceWidget" style="display: none;"> Call AJ:
-  <object type="application/x-shockwave-flash" data="https://clients4.google.com/voice/embed/webCallButton" width="230" height="85">
-    <param name="movie" value="https://clients4.google.com/voice/embed/webCallButton" />
-    <param name="wmode" value="transparent" />
-    <param name="FlashVars" value="id=eefa487d95b71e2a840a26f71e7bac82fbd7e2b4&style=0" />
-  </object>
-</div>
-    <script>
-    </script>
+  <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Blyph.com</title>
+  <!-- purposefully pre-cache these local-ish resources now -->
+  <link href="./css/main.css" rel="stylesheet" type="text/css"/>
+  <link href="./css/item.css" rel="stylesheet" type="text/css"/>
+  <link href="./css/booklist.css" rel="stylesheet" type="text/css" />
+  <link href="./css/results.css" rel="stylesheet" type="text/css" />
   <!--[if IE]>
-    <script src="vendor/CFInstall.min.js"></script>
-    <script>
-      $.domReady = $;
-      $.domReady(function () {
-        CFInstall.check({
-          mode: "overlay",
-          url: "gcf.html",
-        });
-      });
-    </script>
+  <script src="./javascripts/CFInstall.min.js"></script>
   <![endif]-->
-    <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+  <script src="./javascripts/global-es5.js"></script>
+  <script src="./javascripts/ender.js"></script>
+  </head>
+  <body>
+    <script>
+      var newLocation = location.protocol + '//' + location.host + '/booklist.html' + location.hash;
+      location.replace(newLocation);
+    </script>
+    <a href="/booklist.html">You weren't automatically redirected. Enable JavaScript (ECMAScript) and enter here.</a>
   </body>
 </html>

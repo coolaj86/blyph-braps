@@ -3,7 +3,6 @@ var ignoreme
   , searchKeywords = {}
   , userBooks
   , fullBooklist
-  , token
   , updateListsG
   ;
 
@@ -11,6 +10,7 @@ var ignoreme
   "use strict";
 
   var $ = require('jQuery')
+    , currentUser = {}
     , url = require('url')
     , MD5 = require('md5')
     , Join = require('join')
@@ -67,7 +67,11 @@ var ignoreme
   // TODO be efficient-ish
   var pending
     ; // delay updates by 5 seconds
-  function saveBooklist(fosure) {
+  function saveBooklist() {
+    if (!currentUser.token) {
+      return;
+    }
+
     if (pending) {
       console.log('pending')
       clearTimeout(pending);
@@ -81,8 +85,8 @@ var ignoreme
 
     var booklist;
     // TODO figure this the heck out!!! wtf?
-    fullBooklist.token = token;
-    fullBooklist.student = token;
+    fullBooklist.token = currentUser.token;
+    fullBooklist.student = currentUser.token;
     fullBooklist.booklist = userBooks;
     fullBooklist.timestamp = new Date().valueOf();
     fullBooklist.type = 'booklist';
@@ -94,7 +98,7 @@ var ignoreme
     // TODO fix stringify on serverside
     request({
         "method": "POST"
-      , "href": "/booklist/" + token
+      , "href": "/booklist/" + currentUser.token
       , "body": { "booklist": booklist }
       // TODO make a shortcut in ahr for this
       , "contentType": "application/json"
@@ -762,8 +766,11 @@ var ignoreme
 
     function getBooklistHttp() {
       // http://localhost:3080
+      if (!currentUser.token) {
+        return;
+      }
       request({
-          href: "/booklist/" + token + "?_no_cache_=" + new Date().valueOf()
+          href: "/booklist/" + currentUser.token + "?_no_cache_=" + new Date().valueOf()
       /*
         , headers: {
               "X-User-Session": "badSession"
@@ -773,6 +780,10 @@ var ignoreme
     }
 
     booklist = undefined; //jsonStorage.get('user-booklist');
+
+    if (!currentUser.token) {
+      onBooklist({});
+    }
 
     // 10 minutes
     if (!booklist || !booklist.data || new Date().valueOf() - booklist.timestamp > 10 * 60 * 60 * 1000) {
@@ -1043,48 +1054,123 @@ var ignoreme
     saveBooklist();
   }
 
-  function getLogin() {
-    var user;
-    jsonStorage.set('user', user);
-  }
-
-  function logout() {
-    localStorage.removeItem('token');
-    jsonStorage.remove('token');
-  }
-
-  //$.domReady(run);
-  $.domReady(function () {
-    var urlObj
-      , queryObj
+  function attemptLogin() {
+    // TODO move out
+    var users
+      , user
       ;
 
-    display_item_template = $("#imported-booklist").html();
-    form_item_template = $("#item_form").html()
+    user = jsonStorage.get('user');
+    users = jsonStorage.get('users') || '{}';
 
-    urlObj = url.parse(location.hash.substr(1), true);
-    queryObj = urlObj.query || {};
+    if (!currentUser.email) {
+      if (!user || !user.email) {
+        return;
+      }
+      Object.keys(user).forEach(function (key) {
+        currentUser[key] = user[key];
+      });
+    } else {
+      user = users[currentUser.email] = users[currentUser.email] || currentUser;
+    }
 
-    token = queryObj.token;
+    if ('object' === typeof user) {
+      Object.keys(user).forEach(function (key) {
+        currentUser[key] = user[key];
+      });
+    }
+
+    currentUser.timestamp = new Date().valueOf();
+
+    users[currentUser.email] = currentUser;
+    jsonStorage.set('users', users);
+    jsonStorage.set('user', currentUser);
+
+    if (currentUser.email) {
+      onSuccessfulLogin();
+    }
+  }
+
+  function parseHash() {
+    var urlObj
+      , queryObj
+      , hashStr = location.hash
+      , referrerIdM = /referrerId=(.*)/.exec(hashStr)
+      ;
 
     location.hash = '';
 
-    if (!token) {
-      token = localStorage.getItem('token');
+    urlObj = url.parse(hashStr.substr(1), true);
+    queryObj = urlObj.query || {};
+
+    if (referrerIdM) {
+      currentUser.referredBy = referrerIdM[1];
+    } else {
+      currentUser.referredBy = queryObj.referredBy;
     }
-    while (!token) {
-      token = prompt('Your Email Address:');
-    }
-    localStorage.setItem('token', token);
+
+    currentUser.token = queryObj.token;
+    currentUser.email = queryObj.email || queryObj.token;
+
+    attemptLogin();
+  }
+
+  $.domReady(parseHash);
+  $.domReady(function () {
+    display_item_template = $("#imported-booklist").html();
+    form_item_template = $("#item_form").html()
 
     setTimeout(function () {
       var href = $(".load-booklist a").attr('href');
-      $(".load-booklist a").attr('href', href + '#/?token=' + token);
+      $(".load-booklist a").attr('href', href + '#/?token=' + currentUser.token);
     }, 100);
 
     $("div.item").remove();
     $("div.change_item").remove();
   });
+
+  function showSocial() {
+      var fbScript
+        , twScript
+        , xfbml
+        ;
+
+      // TODO we have to use #referrerId here due to some server parse error?
+      xfbml = '<fb:send id="fb-unique-link" href="' + 'blyph.com/#referrerId=' + currentUser.referrerId + '" font=""></fb:send>';
+      document.getElementById('fbml').innerHTML = xfbml;
+      document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.referrerId;
+
+      fbScript = document.createElement('script');
+      fbScript.src = 'http://connect.facebook.net/en_US/all.js#xfbml=1';
+      fbScript.async = 'async';
+      fbScript.defer = 'defer';
+      setTimeout(function () {
+        document.body.appendChild(fbScript);
+      }, 100);
+
+      twScript = document.createElement('script');
+      twScript.src = 'http://platform.twitter.com/widgets.js';
+      twScript.async = 'async';
+      twScript.defer = 'defer';
+      setTimeout(function () {
+        document.body.appendChild(twScript);
+      }, 100);
+  }
+
+  function onSuccessfulLogin() {
+    currentUser.email = currentUser.email || currentUser.token;
+    currentUser.token = currentUser.token || currentUser.email;
+    currentUser.nickname = currentUser.nickname || currentUser.email.replace(/@.*/, '');
+    currentUser.gravatar = MD5.digest_s(currentUser.email.trim().toLowerCase());
+    currentUser.referrerId = currentUser.referrerId || currentUser.token || currentUser.email
+    document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.referrerId || currentUser.token || currentUser.email;
+    $("#fb-unique-link").attr('href', 'blyph.com/#/?referredBy=' + currentUser.referrerId || currentUser.token || currentUser.email);
+    $('#saveyourinfo').slideUp();
+    $('#logout').show();
+    $('.username').text(currentUser.nickname);
+    showSocial();
+    listUploads();
+  }
 
   $.domReady(function () {
     $('body').delegate('.button-want2', 'click', function (ev) {
@@ -1102,11 +1188,6 @@ var ignoreme
     $('body').delegate('.button-ignore2', 'click', function (ev) {
       ev.stopPropagation();
       addBook($(this).closest('.item'), false, false);
-    });
-
-    $('body').delegate('a.logout', 'click', function (ev) {
-      // TODO
-      localStorage.removeItem('token');
     });
 
     $('body').delegate('.booklist-item', 'click', function (ev) {
@@ -1194,7 +1275,7 @@ var ignoreme
 
       message.note = "Hello firebugger / wiresharker. Yes, we plan on fixing this bug soon. Just trying to release, y'know";
       message.to = personHtml.find('input.email').val();
-      message.from = token;
+      message.from = currentUser.token;
       message.bookTitle = $('#imported-booklist .item .title').text().trim();
       message.body = personHtml.find('textarea').val();
       message.fairPrice = personHtml.find('.result-for-price').text().trim();
@@ -1225,6 +1306,94 @@ var ignoreme
 
       personHtml.html('Sending Message...');
     });
+
+
+    $('body').delegate('form#email_form', 'submit', function (ev) {
+      ev.preventDefault();
+
+      var users
+        ;
+
+      // TODO this must be done on the application side as well!!!
+      currentUser.email = $('input[name=email]').val().toLowerCase();
+      currentUser.school = $('input[name=school]').val().toLowerCase();
+
+      if (!currentUser.email || !/\w+@\w+.\w+/.exec(currentUser.email)) {
+        alert('bad email address');
+        return;
+      }
+
+      if (!currentUser.school || !/\w+\.(?:edu|gov)\s*$/i.exec(currentUser.school)) {
+        alert('Put a University url such as "byu.edu"');
+        return;
+      }
+
+      function onSubscribe(err, ahr, echo) {
+        $('saveyourinfo').fadeTo(300, 1);
+
+        if (!echo) {
+          $('#email_form').html(
+              "Error: A monkey wrench must have gotten stuck in one of the server gizmos." +
+              "<br/>" +
+              "If it's not working in 5 minutes please call AJ"
+            );
+          $('#gvoice').click();
+          return;
+        }
+
+        if ('byu.edu' !== echo.couchdb.school) {
+          alert("Currently we only support BYU, but UVU, USU, and UofU are close behind!");
+        } else {
+          $('#import-prompt').show();
+        }
+
+        Object.keys(echo.couchdb).forEach(function (key) {
+          currentUser[key] = echo.couchdb[key];
+        });
+
+        jsonStorage.set('user', currentUser);
+
+        onSuccessfulLogin();
+      }
+
+      $('saveyourinfo').fadeTo(300, 0.3);
+      currentUser.gravatar = MD5.digest_s(currentUser.email.trim().toLowerCase());
+      request({
+          method: 'POST'
+        , href: '/subscribe'
+        , body: currentUser
+      }).when(onSubscribe);
+
+      var users, user;
+      users = jsonStorage.get('users') || '{}';
+      user = users[currentUser.email] = users[currentUser.email];
+      if ('object' === typeof user) {
+        Object.keys(user).forEach(function (key) {
+          currentUser[key] = user[key];
+        });
+      }
+      currentUser.timestamp = new Date().valueOf();
+      users[currentUser.email] = currentUser;
+      jsonStorage.set('users', users);
+
+    });
+
+    $('body').delegate('#logout a', 'click', function (ev) {
+      ev.preventDefault();
+      currentUser = {};
+      jsonStorage.remove('user');
+      $('#logout').hide();
+      $('#saveyourinfo').slideDown();
+      location.reload();
+    });
+
+    $('#saveyourinfo').delegate('#gvoice', 'click', function (ev) {
+      ev.preventDefault();
+      $('#gvoice').hide();
+      $('#gvoiceWidget').show();
+      $('#gvoiceWidget').click();
+    });
+
   });
 
   $.domReady(run);
