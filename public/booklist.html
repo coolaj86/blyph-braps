@@ -303,5 +303,19 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
   <p>&copy;Blyph 2011</p>
 </div>
 <!--footer-->
-</body>
+
+    <!--[if IE]>
+    <script src="vendor/CFInstall.min.js"></script>
+    <script>
+      $.domReady = $;
+      $.domReady(function () {
+        CFInstall.check({
+          mode: "overlay",
+          url: "gcf.html",
+        });
+      });
+    </script>
+    <![endif]-->
+
+  </body>
 </html>
