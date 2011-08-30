@@ -5,7 +5,7 @@
   var GLOBALS = {};
   var userToken = $.TOKEN;
   var origin = window.ORIGIN || 'http://blyph.com';
-  var redirect = origin + '/booklist.html#/?token=' + userToken;
+  var redirect = origin + '/#/?token=' + userToken;
 
   var body = "<div id='logo'></div>\n<div id='container2'>\n<div id='loading-container'><div id='loading-animation'></div><!--container-->\n\n<progress value='1' max='10' id='progress-bar'><span class='loaded'>1</span>/<span class='total'>10</span></progress>\n</div>" +
 

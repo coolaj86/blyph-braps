@@ -66,7 +66,7 @@
               "\n" +
               "\nWe've launched. Time to save to moolahlah!" +
               "\n" +
-              "\nhttp://blyph.com/booklist.html#/?token=" + user.email +
+              "\nhttp://blyph.com/#/?token=" + user.email +
               "\n" +
               "\nYour unique URL to share on Facebook, Twitter, Email, etc:" +
               "\nhttp://blyph.com#/?referredBy=" + user.referrerId +
