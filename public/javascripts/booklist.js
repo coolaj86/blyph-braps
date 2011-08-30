@@ -975,8 +975,10 @@ var ignoreme
 
     cbProviders = jsonStorage.get('cbp:' + isbn);
     blyphProviders = jsonStorage.get('blyphp:' + isbn);
+
     cbConsumers = jsonStorage.get('cbc:' + isbn);
     blyphConsumers = jsonStorage.get('blyphc:' + isbn);
+
     blyphUnsorted = jsonStorage.get('blyphu:' + isbn);
 
     if (
@@ -996,7 +998,7 @@ var ignoreme
       );
       getProviderData();
     } else {
-      sortData(cbProviders.data, blyphProviders.data, cbConsumers.data, blyphProviders.data, blyphUnsorted.data);
+      sortData(cbProviders.data, blyphProviders.data, cbConsumers.data, blyphConsumers.data, blyphUnsorted.data);
     }
   }
 
