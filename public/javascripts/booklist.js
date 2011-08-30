@@ -146,7 +146,8 @@ var ignoreme
       var traderHtml = $(tradersTpl)
         , name = trader.token.replace(/\s*@.*/, '').toLowerCase()
         , gravatar = MD5.digest_s(trader.token.trim().toLowerCase())
-        , price = Number(trader.fairest_price)
+        , book = userBooks[trader.isbn13 || trader.isbn]
+        , price = Number(book.fairest_price)
         ;
 
       if (price) {
@@ -259,6 +260,7 @@ var ignoreme
     }
     if (count) {
       book.fairest_price /= count;
+      console.log('fair price: ', book.fairest_price);
     }
     if (!book.fairest_price) {
       delete book.fairest_price;
@@ -976,8 +978,10 @@ var ignoreme
 
     cbProviders = jsonStorage.get('cbp:' + isbn);
     blyphProviders = jsonStorage.get('blyphp:' + isbn);
+
     cbConsumers = jsonStorage.get('cbc:' + isbn);
     blyphConsumers = jsonStorage.get('blyphc:' + isbn);
+
     blyphUnsorted = jsonStorage.get('blyphu:' + isbn);
 
     if (
@@ -997,7 +1001,7 @@ var ignoreme
       );
       getProviderData();
     } else {
-      sortData(cbProviders.data, blyphProviders.data, cbConsumers.data, blyphProviders.data, blyphUnsorted.data);
+      sortData(cbProviders.data, blyphProviders.data, cbConsumers.data, blyphConsumers.data, blyphUnsorted.data);
     }
   }
 

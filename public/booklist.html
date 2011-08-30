@@ -4,6 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Blyph</title>
 <script src="./javascripts/CFInstall.min.js"></script>
+<script src="./javascripts/global-es5.js"></script>
 <script src="./javascripts/ender.js"></script>
 <script src="./javascripts/booklist.js"></script>
 <link href="css/main.css" rel="stylesheet" type="text/css"/>
@@ -303,5 +304,19 @@ Could we meet by @LOCATION at @TIME on @DATE?</textarea>
   <p>&copy;Blyph 2011</p>
 </div>
 <!--footer-->
-</body>
+
+    <!--[if IE]>
+    <script src="vendor/CFInstall.min.js"></script>
+    <script>
+      $.domReady = $;
+      $.domReady(function () {
+        CFInstall.check({
+          mode: "overlay",
+          url: "gcf.html",
+        });
+      });
+    </script>
+    <![endif]-->
+
+  </body>
 </html>

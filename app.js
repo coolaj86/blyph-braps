@@ -16,6 +16,13 @@
   // iClicker
 
   function emailMatchMessage(message, fn) {
+    if (/^\$/.exec(message.fairPrice)) {
+      message.fairPrice = message.fairPrice.substr(1);
+    } else if (/\d/.exec(message.fairPrice)) {
+      // nada
+    } else {
+      message.fairPrice = undefined;
+    }
     var headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
             // TODO sanatize / validate this carefully
@@ -26,7 +33,7 @@
           , text: "" +
               "\n Who: " + message.from +
               "\n What: " + message.bookTitle +
-              (message.fairPrice ? ("\n Our Fair Price Guesstimate: " + "we recommend " + message.fairPrice) : '') + 
+              (Number(message.fairPrice) ? ("\n Our Fair Price Guesstimate: $" + message.fairPrice) : '') + 
               "\n Quoted Message:" +
               "\n" +
               "\n" + message.body +
