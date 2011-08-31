@@ -2,6 +2,7 @@
   "use strict";
 
   var config = require(__dirname + '/config')
+    , crypto = require('crypto')
     , connect = require('jason')
     , mailer = require('emailjs')
     , mailserver = mailer.server.connect(config.emailjs)
@@ -23,37 +24,58 @@
     } else {
       message.fairPrice = undefined;
     }
-    var headers = {
-            from: "AJ @ Blyph <" + config.emailjs.user + ">"
-            // TODO sanatize / validate this carefully
-          , to: message.to
-          , cc: message.from
-          , 'reply-to': message.from
-          , subject: message.from.replace(/@.*/i, '') + " wants to exchange " + message.bookTitle
-          , text: "" +
-              "\n Who: " + message.from +
-              "\n What: " + message.bookTitle +
-              (Number(message.fairPrice) ? ("\n Our Fair Price Guesstimate: $" + message.fairPrice) : '') + 
-              "\n Quoted Message:" +
-              "\n" +
-              "\n" + message.body +
-              "\n" +
-              "\n ===============" +
-              "\n" +
-              "\n" +
-              "\nIf the above message contains offensive or otherwise inappropriate content please forward it directly to aj@blyph.com" +
-              "\n" +
-              "\nThanks for your support," +
-              "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
-              "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
-              "\nLike us: http://fb.com/blyph" +
-              "\nFollow us: http://twitter.com/blyph" +
-              ""
-        }
-      , message = mailer.message.create(headers)
-      ;
 
-    mailserver.send(message, fn);
+    // TODO use Join
+    db.get(message.to, function (err, res) {
+      if (err) {
+        fn(err);
+        return;
+      }
+
+      message.to = res.email;
+      db.get(message.from, function (err, res) {
+        if (err) {
+          fn(err);
+          return;
+        }
+
+        message.from = res.email;
+
+        var headers = {
+                from: "AJ @ Blyph <" + config.emailjs.user + ">"
+                // TODO sanatize / validate this carefully
+              , to: message.to
+              , cc: message.from
+              , 'reply-to': message.from
+              , subject: message.from.replace(/@.*/i, '') + " wants to exchange " + message.bookTitle
+              , text: "" +
+                  "\n Who: " + message.from +
+                  "\n What: " + message.bookTitle +
+                  (Number(message.fairPrice) ? ("\n Our Fair Price Guesstimate: $" + message.fairPrice) : '') + 
+                  "\n Quoted Message:" +
+                  "\n" +
+                  "\n" + message.body +
+                  "\n" +
+                  "\n ===============" +
+                  "\n" +
+                  "\n" +
+                  "\nIf the above message contains offensive or otherwise inappropriate content please forward it directly to aj@blyph.com" +
+                  "\n" +
+                  "\nThanks for your support," +
+                  "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
+                  "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
+                  "\nLike us: http://fb.com/blyph" +
+                  "\nFollow us: http://twitter.com/blyph" +
+                  "\n" +
+                  "\nUnsubscribe: Send a message with your feedback to unsubscribe@blyph.com" +
+                  ""
+            }
+          , message = mailer.message.create(headers)
+          ;
+
+        mailserver.send(message, fn);
+      });
+    });
   }
 
   function sendEmail(user, fn) {
@@ -87,6 +109,8 @@
               "\nFollow us: http://twitter.com/blyph" +
               "\n" +
               "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
+              "\n" +
+              "\nUnsubscribe: Send a message with your feedback to unsubscribe@blyph.com" +
               ""
         }
         // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
@@ -104,25 +128,25 @@
   function rest(app) {
     // TODO allow unsubscribe via email
     app.put('/unsubscribe', function (req, res) {
-      var email = req.body && req.body.email;
+      var userToken = req.body && req.body.userToken;
 
-      if (!email) {
-        res.json({ error: { message: "no email given" } });
+      if (!userToken) {
+        res.json({ error: { message: "no userToken given" } });
         return;
       }
 
-      db.get(email, function (err, data) {
+      db.get(userToken, function (err, data) {
         if (!data || !data.doNotMail) {
           res.json({ error: { message: "No subscription found. Please email us if you wish to permanently delete your account" } });
           return;
         }
 
         data.doNotMail = true;
-        db.save(data.email, data, function (err, data) {
+        db.save(data.userToken, data, function (err, data) {
           if (err) {
             console.error('db.save unsub', err);
           }
-          res.json({email: data.email, couchdb: data});
+          res.json({userToken: data.userToken, couchdb: data});
         });
       });
       
@@ -148,7 +172,8 @@
             var book = value.book
               ;
 
-            book.token = value.token;
+            book.userToken = value.userToken;
+            book.nickname = value.nickname;
 
             if (book.isbn) {
               if (book.isbn === book.isbn13) {
@@ -203,18 +228,17 @@
      *
      */
     // TODO convert to use session
-    app.get('/booklist/:email', function (req, res) {
+    app.get('/booklist/:userToken', function (req, res) {
       console.log('map booklist');
-      var email = req.params.email
+      var userToken = req.params.userToken.trim().toLowerCase()
         ;
 
-      if (!email) {
-        res.json({ error: { message: "bad token" } });
+      if (!userToken) {
+        res.json({ error: { message: "bad userToken" } });
         return;
       }
 
-      email.toLowerCase();
-      db.get(email + ':booklist', function (err, data) {
+      db.get(userToken + ':booklist', function (err, data) {
         if (data) {
           res.json(data);
         } else {
@@ -223,15 +247,18 @@
       });
     });
 
+    var userTokenRegExp = /^\w+$/;
     app.post('/match', function (req, res) {
       var message = req.body || {};
 
       if (
-             emailRegExp.exec(message.to)
-          && emailRegExp.exec(message.from)
+             userTokenRegExp.exec(message.to)
+          && userTokenRegExp.exec(message.from)
           && 'string' === typeof message.bookTitle
           && 'string' === typeof message.body
       ) {
+        message.to = message.to.trim().toLowerCase();
+        message.from = message.from.trim().toLowerCase();
         emailMatchMessage(message, function (err) {
           if (err) {
             res.error(err);
@@ -244,9 +271,8 @@
       res.error(new Error('some bad params'));
       res.json(req.body);
     });
-    // todo One-Time Tokens
-    // todo token in params
-    app.post('/booklist/:token', function (req, res) {
+
+    app.post('/booklist/:userToken', function (req, res) {
       var booklist = req.body && req.body.booklist
         , redirect = req.body && req.body.redirect
         ;
@@ -265,14 +291,13 @@
         return;
       }
 
-      if (!req.params.token) {
+      if (!req.params.userToken) {
         res.writeHead(422);
-        res.end(JSON.stringify({ error: { message: "Bad token"} }));
+        res.end(JSON.stringify({ error: { message: "Bad userToken"} }));
         return;
       }
 
-      // TODO token should cause lookup for email?
-      if (!(booklist.token
+      if (!(booklist.userToken
         && 'booklist' === booklist.type 
         // TODO figure this crap out!
         //&& booklist.school 
@@ -282,13 +307,13 @@
         res.writeHead(422);
         var status =
         {
-            token: !!booklist.token
+            userToken: !!booklist.userToken
           , 'type': !!('booklist' === booklist.type)
           , school: !!booklist.school 
           , timestamp: !!booklist.timestamp 
           , booklist: !!('object' === typeof booklist.booklist)
         };
-        res.end(JSON.stringify({ error: { message: "Bad booklist object (token, type, school, timestamp, booklist)"}, status: status }));
+        res.end(JSON.stringify({ error: { message: "Bad booklist object (userToken, type, school, timestamp, booklist)"}, status: status }));
         return;
       }
 
@@ -341,16 +366,15 @@
         // copy over just the desired objects
         // TODO have a validate function
         //
-        data.token = booklist.token;
+        data.userToken = booklist.userToken;
         data.type = booklist.type;
         data.school = booklist.school;
         data.timestamp = booklist.timestamp;
-        data.student = booklist.student;
 
-        db.save(booklist.student + ':booklist', data, redirectBack);
+        db.save(booklist.userToken + ':booklist', data, redirectBack);
       }
 
-      db.get(booklist.student + ':booklist', mergeLists);
+      db.get(booklist.userToken + ':booklist', mergeLists);
     });
 
     function random() {
@@ -368,6 +392,9 @@
     // "byu.edu"
 
     function BlyphUser(obj) {
+      var md5sum = crypto.createHash('md5')
+        ;
+
       this.errors = [];
 
       this.type = 'user';
@@ -385,6 +412,8 @@
       //if (email.match(/@gmail\./) || email.match(/@googlemail\./)) {
       //}
       this.email = obj.email.trim().toLowerCase();
+      md5sum.update(this.email);
+      this.userToken = md5sum.digest('hex').trim().toLowerCase();
 
       if ('string' !== typeof obj.school || !schoolRegExp.exec(obj.school.trim())) {
         this.errors.push("bad school address");
@@ -399,12 +428,8 @@
     // f: coolaj86@gmail.
     // f: @gmail.com
 
-    var blyphSecret = 'thequickgreenlizard';
-    var token = (blyphSecret + 'abcdefghijklmnopqrstuvwxyz0123456789');
-
     function handleSignUp(req, res) {
-      var email = req.body && req.body.email
-        , newUser = req.body
+      var newUser = req.body
         ;
 
       newUser = new BlyphUser(newUser);
@@ -416,11 +441,8 @@
 
       res.writeHead(200, {'Content-Type': 'application/json'});
 
-      // same chars, but mixed up every time
-      token = token.split('').sort(random).join('');
+      db.get(newUser.userToken, function (err, fullUser) {
 
-      // 
-      db.get(newUser.email, function (err, fullUser) {
         if (err && 'missing' !== err.reason) {
           console.error('db.get ERROR', err);
           //res.end(JSON.stringify(err));
@@ -432,45 +454,32 @@
 
         fullUser.type = 'user';
         fullUser.referredBy = fullUser.referredBy || newUser.referredBy;
-        fullUser.referrerId = fullUser.referrerId || token.substr(0, 8);
+        fullUser.referrerId = fullUser.userToken;
         fullUser.confirmationSent = fullUser.confirmationSent || 0;
         fullUser.email = fullUser.email || newUser.email;
+        fullUser.userToken = fullUser.userToken || newUser.userToken;
         fullUser.school = fullUser.school || newUser.school;
 
 
         if (fullUser.confirmationSent) {
-          /*
-          sendEmailCheck(fullUser, function (err, message) {
-            if (err) {
-              console.error('ERROR eager mail', err);
-              return;
-            }
-
-            fullUser.confirmationSent += 1;
-            db.save(fullUser.email, fullUser, function (err, receipt) {
-              if (err) {
-                console.error('ERROR db.save 2nd+ confirmation', err);
-              }
-            });
-          });
-          */
-
           res.end(JSON.stringify({
-              email: email
+              email: fullUser.email
+            , userToken: fullUser.userToken
             , couchdb: fullUser
             , error: err
           }));
           return;
         }
 
-        db.save(fullUser.email, fullUser, function (err, receipt) {
+        db.save(fullUser.userToken, fullUser, function (err, receipt) {
           if (err) {
             console.error('ERROR db.save 1st', err);
           } 
           fullUser._rev = receipt.rev;
 
           res.end(JSON.stringify({
-              email: email
+              email: fullUser.email
+            , userToken: fullUser.userToken
             , couchdb: fullUser
             , error: err
           }));
@@ -482,7 +491,7 @@
             }
 
             fullUser.confirmationSent += 1;
-            db.save(fullUser.email, fullUser, function (err, receipt) {
+            db.save(fullUser.userToken, fullUser, function (err, receipt) {
               if (err) {
                 console.error('ERROR db.save 1st confirmation', err);
               }
@@ -502,40 +511,6 @@
     app.post('/subscribe', handleSignUp);
   };
 
-  function cors(req, res, next) {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, OPTIONS');
-      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Accept');
-      //doop(next);
-      if (req.method.match(/options/i)) {
-        res.end();
-        return;
-      }
-      if (next) {
-          next();
-      }
-  }
-
-  function booklistscraper(req, res, next) {
-    //console.log(req);
-    next();
-    /*
-    if (!req.url.match(/^\/booklistscraper/)) {
-      next();
-      return;
-    }
-
-    cors(req, res, function () {
-      if (!req.method.match(/POST/i)) {
-        return next();
-      }
-      console.log('cross-origin request', req.body);
-      res.end('oh happy dagger');
-    });
-    */
-  }
-
   server = connect.createServer(
       connect.favicon(__dirname + '/public/favicon.ico')
 
@@ -546,12 +521,8 @@
     // decode http forms
     , connect.bodyParser()
 
-    // cors uploads
-    //, booklistscraper
-
     // images, css, etc
     , connect.static(__dirname + '/public')
-
 
     // REST API
     , connect.router(rest)

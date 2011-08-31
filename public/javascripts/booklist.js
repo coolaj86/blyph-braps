@@ -48,6 +48,23 @@ var ignoreme
   // for jeesh / jQuery compat
   $.domReady = $.domReady || $;
 
+  function toUserToken(str) {
+    if (!str) {
+      return;
+    }
+
+    str = str.trim().toLowerCase();
+
+    if (/@/.exec(str)) {
+      str = MD5.digest_s(str);
+      return str;
+    }
+
+    if (/^[a-f0-9]{32}$/.exec(str)) {
+      return str;
+    }
+  }
+
   function sortBySemester(a, b) {
     var year
       , term
@@ -68,7 +85,7 @@ var ignoreme
   var pending
     ; // delay updates by 5 seconds
   function saveBooklist() {
-    if (!currentUser.token) {
+    if (!currentUser.userToken) {
       return;
     }
 
@@ -85,8 +102,7 @@ var ignoreme
 
     var booklist;
     // TODO figure this the heck out!!! wtf?
-    fullBooklist.token = currentUser.token;
-    fullBooklist.student = currentUser.token;
+    fullBooklist.userToken = currentUser.userToken;
     fullBooklist.booklist = userBooks;
     fullBooklist.timestamp = new Date().valueOf();
     fullBooklist.type = 'booklist';
@@ -98,7 +114,7 @@ var ignoreme
     // TODO fix stringify on serverside
     request({
         "method": "POST"
-      , "href": "/booklist/" + currentUser.token
+      , "href": "/booklist/" + currentUser.userToken
       , "body": { "booklist": booklist }
       // TODO make a shortcut in ahr for this
       , "contentType": "application/json"
@@ -146,10 +162,9 @@ var ignoreme
     tradersArea.find('li').remove();
 
     traders.forEach(function (trader) {
-      // TODO calculate name and gravatar server-side (use as token?)
       var traderHtml = $(tradersTpl)
-        , name = trader.token.replace(/\s*@.*/, '').toLowerCase()
-        , gravatar = MD5.digest_s(trader.token.trim().toLowerCase())
+        , name = trader.nickname
+        , gravatar = trader.userToken
         , book = userBooks[trader.isbn13 || trader.isbn]
         , price = Number(book.fairest_price)
         ;
@@ -160,9 +175,8 @@ var ignoreme
         price = 'Make Offer';
       }
 
-      //console.log('showTrader', trader, MD5.digest_s(trader.token.trim().toLowerCase()));
       traderHtml.find('.result-name').text(name);
-      traderHtml.find('input.email').val(trader.token);
+      traderHtml.find('input.email').val(trader.userToken);
 
       traderHtml.find('.result-for-price').text(price);
       traderHtml.find('.person img').attr('src', 'http://www.gravatar.com/avatar/' + gravatar + '?s=50&r=pg&d=identicon');
@@ -557,7 +571,6 @@ var ignoreme
     return results.slice(0, 10);
   }
 
-  var patternToken = /(?:\?|&)token=(.*?)(?:&|$)/;
   var patternIsbn = /\d{10}|\d{13}/;
   function run() {
       // This key is a special dummy key from CampusBooks for public testing purposes 
@@ -766,11 +779,11 @@ var ignoreme
 
     function getBooklistHttp() {
       // http://localhost:3080
-      if (!currentUser.token) {
+      if (!currentUser.userToken) {
         return;
       }
       request({
-          href: "/booklist/" + currentUser.token + "?_no_cache_=" + new Date().valueOf()
+          href: "/booklist/" + currentUser.userToken + "?_no_cache_=" + new Date().valueOf()
       /*
         , headers: {
               "X-User-Session": "badSession"
@@ -781,7 +794,7 @@ var ignoreme
 
     booklist = undefined; //jsonStorage.get('user-booklist');
 
-    if (!currentUser.token) {
+    if (!currentUser.userToken) {
       onBooklist({});
     }
 
@@ -1054,24 +1067,55 @@ var ignoreme
     saveBooklist();
   }
 
+  function transitionToUserToken(obj) {
+    if (!obj || 'object' !== typeof obj) {
+      return;
+    }
+
+    if (/@/.exec(obj.token)) {
+      obj.userToken = toUserToken(obj.token.trim().toLowerCase());
+      delete obj.token;
+    }
+
+    if (/@/.exec(obj.email)) {
+      obj.userToken = toUserToken(obj.email.trim().toLowerCase());
+      delete obj.email;
+    }
+
+    return obj;
+  }
+
   function attemptLogin() {
     // TODO move out
     var users
       , user
       ;
 
-    user = jsonStorage.get('user');
-    users = jsonStorage.get('users') || '{}';
+    user = transitionToUserToken(jsonStorage.get('user'));
+    users = jsonStorage.get('users') || {};
 
-    if (!currentUser.email) {
-      if (!user || !user.email) {
+    transitionToUserToken(currentUser);
+
+    Object.keys(users).forEach(function (key) {
+      var user = transitionToUserToken(users[key]);
+      delete users[key];
+      users[user.userToken] = user;
+    });
+
+    if (!currentUser.userToken) {
+      if (!user || !user.userToken) {
+        // could check for most recent of `users`, but nah
         return;
       }
+
+      currentUser.userToken = user.userToken;
+
       Object.keys(user).forEach(function (key) {
         currentUser[key] = user[key];
       });
+
     } else {
-      user = users[currentUser.email] = users[currentUser.email] || currentUser;
+      user = users[currentUser.userToken] = users[currentUser.userToken] || currentUser;
     }
 
     if ('object' === typeof user) {
@@ -1082,11 +1126,11 @@ var ignoreme
 
     currentUser.timestamp = new Date().valueOf();
 
-    users[currentUser.email] = currentUser;
+    users[currentUser.userToken] = currentUser;
     jsonStorage.set('users', users);
     jsonStorage.set('user', currentUser);
 
-    if (currentUser.email) {
+    if (currentUser.userToken) {
       onSuccessfulLogin();
     }
   }
@@ -1109,8 +1153,7 @@ var ignoreme
       currentUser.referredBy = queryObj.referredBy;
     }
 
-    currentUser.token = queryObj.token;
-    currentUser.email = queryObj.email || queryObj.token;
+    currentUser.userToken = currentUser.userToken || toUserToken(queryObj.userToken) || toUserToken(queryObj.token) || toUserToken(queryObj.email);
 
     attemptLogin();
   }
@@ -1122,7 +1165,7 @@ var ignoreme
 
     setTimeout(function () {
       var href = $(".load-booklist a").attr('href');
-      $(".load-booklist a").attr('href', href + '#/?token=' + currentUser.token);
+      $(".load-booklist a").attr('href', href + '#/?userToken=' + currentUser.userToken);
     }, 100);
 
     $("div.item").remove();
@@ -1158,13 +1201,9 @@ var ignoreme
   }
 
   function onSuccessfulLogin() {
-    currentUser.email = currentUser.email || currentUser.token;
-    currentUser.token = currentUser.token || currentUser.email;
-    currentUser.nickname = currentUser.nickname || currentUser.email.replace(/@.*/, '');
-    currentUser.gravatar = MD5.digest_s(currentUser.email.trim().toLowerCase());
-    currentUser.referrerId = currentUser.referrerId || currentUser.token || currentUser.email
-    document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.referrerId || currentUser.token || currentUser.email;
-    $("#fb-unique-link").attr('href', 'blyph.com/#/?referredBy=' + currentUser.referrerId || currentUser.token || currentUser.email);
+    currentUser.referrerId = currentUser.userToken;
+    document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.userToken;
+    $("#fb-unique-link").attr('href', 'blyph.com/#/?referredBy=' + currentUser.userToken);
     $('#saveyourinfo').slideUp();
     $('#logout').show();
     $('.username').text(currentUser.nickname);
@@ -1274,8 +1313,8 @@ var ignoreme
       ev.stopPropagation();
 
       message.note = "Hello firebugger / wiresharker. Yes, we plan on fixing this bug soon. Just trying to release, y'know";
-      message.to = personHtml.find('input.email').val();
-      message.from = currentUser.token;
+      message.to = personHtml.find('input.email').val(); // TODO rename as userToken
+      message.from = currentUser.userToken;
       message.bookTitle = $('#imported-booklist .item .title').text().trim();
       message.body = personHtml.find('textarea').val();
       message.fairPrice = personHtml.find('.result-for-price').text().trim();
@@ -1315,13 +1354,15 @@ var ignoreme
         ;
 
       // TODO this must be done on the application side as well!!!
-      currentUser.email = $('input[name=email]').val().toLowerCase();
-      currentUser.school = $('input[name=school]').val().toLowerCase();
+      currentUser.email = $('input[name=email]').val().trim().toLowerCase();
+      currentUser.school = $('input[name=school]').val().trim().toLowerCase();
 
       if (!currentUser.email || !/\w+@\w+.\w+/.exec(currentUser.email)) {
         alert('bad email address');
         return;
       }
+      currentUser.userToken = MD5.digest_s(currentUser.email);
+      //delete currentUser.email;
 
       if (!currentUser.school || !/\w+\.(?:edu|gov)\s*$/i.exec(currentUser.school)) {
         alert('Put a University url such as "byu.edu"');
@@ -1357,7 +1398,6 @@ var ignoreme
       }
 
       $('saveyourinfo').fadeTo(300, 0.3);
-      currentUser.gravatar = MD5.digest_s(currentUser.email.trim().toLowerCase());
       request({
           method: 'POST'
         , href: '/subscribe'
@@ -1366,14 +1406,14 @@ var ignoreme
 
       var users, user;
       users = jsonStorage.get('users') || '{}';
-      user = users[currentUser.email] = users[currentUser.email];
+      user = users[currentUser.userToken] = users[currentUser.userToken];
       if ('object' === typeof user) {
         Object.keys(user).forEach(function (key) {
           currentUser[key] = user[key];
         });
       }
       currentUser.timestamp = new Date().valueOf();
-      users[currentUser.email] = currentUser;
+      users[currentUser.userToken] = currentUser;
       jsonStorage.set('users', users);
 
     });
