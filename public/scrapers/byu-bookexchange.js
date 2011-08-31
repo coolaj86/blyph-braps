@@ -1,4 +1,5 @@
 // Book Exchange (isbn + course):
+var allBookIds = [];
 (function () {
   "use strict";
 
@@ -253,7 +254,13 @@
       ;
 
     anchors.each(function (i, anchor) {
-      bookIds.push($(anchor).attr('href').match(/book_id=(\w+)/)[1]);
+      var book_id = $(anchor).attr('href').match(/book_id=(\w+)/);
+      book_id = book_id && book_id[1];
+
+      if (book_id) {
+        allBookIds.push(book_id);
+        bookIds.push(book_id);
+      }
     });
     return bookIds;
   }
@@ -428,6 +435,7 @@
   }
 
   function scraper() {
+    
 
     // 3
     // The data is so heirarchical, next we can get just a list of postings, but not the postings...
@@ -685,4 +693,4 @@
   jqScript.onload = scraper;
   document.body.appendChild(jqScript);
 }());
-// javascript:window.blys=document.createElement('script');blys.src="http://alpha.blyph.com/scrapers/byu-bookexchange.js";document.body.append(blys)
+// javascript:window.blys=document.createElement('script');blys.src="http://alpha.blyph.com/scrapers/byu-bookexchange.js";document.body.appendChild(blys)
