@@ -100,13 +100,14 @@
               return;
             }
 
-            emit(null, doc);
+            emit(doc.nickname, doc);
           }
         },
         byUnsorted: {
           map: function (doc) {
             var booklist
-              , token = doc.token || doc.student || doc.email
+              , userToken = doc.userToken
+              , nickname = doc.nickname
               ;
 
             if ('booklist' !== doc.type) {
@@ -140,7 +141,8 @@
 
               emit([isbn, doc.school], {
                   book: book
-                , token: token
+                , nickname: nickname
+                , userToken: userToken
               });
             });
           }
@@ -148,7 +150,8 @@
         byTrade: {
           map: function (doc) {
             var booklist
-              , token = doc.token || doc.student || doc.email
+              , userToken = doc.userToken
+              , nickname = doc.nickname
               ;
 
             if ('booklist' !== doc.type) {
@@ -170,7 +173,8 @@
               if (false === book.wantIt && true === book.haveIt) {
                 emit([isbn, doc.school], {
                     book: book
-                  , token: token
+                  , nickname: nickname
+                  , userToken: userToken
                 });
               }
             });
@@ -179,7 +183,8 @@
         byNeed: {
           map: function (doc) {
             var booklist
-              , token = doc.token || doc.student || doc.email
+              , userToken = doc.userToken
+              , nickname = doc.nickname
               ;
 
             if ('booklist' !== doc.type) {
@@ -202,7 +207,8 @@
               if (true === book.wantIt && false === book.haveIt) {
                 emit([isbn, doc.school], {
                     book: book
-                  , token: token
+                  , nickname: nickname
+                  , userToken: userToken
                 });
               }
             });
@@ -211,7 +217,8 @@
         byKeep: {
           map: function (doc) {
             var booklist
-              , token = doc.token || doc.student || doc.email
+              , userToken = doc.userToken
+              , nickname = doc.nickname
               ;
 
             if ('booklist' !== doc.type) {
@@ -233,7 +240,8 @@
               if (true === book.wantIt && true === book.haveIt) {
                 emit([isbn, doc.school], {
                     book: book
-                  , token: token
+                  , nickname: nickname
+                  , userToken: userToken
                 });
               }
             });
@@ -242,7 +250,8 @@
         byIgnore: {
           map: function (doc) {
             var booklist
-              , token = doc.token || doc.student || doc.email
+              , userToken = doc.userToken
+              , nickname = doc.nickname
               ;
 
             if ('booklist' !== doc.type) {
@@ -265,7 +274,8 @@
               if (false === book.wantIt && false === book.haveIt) {
                 emit([isbn, doc.school], {
                     book: book
-                  , token: token
+                  , nickname: nickname
+                  , userToken: userToken
                 });
               }
             });
@@ -280,29 +290,17 @@
       views: {
         all: {
           map: function (doc) {
-            if (doc.type && 'user' !== doc.type) {
+            if ('user' !== doc.type || !doc.email) {
               return;
             }
 
-            if (!doc.email) {
-              return;
-            }
-
-            emit(null, doc);
+            emit(doc.email, doc);
           }
         },
         bySchool: {
           map: function (doc) {
-            if (doc.type && 'user' !== doc.type) {
+            if ('user' !== doc.type || !doc.email) {
               return;
-            }
-
-            if (!doc.email) {
-              return;
-            }
-
-            if (!doc.school) {
-              doc.school = null;
             }
 
             emit(doc.school, doc.email);

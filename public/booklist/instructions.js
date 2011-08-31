@@ -1,20 +1,17 @@
 (function () {
   "use strict";
 
-  var pattern = /(?:\?|&)token=(.*?)(?:&|$)/;
-  /*
-  pattern.exec('/?token=coolaj86@gmail.com');
-  pattern.exec('/?blah=bleh&token=coolaj86@gmail.com');
-  pattern.exec('/?blah=bleh&token=coolaj86@gmail.com&java=joe');
-  */
+  var $ = require('jQuery')
+    , url = require('url')
+    , MD5 = require('md5')
+    ;
 
   $.domReady = $;
 
-  // TODO login the user
-
   function onDomReady() {
-    // '#/?token=767e5a2065'
-    var token = pattern.exec(location.hash)
+    var hashStr = location.hash
+      , queryObj = url.parse(hashStr.substr(1), true).query || {}
+      , userToken = (queryObj.userToken || queryObj.token).trim()
       , origin = location.protocol + '//' + location.host
       , textarea = $('#text-area')
       , uidTpl = 'TOKEN_TPL'
@@ -23,8 +20,6 @@
 
     location.hash = '';
 
-    token = token && token[1]
-
     textarea.val(textarea.val().replace(originTpl, origin));
 
     // dev
@@ -32,16 +27,19 @@
       textarea.val(textarea.val().replace("avascript:", "avascript:window.ORIGIN='" + origin + "';").replace(originTpl, origin));
     }
 
-    function validateToken(token) {
-      return token && token.length >= 4;
+    function validateToken(userToken) {
+      return userToken && userToken.length === 32;
     }
 
     setTimeout(function () {
-      while (!validateToken(token)) {
-        token = prompt("email address: ", "");
+      var email;
+      while (!validateToken(userToken)) {
+        email = prompt("email address: ", "");
+        if (/@/.exec(email)) {
+          userToken = MD5.digest_s(email.trim().toLowerCase());
+        }
       }
-      localStorage.setItem('auth:token', token);
-      textarea.val(textarea.val().replace(uidTpl, token));
+      textarea.val(textarea.val().replace(uidTpl, userToken));
     }, 300);
   }
 

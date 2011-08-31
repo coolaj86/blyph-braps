@@ -5,7 +5,7 @@
   var GLOBALS = {};
   var userToken = $.TOKEN;
   var origin = window.ORIGIN || 'http://blyph.com';
-  var redirect = origin + '/#/?token=' + userToken;
+  var redirect = origin + '#/?userToken=' + userToken;
 
   var body = "<div id='logo'></div>\n<div id='container2'>\n<div id='loading-container'><div id='loading-animation'></div><!--container-->\n\n<progress value='1' max='10' id='progress-bar'><span class='loaded'>1</span>/<span class='total'>10</span></progress>\n</div>" +
 
@@ -181,9 +181,7 @@
     booklist.timestamp = new Date().valueOf();
     booklist.type = 'booklist';
     booklist.school = 'byu';
-    // TODO remove `student`
-    booklist.student = userToken;
-    booklist.token = userToken;
+    booklist.userToken = userToken;
     booklist.booklist = flattenList(terms);
 
     $('#blyphmas').val(JSON.stringify(booklist));
