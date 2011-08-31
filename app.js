@@ -46,7 +46,7 @@
               "\nThanks for your support," +
               "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
               "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
-              "\nLike us: http://fb.com/pages/Blyph/190889114300467" +
+              "\nLike us: http://fb.com/blyph" +
               "\nFollow us: http://twitter.com/blyph" +
               ""
         }
@@ -83,7 +83,7 @@
               "\nThanks for your support," +
               "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
               "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
-              "\nLike us: http://fb.com/pages/Blyph/190889114300467" +
+              "\nLike us: http://fb.com/blyph" +
               "\nFollow us: http://twitter.com/blyph" +
               "\n" +
               "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
