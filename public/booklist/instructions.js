@@ -9,7 +9,8 @@
   $.domReady = $;
 
   function onDomReady() {
-    var queryObj = url.parse(location.hash, true).query || {}
+    var hashStr = location.hash
+      , queryObj = url.parse(hashStr.substr(1), true).query || {}
       , userToken = (queryObj.userToken || queryObj.token).trim()
       , origin = location.protocol + '//' + location.host
       , textarea = $('#text-area')

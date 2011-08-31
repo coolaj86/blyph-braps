@@ -1093,6 +1093,9 @@ var ignoreme
 
     user = transitionToUserToken(jsonStorage.get('user'));
     users = jsonStorage.get('users') || {};
+    if ('object' !== typeof users) {
+      users = {};
+    }
 
     transitionToUserToken(currentUser);
 
@@ -1164,8 +1167,6 @@ var ignoreme
     form_item_template = $("#item_form").html()
 
     setTimeout(function () {
-      var href = $(".load-booklist a").attr('href');
-      $(".load-booklist a").attr('href', href + '#/?userToken=' + currentUser.userToken);
     }, 100);
 
     $("div.item").remove();
@@ -1201,8 +1202,13 @@ var ignoreme
   }
 
   function onSuccessfulLogin() {
+    var href;
+
     currentUser.referrerId = currentUser.userToken;
+
     document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.userToken;
+    href = $(".load-booklist a").attr('href');
+    $(".load-booklist a").attr('href', href + '#/?userToken=' + currentUser.userToken);
     $("#fb-unique-link").attr('href', 'blyph.com/#/?referredBy=' + currentUser.userToken);
     $('#saveyourinfo').slideUp();
     $('#logout').show();
@@ -1361,6 +1367,7 @@ var ignoreme
         alert('bad email address');
         return;
       }
+      currentUser.nickname = currentUser.email.replace(/@.*/, '');
       currentUser.userToken = MD5.digest_s(currentUser.email);
       //delete currentUser.email;
 
