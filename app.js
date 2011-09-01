@@ -91,7 +91,7 @@
               "\nWhy? Simple: More people means more trading matches." +
               "\n" +
               "\nPlease share this unique link with your BYU friends:" +
-              "\nhttp://blyph.com#/?referredBy=" + user.referrerId +
+              "\nhttp://blyph.com#/?referredBy=" + (user.referrerId || user.userToken.substr(14,8)) +
               "\n" +
               "\nAs a bonus, the more friends you share with, the more entries you get into the 16gb iPad2 drawing." +
               "\n" +

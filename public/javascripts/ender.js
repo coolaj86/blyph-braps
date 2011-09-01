@@ -1,4 +1,4 @@
-window.FormData = window.FormData || {};
+window.FormData = window.FormData || function FormData() {};
 /*!
   * =============================================================
   * Ender: open module JavaScript framework (https://ender.no.de)
