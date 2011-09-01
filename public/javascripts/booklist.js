@@ -938,7 +938,7 @@ var ignoreme
 
       retailBuyBacks = cbBuyBackPrices(retailBuyBacks[2]);
       need = need[2] && need[2].books || [];
-      unsorted = unsorted[2].books || [];
+      unsorted = unsorted[2] && unsorted[2].books || [];
 
       jsonStorage.set('cbp:' + isbn, {
           timestamp: now
