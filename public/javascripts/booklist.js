@@ -1179,6 +1179,8 @@ var ignoreme
         , xfbml
         ;
 
+      currentUser.referrerId = currentUser.referrerId || currentUser.userToken.substr(14,8);
+
       // TODO we have to use #referrerId here due to some server parse error?
       xfbml = '<fb:send id="fb-unique-link" href="' + 'blyph.com/#referrerId=' + currentUser.referrerId + '" font=""></fb:send>';
       document.getElementById('fbml').innerHTML = xfbml;
@@ -1204,7 +1206,7 @@ var ignoreme
   function onSuccessfulLogin() {
     var href;
 
-    currentUser.referrerId = currentUser.userToken;
+    currentUser.referrerId = currentUser.referrerId || currentUser.userToken.substr(14,8);
 
     document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.userToken;
     href = $(".load-booklist a").attr('href');
@@ -1344,7 +1346,7 @@ var ignoreme
         if (data && 'string' !== typeof data && !data.error ) {
           alert('Message sent. :-D');
         } else {
-          console.log(ahr.status, data, data.error);
+          console.log(ahr.status, data);
           alerted || alert('Error: failed to send message');
         }
       });
