@@ -1,6 +1,11 @@
 @charset "UTF-8";
 /* CSS Document */
 
+#fb-send {
+  position: relative;
+  width: 100px;
+}
+
 .title_box {
     height:15px;
     width:auto;
@@ -37,7 +42,7 @@
 }
 
 #social-sharing {
-    width:260px;
+    width:auto;
     height:auto;
     padding-left:0px;
     margin-top:5px;
@@ -46,13 +51,6 @@
 #saveyourinfo {
     background:#FFC;
     text-align:center;
-}
-
-#social-sharing {
-    background-color:#fff;
-    height:auto;
-    width:650px;
-    margin:0px auto 0px auto;
 }
 
 #social-sharing h3 {

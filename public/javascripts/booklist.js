@@ -1179,10 +1179,10 @@ var ignoreme
         , xfbml
         ;
 
-      currentUser.referrerId = currentUser.referrerId || currentUser.userToken.substr(14,8);
+      currentUser.referrerId = currentUser.userToken.substr(14, 8);
 
       // TODO we have to use #referrerId here due to some server parse error?
-      xfbml = '<fb:send id="fb-unique-link" href="' + 'blyph.com/#referrerId=' + currentUser.referrerId + '" font=""></fb:send>';
+      xfbml = '<fb:send width="200" id="fb-unique-link" href="' + 'blyph.com/#referrerId=' + currentUser.referrerId + '" font=""></fb:send>';
       document.getElementById('fbml').innerHTML = xfbml;
       document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.referrerId;
 
@@ -1206,7 +1206,7 @@ var ignoreme
   function onSuccessfulLogin() {
     var href;
 
-    currentUser.referrerId = currentUser.referrerId || currentUser.userToken.substr(14,8);
+    currentUser.referrerId = currentUser.userToken.substr(14,8);
 
     document.getElementById('unique-link').innerHTML = 'blyph.com/#/?referredBy=' + currentUser.userToken;
     href = $(".load-booklist a").attr('href');
