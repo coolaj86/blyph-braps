@@ -937,7 +937,7 @@ var ignoreme
       trade = trade[2] && trade[2].books || [];
 
       retailBuyBacks = cbBuyBackPrices(retailBuyBacks[2]);
-      need = need[2].books || [];
+      need = need[2] && need[2].books || [];
       unsorted = unsorted[2].books || [];
 
       jsonStorage.set('cbp:' + isbn, {
