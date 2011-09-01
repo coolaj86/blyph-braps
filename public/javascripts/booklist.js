@@ -20,7 +20,7 @@ var ignoreme
     , Futures = require('futures')
     , request = require('ahr2')
     , CampusBooks = require('campusbooks')
-    , campusbooks = CampusBooks.create("BDz21GvuL6RgTKiSbwe3")
+    , campusbooks = CampusBooks.create("BLCg7q5VrmUBxsrETg5c")
     , ISBN = require('isbn').ISBN
     , display_item_template
     , form_item_template
