@@ -1344,7 +1344,7 @@ var ignoreme
           }
         }
         if (data && 'string' !== typeof data && !data.error ) {
-          alert('Message sent. :-D');
+          personHtml.html('Message sent. :-D');
         } else {
           console.log(ahr.status, data);
           alerted || alert('Error: failed to send message');

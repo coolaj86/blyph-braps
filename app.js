@@ -25,6 +25,9 @@
       message.fairPrice = undefined;
     }
 
+
+    console.log('message 0', message);
+
     // TODO use Join
     db.get(message.to, function (err, res) {
       if (err) {
@@ -32,12 +35,18 @@
         return;
       }
 
+      console.log('message 1', message);
+
       message.to = res.email;
+
       db.get(message.from, function (err, res) {
         if (err) {
           fn(err);
           return;
         }
+
+        console.log('message 2', message);
+        console.log('res 1 ', res);
 
         message.from = res.email;
 
@@ -70,10 +79,10 @@
                   "\nUnsubscribe: Send a message with your feedback to unsubscribe@blyph.com" +
                   ""
             }
-          , message = mailer.message.create(headers)
+          , emailMessage = mailer.message.create(headers)
           ;
 
-        mailserver.send(message, fn);
+        mailserver.send(emailMessage, fn);
       });
     });
   }
@@ -263,6 +272,7 @@
           if (err) {
             res.error(err);
           }
+          console.log('message sent');
           res.json(message);
         });
         return;
