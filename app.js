@@ -4,6 +4,7 @@
   var config = require(__dirname + '/config')
     , crypto = require('crypto')
     , connect = require('jason')
+    , gzip = require('connect-gzip')
     , mailer = require('emailjs')
     , mailserver = mailer.server.connect(config.emailjs)
     , cradle = require('cradle')
@@ -531,6 +532,7 @@
     , connect.bodyParser()
 
     // images, css, etc
+    , gzip.staticGzip(__dirname + '/public')
     , connect.static(__dirname + '/public')
 
     // REST API
