@@ -145,6 +145,7 @@ var ignoreme
 
     // now show my list
     $.domReady(listUploads);
+    $('#loading-mask').fadeOut();
   }
   request({
     href: "/bookinfo.table.json"

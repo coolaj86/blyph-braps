@@ -1,6 +1,16 @@
 @charset "UTF-8";
 /* CSS Document */
 
+#loading-mask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background-color: white;
+  z-index: 2147483647;
+}
+
 #fb-send {
   position: relative;
   width: 100px;
