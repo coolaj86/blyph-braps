@@ -2,6 +2,7 @@
   "use strict";
 
   var config = require(__dirname + '/config')
+    , fs = require('fs')
     , crypto = require('crypto')
     , connect = require('jason')
     , gzip = require('connect-gzip')
@@ -11,7 +12,10 @@
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
         .database(config.cradle.database, function () { console.log(arguments); })
     , server
+    , defaultWelcome
     ;
+
+  defaultWelcome = fs.readFileSync(__dirname + '/emails/welcome.email.tpl.txt').toString('utf8');
 
   // August 24th, 2011
   // iClicker
@@ -88,39 +92,20 @@
   }
 
   function sendEmail(user, fn) {
-    var headers = {
+    var headers
+      , referredBy
+      , message
+      ;
+
+    referredBy = (user.referrerId || user.userToken.substr(14,8));
+
+    message = defaultWelcome.replace('{{REFERRED_BY}}', referredBy);
+
+    headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
           , to: user.email
-          , subject: "Share more Blyph, Get more Matches (and win an iPad)"
-          , text: "" +
-              "\nThanks for signing up. We're glad to have you." +
-              "\n" +
-              "\nWith only a few days before classes start, we really need your help to get the word out!" +
-              "\n" +
-              "\nWhy? Simple: More people means more trading matches." +
-              "\n" +
-              "\nPlease share this unique link with your BYU friends:" +
-              "\nhttp://blyph.com#/?referredBy=" + (user.referrerId || user.userToken.substr(14,8)) +
-              "\n" +
-              "\nAs a bonus, the more friends you share with, the more entries you get into the 16gb iPad2 drawing." +
-              "\n" +
-              "\n10 friends join - 10 entries" +
-              "\n20 friends join - 40 entries" +
-              "\n30 friends join - 90 entries" +
-              "\n10n friends join - 10(n^2) entries (for you math geeks)" +
-              "\n100 friends join - 1000 entries" +
-              "\n" +
-              "\n" +
-              "\nThanks for your support," +
-              "\nAJ ONeal <aj@blyph.com> (http://fb.com/coolaj86)" +
-              "\nBrian Turley <brian@blyph.com> (http://fb.com/brian.turley03)" +
-              "\nLike us: http://fb.com/blyph" +
-              "\nFollow us: http://twitter.com/blyph" +
-              "\n" +
-              "\n* Drawing details at http://blyph.com/sweepstakes-rules.html" +
-              "\n" +
-              "\nUnsubscribe: Send a message with your feedback to unsubscribe@blyph.com" +
-              ""
+          , subject: "Welcome to Blyph"
+          , text: message
         }
         // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
       , message = mailer.message.create(headers)

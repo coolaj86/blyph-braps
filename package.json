@@ -16,7 +16,8 @@
     , "cradle": ">= 0.0.0"
     , "emailjs": ">= 0.0.0"
     , "isbn": ">= 0.0.0"
-    , "connect-gzip": "*"
+    , "forEachAsync": "2.1.x"
+    , "connect-gzip": "0.1.x"
   },
   "devDependencies": {}
 }
