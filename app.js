@@ -13,9 +13,11 @@
         .database(config.cradle.database, function () { console.log(arguments); })
     , server
     , defaultWelcome
+    , defaultSubject
     ;
 
-  defaultWelcome = fs.readFileSync(__dirname + '/emails/welcome.email.tpl.txt').toString('utf8');
+  defaultWelcome = fs.readFileSync(__dirname + '/emails/personal-asteroids.tpl.txt').toString('utf8');
+  defaultSubject = "You can't beat personal contact, but you can explodinate asteroids"
 
   // August 24th, 2011
   // iClicker
@@ -104,7 +106,7 @@
     headers = {
             from: "AJ @ Blyph <" + config.emailjs.user + ">"
           , to: user.email
-          , subject: "Welcome to Blyph"
+          , subject: defaultSubject
           , text: message
         }
         // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
@@ -470,6 +472,7 @@
           if (err) {
             console.error('ERROR db.save 1st', err);
           } 
+
           fullUser._rev = receipt.rev;
 
           res.end(JSON.stringify({
@@ -478,6 +481,10 @@
             , couchdb: fullUser
             , error: err
           }));
+
+          if (fullUser.confirmationSent) {
+            return;
+          }
 
           sendEmail(fullUser, function(err, message) {
             if (err) {
