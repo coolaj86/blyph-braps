@@ -8,14 +8,16 @@
     "type": "git",
     "url": "gitosis@thrustvps.coolaj86.info:blyph.git"
   },
+  "private": true,
   "engines": {
     "node": ">= 0.4.8"
   },
   "dependencies": {
-      "jason": ">= 0.1.4"
-    , "cradle": ">= 0.0.0"
-    , "emailjs": ">= 0.0.0"
+      "cradle": "0.5.7"
+    , "emailjs": "0.1.14"
+    , "jason": "0.1.5"
     , "isbn": ">= 0.0.0"
+    , "connect_router": "1.x"
     , "forEachAsync": "2.1.x"
     , "connect-gzip": "0.1.x"
   },
