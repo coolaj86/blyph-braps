@@ -1,3 +1,11 @@
-Braps (server)
-====
+# Braps (server)
 
+# API
+
+    GET /
+
+## Users
+
+## Booklists
+
+##

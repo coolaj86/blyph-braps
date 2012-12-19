@@ -6,7 +6,6 @@
     , fs = require('fs')
     , crypto = require('crypto')
     , connect = require('jason')
-    //, gzip = require('connect-gzip')
     , blyphMail = require('./blyph-mail')
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
@@ -534,9 +533,9 @@
     // decode http forms
     .use(connect.bodyParser())
 
+    // text types
+    .use(connect.compress({ level: 9, memLevel: 9 }))
     // images, css, etc
-    //.use(gzip.staticGzip(__dirname + '/../public'))
-    //.use(connect.compress())
     .use(connect.static(__dirname + '/../public'))
 
     // REST API
