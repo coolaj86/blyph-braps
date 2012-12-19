@@ -2,22 +2,25 @@
   "author": "AJ ONeal <coolaj86@gmail.com> (http://coolaj86.info)",
   "name": "blyph",
   "description": "Blyph student book exchange",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "http://blyph.com",
   "repository": {
     "type": "git",
     "url": "gitosis@thrustvps.coolaj86.info:blyph.git"
   },
+  "private": true,
   "engines": {
     "node": ">= 0.4.8"
   },
+  "main": "server",
   "dependencies": {
-      "jason": ">= 0.1.4"
-    , "cradle": ">= 0.0.0"
-    , "emailjs": ">= 0.0.0"
-    , "isbn": ">= 0.0.0"
-    , "forEachAsync": "2.1.x"
-    , "connect-gzip": "0.1.x"
+    "cradle": "0.5.7",
+    "jason": "0.1.5",
+    "isbn": ">=0.1.0 <0.2.0",
+    "connect_router": "1.x",
+    "forEachAsync": "2.1.x",
+    "connect-gzip": "0.1.x",
+    "nodemailer": ">=0.3.37 <0.4.0"
   },
   "devDependencies": {}
 }
