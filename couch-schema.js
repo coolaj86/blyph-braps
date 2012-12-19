@@ -1,14 +1,12 @@
+/*jshint strict:true node:true es5:true onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unused:true undef:true*/
+/*global emit*/
 (function () {
   "use strict";
 
   var cradle = require('cradle')
-    , db = new(cradle.Connection)('coolaj86.couchone.com', 443, {
-          secure: true
-        , auth: {
-            username: 'coolaj86'
-          , password: 'Wh1t3Ch3dd3r'
-        }
-      }).database('syllabi', function () { console.log('connected to database', arguments); })
+    , config = require('./config')
+    , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
+      .database(config.cradle.database, function () { console.log(arguments); })
     ;
 
   /*
