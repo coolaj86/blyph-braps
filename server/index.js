@@ -11,9 +11,9 @@
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
         .database(config.cradle.database, function () { console.log(arguments); })
-    , server
     , defaultWelcome
     , defaultSubject
+    , app
     ;
 
   if (!connect.router) {
@@ -104,29 +104,35 @@
 
     referredBy = (user.referrerId || user.userToken.substr(14,8));
 
-    message = defaultWelcome.replace(/{{REFERRED_BY}}/g, referredBy);
+    message = defaultWelcome.replace(/\{\{REFERRED_BY\}\}/g, referredBy);
 
     headers = {
             from: "AJ @ Blyph <" + config.mailer.user + ">"
           , to: user.email
           , subject: defaultSubject
-          , text: message
+          , body: message
         }
         // message.attach_alternative("<html>i <i>hope</i> this works!</html>");
-      , message = mailer.message.create(headers)
       ;
 
-    mailserver.send(message, fn);
+    blyphMail.send(config.mailer, headers, fn);
   }
 
+/*
   function log(err, data) {
     console.error('err: ' + err);
     console.log('data: ' + JSON.stringify(data));
   }
+*/
 
-  function rest(app) {
+  function rest(routes) {
+    var userTokenRegExp = /^\w+$/
+      , emailRegExp
+      , schoolRegExp
+      ;
+
     // TODO allow unsubscribe via email
-    app.put('/unsubscribe', function (req, res) {
+    routes.put('/unsubscribe', function (req, res) {
       var userToken = req.body && req.body.userToken;
 
       if (!userToken) {
@@ -151,10 +157,14 @@
       
     });
 
+    routes.get('/schools', function (req, res) {
+      db.view('schools/all', function (err, schools) {
+        res.json(schools);
+      });
+    });
     // sorted and unsorted booklists
     ['byTrade', 'byNeed', 'byUnsorted', 'byIgnore', 'byKeep'].forEach(function (bySort) {
       var cache = {}
-        , inProgress = false
         ;
 
       cache.timestamp = 0;
@@ -201,9 +211,13 @@
         });
       }
 
-      app.get('/books/' + bySort + '/:isbn', function (req, res) {
+      routes.get('/books/' + bySort + '/:isbn', function (req, res) {
         console.log("HERE I AM", req.params.isbn);
         function respond(err) {
+          if (err) {
+            console.error(__dirname);
+            console.error(err);
+          }
           console.log('responded');
           var result = cache[req.params.isbn];
           res.json({ books: result });
@@ -215,11 +229,6 @@
         }
       });
     });
-    app.get('/schools', function (req, res) {
-      db.view('schools/all', function (err, schools) {
-        res.json(schools);
-      });
-    });
 
     /*
      *
@@ -227,7 +236,7 @@
      *
      */
     // TODO convert to use session
-    app.get('/booklist/:userToken', function (req, res) {
+    routes.get('/booklist/:userToken', function (req, res) {
       console.log('map booklist');
       var userToken = req.params.userToken.trim().toLowerCase()
         ;
@@ -246,8 +255,7 @@
       });
     });
 
-    var userTokenRegExp = /^\w+$/;
-    app.post('/match', function (req, res) {
+    routes.post('/match', function (req, res) {
       var message = req.body || {};
 
       if (
@@ -272,9 +280,10 @@
       res.json(req.body);
     });
 
-    app.post('/booklist/:userToken', function (req, res) {
+    routes.post('/booklist/:userToken', function (req, res) {
       var booklist = req.body && req.body.booklist
         , redirect = req.body && req.body.redirect
+        , result
         ;
 
       try { 
@@ -287,7 +296,7 @@
 
       if (!booklist) {
         res.writeHead(422);
-        res.end(JSON.stringify({ error: { message: "Bad body", parseError: JSON.stringify(e)} }));
+        res.end(JSON.stringify({ error: { message: "Bad body", parseError: JSON.stringify(new Error('no booklist found'))} }));
         return;
       }
 
@@ -305,15 +314,14 @@
         && 'object' === typeof booklist.booklist
         )) {
         res.writeHead(422);
-        var status =
-        {
+        result = {
             userToken: !!booklist.userToken
-          , 'type': !!('booklist' === booklist.type)
+          , 'type': ('booklist' === booklist.type)
           , school: !!booklist.school 
           , timestamp: !!booklist.timestamp 
-          , booklist: !!('object' === typeof booklist.booklist)
+          , booklist: ('object' === typeof booklist.booklist)
         };
-        res.end(JSON.stringify({ error: { message: "Bad booklist object (userToken, type, school, timestamp, booklist)"}, status: status }));
+        res.end(JSON.stringify({ error: { message: "Bad booklist object (userToken, type, school, timestamp, booklist)"}, status: result }));
         return;
       }
 
@@ -345,8 +353,6 @@
       }
 
       function mergeLists(err, data) {
-        var isbns = {};
-
         if (err || 'object' !== data.booklist || Array.isArray(data.booklist)) { 
           data = { booklist: {} };
         }
@@ -377,15 +383,17 @@
       db.get(booklist.userToken + ':booklist', mergeLists);
     });
 
+    /*
     function random() {
       return 0.5 - Math.random();
     }
+    */
 
     // RFC Allowed: ! # $ % & ' * + - / = ? ^ _ ` { | } ~
     // Hotmail Disallowed ! # $ % * / ? ^ ` { | } ~
     // (I agree with MS on this one!)
-    var emailRegExp = /^[-&'+=_\w\.]+@[-\w\.]+\.\w{1,8}$/i;
-    var schoolRegExp = /^(?:https?:\/\/)?(?:[-\w\.]+\.)?([-\w]+\.(?:edu|gov))$/i;
+    emailRegExp = /^[\-&'+=_\w\.]+@[\-\w\.]+\.\w{1,8}$/i;
+    schoolRegExp = /^(?:https?:\/\/)?(?:[\-\w\.]+\.)?([\-\w]+\.(?:edu|gov))$/i;
     // "http://www.byu.edu"
     // "http://www-apps.byu.edu"
     // "http://www-apps.byu-i.edu"
@@ -489,14 +497,14 @@
             return;
           }
 
-          sendEmail(fullUser, function(err, message) {
+          sendEmail(fullUser, function(err/*, message*/) {
             if (err) {
               console.error('ERROR send email', err);
               return;
             }
 
             fullUser.confirmationSent += 1;
-            db.save(fullUser.userToken, fullUser, function (err, receipt) {
+            db.save(fullUser.userToken, fullUser, function (err/*, receipt*/) {
               if (err) {
                 console.error('ERROR db.save 1st confirmation', err);
               }
@@ -507,16 +515,16 @@
       });
     }
 
-    app.get('/subscribe/:user@:domain.:tld', function(req, res) {
+    routes.get('/subscribe/:user@:domain.:tld', function(req, res) {
       req.body = req.params;
 
       handleSignUp(req, res);
     });
 
-    app.post('/subscribe', handleSignUp);
-  };
+    routes.post('/subscribe', handleSignUp);
+  }
 
-  server = connect.createServer()
+  app = connect.createServer()
     .use(connect.favicon(__dirname + '/../public/favicon.ico'))
 
   // these won't work CORS-style without an Access-Control-Allow
@@ -535,5 +543,5 @@
     .use(connect.router(rest))
     ;
 
-  module.exports = server;
+  module.exports = app;
 }());

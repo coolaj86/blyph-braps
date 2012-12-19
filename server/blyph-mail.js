@@ -42,6 +42,7 @@
       html
       attachments
      */
+    message.body = message.text || message.body;
     get(opts).sendMail(message);
   }
 

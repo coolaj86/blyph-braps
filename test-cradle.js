@@ -13,11 +13,11 @@
 
   // save the user info
   fs.readFile('users.json', function (err, data) {
-    console.log('users.json', data.toString('utf8'));
     if (err) {
       console.error('ERR:', err);
       return;
     }
+    console.log('users.json', data.toString('utf8'));
 
     data = JSON.parse(data.toString('utf8'));
 
