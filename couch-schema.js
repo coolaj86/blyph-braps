@@ -1,4 +1,5 @@
 /*jshint strict:true node:true es5:true onevar:true laxcomma:true laxbreak:true eqeqeq:true immed:true latedef:true unused:true undef:true*/
+/*global emit*/
 (function () {
   "use strict";
 
@@ -6,7 +7,6 @@
     , config = require('./config')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
       .database(config.cradle.database, function () { console.log(arguments); })
-      }).database('syllabi', function () { console.log('connected to database', arguments); })
     ;
 
   /*
