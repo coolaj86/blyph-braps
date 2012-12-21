@@ -514,12 +514,6 @@
       });
     }
 
-    routes.get('/subscribe/:user@:domain.:tld', function(req, res) {
-      req.body = req.params;
-
-      handleSignUp(req, res);
-    });
-
     routes.post('/subscribe', handleSignUp);
   }
 
