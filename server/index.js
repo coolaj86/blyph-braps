@@ -19,8 +19,9 @@
     connect.router = require('connect_router');
   }
 
-  defaultWelcome = fs.readFileSync(__dirname + '/../emails/personal-asteroids.tpl.txt').toString('utf8');
-  defaultSubject = "You can't beat personal contact, but you can explodinate asteroids";
+  defaultWelcome = fs.readFileSync(__dirname + '/../emails/welcome-2012-12-21.tpl.txt').toString('utf8');
+  defaultSubject = "Welcome to Blyph";
+  //"You can't beat personal contact, but you can explodinate asteroids";
 
   // August 24th, 2011
   // iClicker
