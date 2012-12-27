@@ -519,6 +519,15 @@
   }
 
   app = connect.createServer()
+    // text types
+    .use(connect.compress({ level: 9, memLevel: 9 }))
+    // images, css, etc
+    .use(connect.static(__dirname + '/../public'))
+
+    .use(function (req, res, next) {
+        console.log(req.url);
+        next();
+      })
     .use(connect.favicon(__dirname + '/../public/favicon.ico'))
 
   // these won't work CORS-style without an Access-Control-Allow
@@ -527,11 +536,6 @@
 
     // decode http forms
     .use(connect.bodyParser())
-
-    // text types
-    .use(connect.compress({ level: 9, memLevel: 9 }))
-    // images, css, etc
-    .use(connect.static(__dirname + '/../public'))
 
     // REST API
     .use(connect.router(rest))
