@@ -41,7 +41,6 @@
       message.fairPrice = undefined;
     }
 
-
     console.log('message 0', message);
 
     // TODO use Join
@@ -550,7 +549,7 @@
 
   // these won't work CORS-style without an Access-Control-Allow
   //, connect.cookieParser()
-  //, connect.session({ secret: 'Baby, ride your Firebolt!' })
+  //, connect.session({ secret: config.secret })
 
     // decode http forms
     .use(connect.bodyParser())
