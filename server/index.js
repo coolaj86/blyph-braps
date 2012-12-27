@@ -27,6 +27,12 @@
   // August 24th, 2011
   // iClicker
 
+  function merge(a, b) {
+    Object.keys(b).forEach(function (key) {
+      a[key] = b[key] || a[key];
+    });
+  }
+
   function emailMatchMessage(message, fn) {
     if (/^\$/.exec(message.fairPrice)) {
       message.fairPrice = message.fairPrice.substr(1);
@@ -183,7 +189,7 @@
               ;
 
             book.userToken = value.userToken;
-            book.nickname = value.nickname;
+            book.nickname = value.nickname || value.email && value.email.replace(/@.*/, '');
 
             if (book.isbn) {
               if (book.isbn === book.isbn13) {
@@ -285,25 +291,36 @@
       var booklist = req.body && req.body.booklist
         , redirect = req.body && req.body.redirect
         , result
+        , error
         ;
 
-      try { 
-        booklist = JSON.parse(booklist);
-      } catch(e) {
-        res.writeHead(422);
-        res.end(JSON.stringify({ error: { message: "Bad body", booklistText: booklist, parseError: JSON.stringify(e)} }));
+      if (!req.params.userToken) {
+        res.statusCode = 422;
+        res.error(new Error('Bad userToken'));
+        res.json();
         return;
       }
 
       if (!booklist) {
-        res.writeHead(422);
-        res.end(JSON.stringify({ error: { message: "Bad body", parseError: JSON.stringify(new Error('no booklist found'))} }));
+        res.statusCode = 422;
+        res.error(new Error('no booklist found'));
+        res.json();
         return;
       }
 
-      if (!req.params.userToken) {
-        res.writeHead(422);
-        res.end(JSON.stringify({ error: { message: "Bad userToken"} }));
+      try { 
+        if ('string' === typeof booklist) {
+          booklist = JSON.parse(booklist);
+        } else if (!booklist || 'object' !== typeof booklist) {
+          throw new Error('booklist neither proper JSON String nor Object');
+        }
+      } catch(e) {
+        e.booklistText = booklist;
+        e.message = e.toString();
+
+        res.statusCode = 422;
+        res.error(e);
+        res.json();
         return;
       }
 
@@ -314,7 +331,8 @@
         && booklist.timestamp 
         && 'object' === typeof booklist.booklist
         )) {
-        res.writeHead(422);
+
+        res.statusCode = 422;
         result = {
             userToken: !!booklist.userToken
           , 'type': ('booklist' === booklist.type)
@@ -322,7 +340,12 @@
           , timestamp: !!booklist.timestamp 
           , booklist: ('object' === typeof booklist.booklist)
         };
-        res.end(JSON.stringify({ error: { message: "Bad booklist object (userToken, type, school, timestamp, booklist)"}, status: result }));
+        error = new Error("Bad booklist object (userToken, type, school, timestamp, booklist)");
+        error.debug = result;
+        res.error(error);
+        //res.meta('status', result);
+        //res.json(result);
+        res.json();
         return;
       }
 
@@ -331,7 +354,7 @@
 
       function redirectBack(err, data) {
         if (err) {
-          res.writeHead(422);
+          res.statusCode = 422;
           res.error(err);
           res.json();
           return;
@@ -347,11 +370,6 @@
         res.end(JSON.stringify(data));
       }
 
-      function merge(a, b) {
-        Object.keys(b).forEach(function (key) {
-          a[key] = b[key] || a[key];
-        });
-      }
 
       function mergeLists(err, data) {
         if (err || 'object' !== data.booklist || Array.isArray(data.booklist)) { 
