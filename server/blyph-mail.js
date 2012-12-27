@@ -29,7 +29,7 @@
     return mailer;
   }
 
-  function send(opts, message) {
+  function send(opts, message, fn) {
     // Comma-separated lists for to, cc, etc
     /*
       from
@@ -43,7 +43,7 @@
       attachments
      */
     message.body = message.text || message.body;
-    get(opts).sendMail(message);
+    get(opts).sendMail(message, fn);
   }
 
   blyphMail.get = get;
