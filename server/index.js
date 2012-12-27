@@ -333,6 +333,7 @@
         res.statusCode = 422;
         result = {
             userToken: !!booklist.userToken
+          , nickname: !!booklist.nickname
           , 'type': ('booklist' === booklist.type)
           , school: !!booklist.school 
           , timestamp: !!booklist.timestamp 
@@ -363,8 +364,8 @@
           return;
         }
 
-        res.setHeader("Location", redirect);
         res.statusCode = 302;
+        res.setHeader("Location", redirect);
         res.end(JSON.stringify(data));
       }
 
@@ -390,6 +391,7 @@
         // TODO have a validate function
         //
         data.userToken = booklist.userToken;
+        data.nickname = booklist.nickname;
         data.type = booklist.type;
         data.school = booklist.school;
         data.timestamp = booklist.timestamp;
@@ -460,7 +462,8 @@
       newUser = new BlyphUser(newUser);
       if (newUser.errors.length) {
         res.statusCode = 422;
-        res.end('{ "error": { "message": "bad object" } }');
+        res.error(new Error("bad object"));
+        res.end();
         return;
       }
 
