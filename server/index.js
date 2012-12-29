@@ -5,7 +5,8 @@
   var config = require(__dirname + '/../config')
     , fs = require('fs')
     , crypto = require('crypto')
-    , connect = require('jason')
+    , connect = require('connect')
+    , steve = require('./steve')
     , blyphMail = require('./blyph-mail')
     , cradle = require('cradle')
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
@@ -247,7 +248,8 @@
         ;
 
       if (!userToken) {
-        res.json({ error: { message: "bad userToken" } });
+        res.error(new Error("bad userToken"));
+        res.json();
         return;
       }
 
@@ -539,16 +541,13 @@
   }
 
   app = connect.createServer()
-    // text types
-    .use(connect.compress({ level: 9, memLevel: 9 }))
-    // images, css, etc
-    .use(connect.static(__dirname + '/../public'))
+    .use(steve)
+    //.use(steve())
 
     .use(function (req, res, next) {
         console.log(req.url);
         next();
       })
-    .use(connect.favicon(__dirname + '/../public/favicon.ico'))
 
   // these won't work CORS-style without an Access-Control-Allow
   //, connect.cookieParser()
