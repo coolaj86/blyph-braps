@@ -16,7 +16,7 @@
         , service: "Gmail"
       }
     , cradle: {
-          hostname: 'braps.couchone.com'
+          hostname: 'braps.iriscouch.com'
         , port: 443
         , options: {
               secure: true
