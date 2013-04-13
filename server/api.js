@@ -274,6 +274,7 @@
   function addAccountToSession(session, account) {
     session.uuid = account.uuid;
     session.gravatar = account.gravatar;
+    session.userToken = account.gravatar;
     session.username = account.username;
     session.nickname = account.nickname || account.username || (account.email||'').replace(/@.*/, '');
     // The only valid use of secret as a property

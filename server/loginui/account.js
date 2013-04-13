@@ -528,8 +528,10 @@
         pathname
     ));
     addAccountInfoToSession = addAccountToSession;
-    setUserAccount(demoDb.coolaj86);
-    setUserAccount(demoDb.foo);
+    if (!checkUser(demoDb.coolaj86.uuid)) {
+      setUserAccount(demoDb.coolaj86);
+      //setUserAccount(demoDb.foo);
+    }
   }
 
   module.exports.init = init;
