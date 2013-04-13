@@ -6,12 +6,14 @@
   // iClicker
 
   var config = require(__dirname + '/../config')
+    , path = require('path')
     , connect = require('connect')
     , cradle = require('cradle')
     , blyphMatch = require('./match')
     , blyphSignUp = require('./signup')
+    , account = require('./loginui/account')
     , handleSignUp = blyphSignUp.handleSignUp
-    , unsubscribe = blyphSignUp.unsubscribe
+    , handleUnsubscribe = blyphSignUp.handleUnsubscribe
     , emailMatchMessage = blyphMatch.emailMatchMessage
     , db = new(cradle.Connection)(config.cradle.hostname, config.cradle.port, config.cradle.options)
         .database(config.cradle.database, function () { console.log(arguments); })
@@ -269,10 +271,32 @@
     db.get(booklist.userToken + ':booklist', mergeLists);
   }
 
+  function addAccountToSession(session, account) {
+    session.uuid = account.uuid;
+    session.gravatar = account.gravatar;
+    session.username = account.username;
+    session.nickname = account.nickname || account.username || (account.email||'').replace(/@.*/, '');
+    // The only valid use of secret as a property
+    session.secret = 'otp' + account.otp;
+    session.createdAt = account.createdAt;
+    session.updatedAt = account.updatedAt;
+    session.authenticatedAt = account.authenticatedAt;
+    session.school = account.school;
+  }
+
+  account.init(path.join(__dirname, '..', 'var', 'users.db.json'), addAccountToSession);
+
   function rest(routes) {
     // TODO allow unsubscribe via email
     routes.post('/subscribe', handleSignUp);
-    routes.put('/unsubscribe', unsubscribe);
+    routes.put('/unsubscribe', handleUnsubscribe);
+
+    routes.post('/sessions', account.restfullyAuthenticateSession);
+
+    routes.post('/users', account.restfullyCreateUser);
+    routes.get('/users/:id', account.checkOrGetUser);
+    routes.patch('/users/:id', account.restfullyUpdateUser);
+
     // A list of all schools
     routes.get('/schools', getSchools);
     // TODO convert to use session
