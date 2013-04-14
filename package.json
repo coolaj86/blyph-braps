@@ -28,5 +28,6 @@
     "nodemailer": ">=0.3.37 <0.4.0",
     "ahr": "~3.0.0-rc.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+  }
 }
