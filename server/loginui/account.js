@@ -534,7 +534,22 @@
     }
   }
 
+  function areSameAccount(a, b) {
+    return a && b && a.uuid === b.uuid;
+  }
+
+  function authorizeRoute(cb, req, alias) {
+    function getSessionAccount(err, sessAcc) {
+      function getAliasAccount(err2, aliasAcc) {
+        cb(areSameAccount(sessAcc, aliasAcc) && aliasAcc);
+      }
+      directRetrieveUser(getAliasAccount, alias);
+    }
+    directRetrieveUser(getSessionAccount, req.session.uuid);
+  }
+
   module.exports.init = init;
+  module.exports.authorizeRoute = authorizeRoute;
   module.exports.restfullyAuthenticateSession = restfullyAuthenticateSession;
   module.exports.restfullyCreateUser = restfullyCreateUser;
   module.exports.checkOrGetUser = checkOrGetUser;

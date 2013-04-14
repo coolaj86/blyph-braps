@@ -155,6 +155,17 @@
     res.json(req.body);
   }
 
+  function authorizeSetUserBooklist(req, res) {
+    function cont(account) {
+      if (account) {
+        setUserBooklist(req, res);
+      } else {
+        res.error(new Error("You don't have permission to update that booklist"));
+        res.json();
+      }
+    }
+    account.authorizeRoute(cont, req, req.params.userToken);
+  }
   function setUserBooklist(req, res) {
     var booklist = req.body && req.body.booklist
       , redirect = req.body && req.body.redirect
@@ -302,7 +313,9 @@
     routes.get('/schools', getSchools);
     // TODO convert to use session
     routes.get('/booklist/:userToken', getUserBooklist);
-    routes.post('/booklist/:userToken', setUserBooklist);
+    routes.get('/booklists/:userToken', getUserBooklist);
+    routes.post('/booklist/:userToken', authorizeSetUserBooklist);
+    routes.post('/booklists/:userToken', authorizeSetUserBooklist);
     // sorted and unsorted booklists
     [
         'byTrade'
