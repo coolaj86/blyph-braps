@@ -7,6 +7,7 @@
 
   var config = require(__dirname + '/../config')
     , path = require('path')
+    //, schools = require('public/lib/schools.js')
     , connect = require('connect')
     , cradle = require('cradle')
     , blyphMatch = require('./match')

@@ -17,7 +17,6 @@
   //, connect.cookieParser()
   //, connect.session({ secret: config.secret })
     // decode http forms
-    .use(connect.bodyParser())
     // REST API
     .use(api)
     ;
